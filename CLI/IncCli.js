@@ -5,12 +5,13 @@ class IncCli {
 
     constructor(args = "") {
         this.settings = `${bin} ${args}`
+        this.sync = true
     }
 
-    run(args, sync = True) {
+    run(args) {
         let command = `${this.settings} ${args}`
         console.log("run::", command)
-        if (sync) {
+        if (this.sync) {
             return execSync(command, { encoding: 'utf-8' });
         }
         return exec(command, { encoding: 'utf-8' });
