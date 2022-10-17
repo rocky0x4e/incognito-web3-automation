@@ -2,3 +2,4 @@ zlab
 log
 node_modules
 report
+.cache
