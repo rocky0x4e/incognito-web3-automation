@@ -28,7 +28,7 @@ module.exports.listPool = async() => {
 
         await addingContent.addContent('api', {
             url,
-            response: response.Result[0]
+            "response.Result[0]": response.Result[0]
         })
         return response
     } catch (error) {

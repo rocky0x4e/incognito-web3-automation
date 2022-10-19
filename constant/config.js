@@ -66,7 +66,6 @@ const setENV = async(network = 'testnet2') => {
         global.urlBackendTool = 'http://34.123.53.141'
         global.urlWeb3 = 'https://mainnet.infura.io/v3/'
         global.urlWebService = 'https://api-webapp.incognito.org'
-            // global.urlWebService = 'https://api-webapp-staging.incognito.org'
 
     } else if (global.ENV == 'testnet2') {
         global.urlFullNode = 'https://testnet.incognito.org/fullnode'

@@ -51,7 +51,7 @@ describe('[Class] Market', () => {
             for (const item of response.Result) {
                 if (item.PoolID == pool_PRV_USDT) {
                     chai.expect(item.AMP).to.be.equal(22000);
-                    chai.expect(item.PriceChange24h).to.be.above(0);
+                    chai.expect(item.PriceChange24h).to.not.equal(0);
                     chai.expect(item.IsVerify).to.equal(true);
                     chai.expect(item.Volume).to.be.above(0);
                     chai.expect(item.Price).to.be.above(0);

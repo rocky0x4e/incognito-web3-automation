@@ -17,21 +17,20 @@ let chai = require('chai');
 
 describe('[Class] Demo', () => {
 
-    let account = {
-        privateKey: null,
-        otaKey: null,
-    }
+    describe.skip('TC004_CheckBalancePrvAfterSend', async() => {
 
-    describe('TC004_CheckBalancePrvAfterSend', async() => {
-
-        let node = new IncNode(global.urlFullNode)
-        let sender = new IncAccount((await config.getAccount('3')).privateKey).attachTo(node)
-        let receiver = new IncAccount((await config.getAccount('2')).privateKey).attachTo(node)
+        let node
+        let sender
+        let receiver
         let amountTranfer = 0
         let PRV = '0000000000000000000000000000000000000000000000000000000000000004'
 
 
         it('STEP_InitData', async() => {
+            node = new IncNode(global.urlFullNode)
+            sender = new IncAccount((await config.getAccount('3')).privateKey).attachTo(node)
+            receiver = new IncAccount((await config.getAccount('2')).privateKey).attachTo(node)
+
             amountTranfer = await commonFunction.randomNumber(1000)
 
             console.log('sender.privateK', sender.privateK);

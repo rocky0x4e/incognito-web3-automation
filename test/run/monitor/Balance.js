@@ -18,7 +18,7 @@ describe('[Class] Balance', () => {
         otaKey: null,
     }
 
-    describe('Before_Initdata', async() => {
+    describe.skip('Before_Initdata', async() => {
         it('Initdata', async() => {
             let accountTemp = await config.getAccount('main7')
             account.privateKey = accountTemp.privateKey
@@ -63,7 +63,7 @@ describe('[Class] Balance', () => {
         })
     })
 
-    describe('TC004_CheckBalancePrvAfterSend', async() => {
+    describe.skip('TC004_CheckBalancePrvAfterSend', async() => {
 
         let accountSend = {
             balanceCLI: 0,
@@ -158,7 +158,7 @@ describe('[Class] Balance', () => {
         }).timeout(1000000)
     })
 
-    describe('TC005_CheckBalanceTokenAfterSend', async() => {
+    describe.skip('TC005_CheckBalanceTokenAfterSend', async() => {
 
         let accountSend = {
             balanceCLI: 0,

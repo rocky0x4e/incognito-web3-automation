@@ -80,7 +80,6 @@ describe('[Class] Liquidity', () => {
         })
     })
 
-
     describe('TC005_WithdrawFeeHistory', async() => {
         it('TC001_CallAPI', async() => {
 
