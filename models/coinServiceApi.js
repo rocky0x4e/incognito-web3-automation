@@ -261,3 +261,52 @@ module.exports.orderTradeHistory = async({
         throw error
     }
 };
+
+module.exports.poolShare = async({
+    nftID
+}) => {
+
+    let url
+    let body
+    try {
+        url = global.urlCoinService + `/pdex/v3/poolshare?nftid=${nftID}`
+        let response = await api.get(url)
+
+        await addingContent.addContent('api', {
+            url,
+            response_Result_0: response.Result[0]
+        })
+        return response
+    } catch (error) {
+        await addingContent.addContent('api', {
+            url,
+        })
+        throw error
+    }
+};
+
+module.exports.poolDetail = async({
+    poolIDs
+}) => {
+
+    let url = global.urlCoinService + `/pdex/v3/poolsdetail`
+    let body = {
+        "PoolIDs": poolIDs
+    }
+    try {
+        let response = await api.post(url, body)
+
+        await addingContent.addContent('api', {
+            url,
+            body,
+            response
+        })
+        return response
+    } catch (error) {
+        await addingContent.addContent('api', {
+            url,
+            body
+        })
+        throw error
+    }
+};

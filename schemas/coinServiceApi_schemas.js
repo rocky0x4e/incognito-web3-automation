@@ -1296,6 +1296,184 @@ const getOrderTradeHistorySchemas = {
     }
 };
 
+const getPoolShareSchemas = {
+    "$id": "PoolShareSchemas",
+    "type": "object",
+    "$ref": "#/definitions/Welcome2",
+    "definitions": {
+        "Welcome2": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Result"
+                    }
+                },
+                "Error": {
+                    "type": "null"
+                }
+            },
+            "required": [
+                "Error",
+                "Result"
+            ],
+            "title": "Welcome2"
+        },
+        "Result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "PoolID": {
+                    "type": "string"
+                },
+                "TokenID1": {
+                    "type": "string"
+                },
+                "TokenID2": {
+                    "type": "string"
+                },
+                "Token1Amount": {
+                    "type": "integer"
+                },
+                "Token2Amount": {
+                    "type": "integer"
+                },
+                "Rewards": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                },
+                "OrderRewards": {
+                    "$ref": "#/definitions/OrderRewards"
+                },
+                "Share": {
+                    "type": "integer"
+                },
+                "AMP": {
+                    "type": "integer"
+                },
+                "TotalShare": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "AMP",
+                "OrderRewards",
+                "PoolID",
+                "Rewards",
+                "Share",
+                "Token1Amount",
+                "Token2Amount",
+                "TokenID1",
+                "TokenID2",
+                "TotalShare"
+            ],
+            "title": "Result"
+        },
+        "OrderRewards": {
+            "type": "object",
+            "additionalProperties": false,
+            "title": "OrderRewards"
+        }
+    }
+};
+
+const getPoolDetailSchemas = {
+    "$id": "PoolDetailSchemas",
+    "type": "object",
+    "$ref": "#/definitions/Welcome7",
+    "definitions": {
+        "Welcome7": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Result"
+                    }
+                },
+                "Error": {
+                    "type": "null"
+                }
+            },
+            "required": [
+                "Error",
+                "Result"
+            ],
+            "title": "Welcome7"
+        },
+        "Result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "PoolID": {
+                    "type": "string"
+                },
+                "Token1ID": {
+                    "type": "string"
+                },
+                "Token2ID": {
+                    "type": "string"
+                },
+                "Token1Value": {
+                    "type": "integer"
+                },
+                "Token2Value": {
+                    "type": "integer"
+                },
+                "Virtual1Value": {
+                    "type": "integer"
+                },
+                "Virtual2Value": {
+                    "type": "integer"
+                },
+                "TotalShare": {
+                    "type": "integer"
+                },
+                "AMP": {
+                    "type": "integer"
+                },
+                "Price": {
+                    "type": "number"
+                },
+                "Volume": {
+                    "type": "number"
+                },
+                "PriceChange24h": {
+                    "type": "number"
+                },
+                "APY": {
+                    "type": "integer"
+                },
+                "IsVerify": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "AMP",
+                "APY",
+                "IsVerify",
+                "PoolID",
+                "Price",
+                "PriceChange24h",
+                "Token1ID",
+                "Token1Value",
+                "Token2ID",
+                "Token2Value",
+                "TotalShare",
+                "Virtual1Value",
+                "Virtual2Value",
+                "Volume"
+            ],
+            "title": "Result"
+        }
+    }
+};
+
 module.exports = {
     getTokenListSchemas,
     getLitsPoolSchemas,
@@ -1307,6 +1485,7 @@ module.exports = {
     getTokenInfoSchemas,
     getPendingOrderSchemas,
     getPendingLimitSchemas,
-    getOrderTradeHistorySchemas
-
+    getOrderTradeHistorySchemas,
+    getPoolShareSchemas,
+    getPoolDetailSchemas
 };
