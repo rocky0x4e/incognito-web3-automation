@@ -332,6 +332,29 @@ module.exports.withdrawHistory = async({
         throw error
     }
 };
+module.exports.withdrawFeeHistory = async({
+    nftID,
+    limit = 1000,
+    offset = 0
+}) => {
+
+    let url
+    try {
+        url = global.urlCoinService + `/pdex/v3/withdrawfeehistory?nftid=${nftID}&limit=${limit}&offset=${offset}`
+        let response = await api.get(url)
+
+        await addingContent.addContent('api', {
+            url,
+            response_Result_0: response.Result[0]
+        })
+        return response
+    } catch (error) {
+        await addingContent.addContent('api', {
+            url,
+        })
+        throw error
+    }
+};
 
 module.exports.poolDetail = async({
     poolIDs

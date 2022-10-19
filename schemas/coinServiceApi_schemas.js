@@ -1669,6 +1669,73 @@ const getWithdrawHistorySchemas = {
     }
 };
 
+const getWithdrawFeeHistorySchemas = {
+    "$id": "WithdrawFeeHistorySchemas",
+    "type": "object",
+    "$ref": "#/definitions/Welcome5",
+    "definitions": {
+        "Welcome5": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Result"
+                    }
+                },
+                "Error": {
+                    "type": "null"
+                }
+            },
+            "required": [
+                "Error",
+                "Result"
+            ],
+            "title": "Welcome5"
+        },
+        "Result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "PoolID": {
+                    "type": "string"
+                },
+                "RequestTx": {
+                    "type": "string"
+                },
+                "RespondTxs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "Status": {
+                    "type": "integer"
+                },
+                "WithdrawTokens": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "integer"
+                    }
+                },
+                "Requestime": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "PoolID",
+                "RequestTx",
+                "Requestime",
+                "RespondTxs",
+                "Status",
+                "WithdrawTokens"
+            ],
+            "title": "Result"
+        }
+    }
+};
+
 module.exports = {
     getTokenListSchemas,
     getLitsPoolSchemas,
@@ -1684,5 +1751,6 @@ module.exports = {
     getPoolShareSchemas,
     getPoolDetailSchemas,
     getContributeHistorySchemas,
-    getWithdrawHistorySchemas
+    getWithdrawHistorySchemas,
+    getWithdrawFeeHistorySchemas
 };
