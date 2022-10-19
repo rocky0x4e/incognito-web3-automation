@@ -292,9 +292,32 @@ module.exports.contributeHistory = async({
 }) => {
 
     let url
-    let body
     try {
         url = global.urlCoinService + `/pdex/v3/contributehistory?nftid=${nftID}&limit=${limit}&offset=${offset}`
+        let response = await api.get(url)
+
+        await addingContent.addContent('api', {
+            url,
+            response_Result_0: response.Result[0]
+        })
+        return response
+    } catch (error) {
+        await addingContent.addContent('api', {
+            url,
+        })
+        throw error
+    }
+};
+
+module.exports.withdrawHistory = async({
+    nftID,
+    limit = 1000,
+    offset = 0
+}) => {
+
+    let url
+    try {
+        url = global.urlCoinService + `/pdex/v3/withdrawhistory?nftid=${nftID}&limit=${limit}&offset=${offset}`
         let response = await api.get(url)
 
         await addingContent.addContent('api', {

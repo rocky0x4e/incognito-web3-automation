@@ -69,6 +69,17 @@ describe('[Class] Liquidity', () => {
         })
     })
 
+    describe('TC004_WithdrawHistory', async() => {
+        it('TC001_CallAPI', async() => {
+
+            let response = await coinServiceApi.withdrawHistory({ nftID })
+
+            await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getWithdrawHistorySchemas, response);
+
+            chai.expect(response.Result).to.have.lengthOf.above(0);
+        })
+    })
+
 
 
 })

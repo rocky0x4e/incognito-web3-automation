@@ -1475,7 +1475,7 @@ const getPoolDetailSchemas = {
 };
 
 const getContributeHistorySchemas = {
-    "$id": "PoolDetailSchemas",
+    "$id": "ContributeHistorySchemas",
     "type": "object",
     "$ref": "#/definitions/Welcome8",
     "definitions": {
@@ -1589,6 +1589,86 @@ const getContributeHistorySchemas = {
     }
 };
 
+const getWithdrawHistorySchemas = {
+    "$id": "WithdrawHistorySchemas",
+    "type": "object",
+    "$ref": "#/definitions/Welcome2",
+    "definitions": {
+        "Welcome2": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Result"
+                    }
+                },
+                "Error": {
+                    "type": "null"
+                }
+            },
+            "required": [
+                "Error",
+                "Result"
+            ],
+            "title": "Welcome2"
+        },
+        "Result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "PoolID": {
+                    "type": "string"
+                },
+                "RequestTx": {
+                    "type": "string"
+                },
+                "RespondTxs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "Status": {
+                    "type": "integer"
+                },
+                "TokenID1": {
+                    "type": "string"
+                },
+                "TokenID2": {
+                    "type": "string"
+                },
+                "Amount1": {
+                    "type": "integer"
+                },
+                "Amount2": {
+                    "type": "integer"
+                },
+                "ShareAmount": {
+                    "type": "integer"
+                },
+                "Requestime": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "Amount1",
+                "Amount2",
+                "PoolID",
+                "RequestTx",
+                "Requestime",
+                "RespondTxs",
+                "ShareAmount",
+                "Status",
+                "TokenID1",
+                "TokenID2"
+            ],
+            "title": "Result"
+        }
+    }
+};
+
 module.exports = {
     getTokenListSchemas,
     getLitsPoolSchemas,
@@ -1603,5 +1683,6 @@ module.exports = {
     getOrderTradeHistorySchemas,
     getPoolShareSchemas,
     getPoolDetailSchemas,
-    getContributeHistorySchemas
+    getContributeHistorySchemas,
+    getWithdrawHistorySchemas
 };
