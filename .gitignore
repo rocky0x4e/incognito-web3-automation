@@ -7,3 +7,4 @@ mochawesome-report
 test/scratch
 scratch*
 .cache*
+bin

@@ -11,7 +11,7 @@ const addingContent = require('../../../testbase/addingContent');
 //Require the dev-dependencies
 let chai = require('chai');
 
-describe('[Class] Pdex', () => {
+describe('[Class] Balance', () => {
 
     let account = {
         privateKey: null,

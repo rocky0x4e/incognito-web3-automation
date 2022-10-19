@@ -58,7 +58,7 @@ const setENV = async(network = 'testnet2') => {
     global.ENV = network
 
     if (global.ENV == 'mainnet') {
-        global.urlFullNode = 'https://fullnode.incognito.org/fullnode'
+        global.urlFullNode = 'https://mainnet.incognito.org/fullnode'
         global.urlFullNodeHieu = 'http://localhost:9999'
         global.urlCoinService = 'https://api-coinservice.incognito.org'
         global.urlPubsubService = 'https://api-coinservice.incognito.org/txservice'
