@@ -285,6 +285,31 @@ module.exports.poolShare = async({
     }
 };
 
+module.exports.contributeHistory = async({
+    nftID,
+    limit = 1000,
+    offset = 0
+}) => {
+
+    let url
+    let body
+    try {
+        url = global.urlCoinService + `/pdex/v3/contributehistory?nftid=${nftID}&limit=${limit}&offset=${offset}`
+        let response = await api.get(url)
+
+        await addingContent.addContent('api', {
+            url,
+            response_Result_0: response.Result[0]
+        })
+        return response
+    } catch (error) {
+        await addingContent.addContent('api', {
+            url,
+        })
+        throw error
+    }
+};
+
 module.exports.poolDetail = async({
     poolIDs
 }) => {

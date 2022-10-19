@@ -11,7 +11,7 @@ const addingContent = require('../../../testbase/addingContent');
 //Require the dev-dependencies
 let chai = require('chai');
 
-describe('[Class] Market', () => {
+describe('[Class] Liquidity', () => {
 
     let nftID = '5756fc0f1661b2b66bc670683ae0f1ef08441c62d91bd22720fa30093ceacaae'
     let pool_PRV_USDT = '0000000000000000000000000000000000000000000000000000000000000004-076a4423fa20922526bd50b0d7b0dc1c593ce16e15ba141ede5fb5a28aa3f229-33a8ceae6db677d9860a6731de1a01de7e1ca7930404d7ec9ef5028f226f1633'
@@ -31,7 +31,7 @@ describe('[Class] Market', () => {
         })
     })
 
-    describe('TC001_PoolDetail', async() => {
+    describe('TC002_PoolDetail', async() => {
         it('TC001_CallAPI', async() => {
 
             let poolIDs = [
@@ -55,6 +55,17 @@ describe('[Class] Market', () => {
                 chai.expect(pool.APY).to.above(0);
                 chai.expect(pool.IsVerify).to.equal(true);
             }
+        })
+    })
+
+    describe('TC003_ContributeHistory', async() => {
+        it('TC001_CallAPI', async() => {
+
+            let response = await coinServiceApi.contributeHistory({ nftID })
+
+            await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getContributeHistorySchemas, response);
+
+            chai.expect(response.Result).to.have.lengthOf.above(1);
         })
     })
 

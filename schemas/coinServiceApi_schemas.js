@@ -1474,6 +1474,121 @@ const getPoolDetailSchemas = {
     }
 };
 
+const getContributeHistorySchemas = {
+    "$id": "PoolDetailSchemas",
+    "type": "object",
+    "$ref": "#/definitions/Welcome8",
+    "definitions": {
+        "Welcome8": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Result"
+                    }
+                },
+                "Error": {
+                    "type": "null"
+                }
+            },
+            "required": [
+                "Error",
+                "Result"
+            ],
+            "title": "Welcome8"
+        },
+        "Result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "RequestTxs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "RespondTxs": {
+                    "anyOf": [{
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "PairID": {
+                    "type": "string"
+                },
+                "PoolID": {
+                    "type": "string"
+                },
+                "PairHash": {
+                    "type": "string"
+                },
+                "ContributeTokens": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "ContributeAmount": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "ReturnTokens": {
+                    "anyOf": [{
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "ReturnAmount": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "NFTID": {
+                    "type": "string"
+                },
+                "RequestTime": {
+                    "type": "integer"
+                },
+                "Status": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "ContributeAmount",
+                "ContributeTokens",
+                "NFTID",
+                "PairHash",
+                "PairID",
+                "PoolID",
+                "RequestTime",
+                "RequestTxs",
+                "RespondTxs",
+                "ReturnAmount",
+                "ReturnTokens",
+                "Status"
+            ],
+            "title": "Result"
+        }
+    }
+};
+
 module.exports = {
     getTokenListSchemas,
     getLitsPoolSchemas,
@@ -1487,5 +1602,6 @@ module.exports = {
     getPendingLimitSchemas,
     getOrderTradeHistorySchemas,
     getPoolShareSchemas,
-    getPoolDetailSchemas
+    getPoolDetailSchemas,
+    getContributeHistorySchemas
 };
