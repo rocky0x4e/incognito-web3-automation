@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "axios": "^1.1.2",
-    "winston": "^3.8.2"
+    "winston": "^3.8.2",
+    "incognito-chain-web-js": "https://github.com/incognitochain/incognito-chain-web-js#4.4.1.70"
   }
 }
