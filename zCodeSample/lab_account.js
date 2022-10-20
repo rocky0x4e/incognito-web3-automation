@@ -1,4 +1,4 @@
-const { IncAccount, IncAccountGroup } = require("../lib/Incognito/Account")
+const { IncAccount, IncAccountGroup } = require("../lib/Incognito/Account/Account")
 const { IncNode } = require("../lib/Incognito/IncNode")
 
 
@@ -21,8 +21,18 @@ async function main() {
     for (acc of accounts.accountList) {
         console.log(acc.otaPrivateK)
     }
-    // bal = await sender.useCli.getBalance()
-    // console.log(bal)
+    let senderBalBefore = await sender.useCli.getBalance()
+    let receiverBalBefore = await receiver.useCli.getBalance()
+
+    tx = await sender.useCli.send(receiver, 10000)
+    node.rpc.getTxByHash(tx)
+    let senderBalAfter = await sender.useCli.getBalance()
+    let receiverBalAfter = await receiver.useCli.waitBalanceChange({ from: receiverBalBefore })
+
+    console.log("sender", senderBalBefore, senderBalAfter)
+    console.log("receiver", receiverBalBefore, receiverBalAfter)
+
+
 }
 // check()
 main()
