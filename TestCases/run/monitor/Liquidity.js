@@ -22,6 +22,9 @@ describe('[Class] Liquidity', () => {
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getPoolShareSchemas, response.data);
 
             chai.expect(response.data.Result).to.have.lengthOf.above(1);
+            chai.expect(response.data.Result).to.have.lengthOf.above(1);
+            chai.expect(response.data.Result).to.have.lengthOf.above(1);
+            chai.expect(response.data.Result).to.have.lengthOf.above(1);
 
         })
     })

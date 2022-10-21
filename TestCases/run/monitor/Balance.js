@@ -1,15 +1,17 @@
 const config = require('../../../constant/config');
-const cliCommonFunction = require('../../../constant/cliCommonFunction');
 const sdkCommonFunction = require('../../../constant/sdkCommonFunction');
 const chainCommonFunction = require('../../../constant/chainCommonFunction');
 const commonFunction = require('../../../constant/commonFunction');
-const coinServiceApi = require('../../../models/coinServiceApi');
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
 const addingContent = require('../../../testbase/addingContent');
 
 //Require the dev-dependencies
 let chai = require('chai');
+const { IncAccount } = require('../../../lib/Incognito/Account/Account');
+const { IncNode } = require('../../../lib/Incognito/IncNode');
+const { CoinServiceApi } = require('../../../lib/Incognito/CoinService/CoinServiceApi');
+const { ENV } = require('../../../global');
 
 describe('[Class] Balance', () => {
 
@@ -17,38 +19,44 @@ describe('[Class] Balance', () => {
         privateKey: null,
         otaKey: null,
     }
+    let coinServiceApi = new CoinServiceApi()
 
     describe.skip('Before_Initdata', async() => {
         it('Initdata', async() => {
-            let accountTemp = await config.getAccount('main7')
-            account.privateKey = accountTemp.privateKey
-            account.otaKey = (await cliCommonFunction.keyInfo(accountTemp.privateKey)).OTAPrivateKey
+            let privateKey = (await config.getAccount('main7')).privateKey
+
+            let node = new IncNode(global.urlFullNode)
+            let accountNode = new IncAccount(privateKey).attachTo(node)
+
+            account.otaKey = accountNode.otaPrivateK
+            account.privateKey = accountNode.privateK
         })
     })
 
-    describe('TC001_GetKeyInfo', async() => {
+    describe.skip('TC001_GetKeyInfo', async() => {
         it('CallAPI', async() => {
 
-            let response = await coinServiceApi.getkeyinfo({ otaKey: account.otaKey })
+            console.log("hoanh", account);
+            let response = await coinServiceApi.getKeyInfo({ otaKey: account.otaKey })
 
-            await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getGetKeyInfoSchemas, response)
+            await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getGetKeyInfoSchemas, response.data)
         })
     })
 
-    describe('TC002_CheckKeyImage', async() => {
+    describe.skip('TC002_CheckKeyImage', async() => {
         it('CallAPI', async() => {
-            let keyImage = [
+            let keyImages = [
                 "7w0f383GlwJli1+7+5ocpLimo5iD6hZzmpL52Yh3EKM=",
                 "XifUy+NcW/MU+zOTofbfCepu07iWPevoaXkextz9i8w="
             ]
 
-            let response = await coinServiceApi.checkkeyimages({ KeyImages: keyImage })
+            let response = await coinServiceApi.getKeyImage({ KeyImages: keyImages })
 
-            await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getCheckKeyImageSchemas, response)
+            await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getCheckKeyImageSchemas, response.data)
         })
     })
 
-    describe('TC003_TokenInfo', async() => {
+    describe.skip('TC003_TokenInfo', async() => {
         it('CallAPI', async() => {
             let
                 TokenIDs = [
@@ -59,101 +67,87 @@ describe('[Class] Balance', () => {
 
             let response = await coinServiceApi.tokenInfo({ TokenIDs: TokenIDs })
 
-            await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getTokenInfoSchemas, response)
+            await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getTokenInfoSchemas, response.data)
         })
     })
 
-    describe.skip('TC004_CheckBalancePrvAfterSend', async() => {
+    describe('TC004_CheckBalancePrvAfterSend', async() => {
 
-        let accountSend = {
-            balanceCLI: 0,
-            balanceSdk: 0,
-            privateKey: 0,
-            paymentAddress: 0,
-            accoutSdk: 0,
-            oldBalance: 0,
-            newBalance: 0
-        }
-        let accountReceive = {
-            balanceCLI: 0,
-            balanceSdk: 0,
-            privateKey: 0,
-            paymentAddress: 0,
-            oldBalance: 0,
-            newBalance: 0
-        }
+        let node = new IncNode(ENV.urlFullNode)
+        let sender = new IncAccount((await config.getAccount('3')).privateKey).attachTo(node)
+        sender.useSdk.setKey()
+        let receiver = new IncAccount((await config.getAccount('2')).privateKey).attachTo(node)
+        receiver.useSdk.setKey()
         let amountTranfer = 0
-        let PRV = '0000000000000000000000000000000000000000000000000000000000000004'
+        const PRV = '0000000000000000000000000000000000000000000000000000000000000004'
 
 
         it('STEP_InitData', async() => {
             amountTranfer = await commonFunction.randomNumber(1000)
 
-            account1 = await config.getAccount("3")
-            accountSend.privateKey = account1.privateKey
-            console.log('accountSend.privateKey', accountSend.privateKey);
-            accountSend.accoutSdk = await sdkCommonFunction.initAccount(accountSend.privateKey)
+            // console.log('sender.privateK', sender.privateK);
+            // sender.accoutSdk = sender.useSdk.init()
 
-            account2 = await config.getAccount("2")
-            accountReceive.privateKey = account2.privateKey
-            accountReceive.paymentAddress = (await cliCommonFunction.keyInfo(account2.privateKey)).PaymentAddress
-            console.log('accountReceive.paymentAddress', accountReceive.paymentAddress);
-            accountReceive.accoutSdk = await sdkCommonFunction.initAccount(accountReceive.privateKey)
+            // console.log('receiver.privateK', receiver.privateK);
+            // receiver.accoutSdk = sender.useSdk.init()
         });
 
-        it('STEP_CheckBalanceCli', async() => {
-            accountSend.balanceCLI = await cliCommonFunction.loadBalance(accountSend.privateKey)
-            await addingContent.addContent('accountSend.balanceCLI', accountSend.balanceCLI)
-            accountSend.oldBalance = accountSend.balanceCLI
+        it.skip('STEP_CheckBalanceCli', async() => {
+            sender.balanceCLI = await sender.useCli.getBalanceAll()
+            await addingContent.addContent('sender.getBalanceAll', sender.balanceCLI)
+            sender.oldBalance = sender.balanceCLI
 
-            accountReceive.balanceCLI = await cliCommonFunction.loadBalance(accountReceive.privateKey)
-            await addingContent.addContent('accountReceive.balanceCLI', accountReceive.balanceCLI)
-            accountReceive.oldBalance = accountReceive.balanceCLI
+            receiver.balanceCLI = await receiver.useCli.getBalanceAll()
+            await addingContent.addContent('receiver.getBalanceAll', receiver.balanceCLI)
+            receiver.oldBalance = receiver.balanceCLI
         }).timeout(1000000)
 
         it('STEP_CheckBalanceSdk', async() => {
-            accountSend.balanceSdk = await sdkCommonFunction.checkBalance({ account: accountSend.accoutSdk })
-            await addingContent.addContent('accountSend.balanceSdk', accountSend.balanceSdk)
 
-            accountReceive.balanceSdk = await sdkCommonFunction.checkBalance({ account: accountReceive.accoutSdk })
-            await addingContent.addContent('accountReceive.balanceSdk', accountReceive.balanceSdk)
+            sender.balanceSdk = await sender.useSdk.getBalanceAll()
+            await addingContent.addContent('sender.balanceSdk', sender.balanceSdk)
+
+            receiver.balanceSdk = await receiver.useSdk.getBalanceAll()
+            await addingContent.addContent('receiver.balanceSdk', receiver.balanceSdk)
 
         }).timeout(1000000)
 
         it('STEP_Send', async() => {
 
-            let tx = await sdkCommonFunction.send({
-                account: accountSend.accoutSdk,
-                paymentAddress: accountReceive.paymentAddress,
-                amountTransfer: amountTranfer,
-            })
+            let tx = await sender.useSdk.sendPRV(receiver, amountTranfer)
+                // let tx = await sdkCommonFunction.send({
+                //     account: sender.accoutSdk,
+                //     paymentAddress: receiver.paymentK,
+                //     amountTransfer: amountTranfer,
+                // })
+
             console.log(`Send PRV : ${tx}`);
             await addingContent.addContent('tx', tx)
             await chainCommonFunction.waitForTxInBlock(tx)
         }).timeout(1000000)
 
         it('STEP_CompareBalance', async() => {
-            await commonFunction.sleep(200000)
+            await sender.useCli.waitBalanceChange()
 
-            accountSend.balanceCLI = await cliCommonFunction.loadBalance(accountSend.privateKey)
-            await addingContent.addContent('accountSend.balanceCLI', accountSend.balanceCLI)
-            accountSend.newBalance = accountSend.balanceCLI
+            sender.balanceCLI = await sender.useCli.getBalanceAll()
+            await addingContent.addContent('sender.balanceCLI', sender.balanceCLI)
+            sender.newBalance = sender.balanceCLI
 
-            accountReceive.balanceCLI = await cliCommonFunction.loadBalance(accountReceive.privateKey)
-            await addingContent.addContent('accountReceive.balanceCLI', accountReceive.balanceCLI)
-            accountReceive.newBalance = accountReceive.balanceCLI
+            receiver.balanceCLI = await receiver.useCli.getBalanceAll()
+            await addingContent.addContent('receiver.balanceCLI', receiver.balanceCLI)
+            receiver.newBalance = receiver.balanceCLI
 
-            accountSend.balanceSdk = await sdkCommonFunction.checkBalance({ account: accountSend.accoutSdk })
-            await addingContent.addContent('accountSend.balanceSdk', accountSend.balanceSdk)
+            sender.balanceSdk = await sdkCommonFunction.checkBalance({ account: sender.accoutSdk })
+            await addingContent.addContent('sender.balanceSdk', sender.balanceSdk)
 
-            accountReceive.balanceSdk = await sdkCommonFunction.checkBalance({ account: accountReceive.accoutSdk })
-            await addingContent.addContent('accountReceive.balanceSdk', accountReceive.balanceSdk)
+            receiver.balanceSdk = await sdkCommonFunction.checkBalance({ account: receiver.accoutSdk })
+            await addingContent.addContent('receiver.balanceSdk', receiver.balanceSdk)
 
-            chai.expect(accountSend.balanceCLI[PRV]).to.equal(accountSend.balanceSdk[PRV])
-            chai.expect(accountReceive.balanceCLI[PRV]).to.equal(accountReceive.balanceSdk[PRV])
+            chai.expect(sender.balanceCLI[PRV]).to.equal(sender.balanceSdk[PRV])
+            chai.expect(receiver.balanceCLI[PRV]).to.equal(receiver.balanceSdk[PRV])
 
-            chai.expect(accountSend.newBalance[PRV]).to.equal(accountSend.oldBalance[PRV] - amountTranfer - 100)
-            chai.expect(accountReceive.newBalance[PRV]).to.equal(accountReceive.oldBalance[PRV] + amountTranfer)
+            chai.expect(sender.newBalance[PRV]).to.equal(sender.oldBalance[PRV] - amountTranfer - 100)
+            chai.expect(receiver.newBalance[PRV]).to.equal(receiver.oldBalance[PRV] + amountTranfer)
 
         }).timeout(1000000)
     })
