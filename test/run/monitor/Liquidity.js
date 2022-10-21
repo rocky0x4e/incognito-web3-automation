@@ -17,7 +17,6 @@ describe('[Class] Liquidity', () => {
     describe('TC001_PoolShare', async() => {
         it('TC001_CallAPI', async() => {
 
-
             let response = await coinServiceApi.poolShare(NFT_ID)
 
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getPoolShareSchemas, response.data);

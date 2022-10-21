@@ -8,7 +8,7 @@
     "scripts": {
         "start": "node server.js",
         "dev": "nodemon --debug",
-        "test": "npx mocha test/run/monitor --timeout 10000 --file testbase/testbase.js --reporter mochawesome --charts true --exit"
+        "test": "npx mocha test/run/monitor/Market --timeout 10000 --file testbase/testbase.js --reporter mochawesome --charts true --exit"
 
     },
     "dependencies": {
