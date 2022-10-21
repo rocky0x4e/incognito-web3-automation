@@ -1,0 +1,9 @@
+{
+    "urlFullNode": "https://mainnet.incognito.org/fullnode",
+    "urlCoinService": "https://api-coinservice.incognito.org",
+    "urlPubsubService": "https://api-coinservice.incognito.org/txservice",
+    "urlBackend": "https://api-service.incognito.org",
+    "urlBackendTool": "http://34.123.53.141",
+    "urlWeb3": "https://mainnet.infura.io/v3/",
+    "urlWebService": "https://api-webapp.incognito.org"
+}

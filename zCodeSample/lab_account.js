@@ -1,11 +1,11 @@
-const { IncAccount, IncAccountGroup } = require("../lib/Incognito/Account")
+const { IncAccount, IncAccountGroup } = require("../lib/Incognito/Account/Account")
 const { IncNode } = require("../lib/Incognito/IncNode")
 
 
-node = new IncNode("http://51.83.36.184:9334")
-sender = new IncAccount("112t8rnXVMJJZzfF1naXvfE9nkTKwUwFWFeh8cfEyViG1vpA8A9khJk3mhyB1hDuJ4RbreDTsZpgJK4YcSxdEpXJKMEd8Vmp5UqKWwBcYzxv").attachTo(node)
-receiver = new IncAccount("112t8rnXS1xtEyykpARqwstHb7avCiLf9fegErxsz5mYbkBE1oaiPvstPpoR3MQQ9RdKtvV932VtQe3P92NnkWax6Pj6bpERUYfySz89shvR").attachTo(node)
-accounts = new IncAccountGroup()
+let node = new IncNode("http://51.83.36.184:9334")
+let sender = new IncAccount("112t8rnXVMJJZzfF1naXvfE9nkTKwUwFWFeh8cfEyViG1vpA8A9khJk3mhyB1hDuJ4RbreDTsZpgJK4YcSxdEpXJKMEd8Vmp5UqKWwBcYzxv").attachTo(node)
+let receiver = new IncAccount("112t8rnXS1xtEyykpARqwstHb7avCiLf9fegErxsz5mYbkBE1oaiPvstPpoR3MQQ9RdKtvV932VtQe3P92NnkWax6Pj6bpERUYfySz89shvR").attachTo(node)
+let accounts = new IncAccountGroup()
 accounts.genAccounts({ numAccount: 7 })
 accounts.attachTo(node)
 
@@ -21,6 +21,17 @@ async function main() {
     for (acc of accounts.accountList) {
         console.log(acc.otaPrivateK)
     }
+    let senderBalBefore = await sender.useCli.getBalance()
+    let receiverBalBefore = await receiver.useCli.getBalance()
+
+    tx = await sender.useCli.send(receiver, 10000)
+    node.rpc.getTxByHash(tx)
+    let senderBalAfter = await sender.useCli.getBalance()
+    let receiverBalAfter = await receiver.useCli.waitBalanceChange({ from: receiverBalBefore })
+
+    console.log("sender", senderBalBefore, senderBalAfter)
+    console.log("receiver", receiverBalBefore, receiverBalAfter)
+
 
 }
 // check()
