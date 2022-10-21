@@ -8,7 +8,7 @@
     "scripts": {
         "start": "node server.js",
         "dev": "nodemon --debug",
-        "test": "npx mocha test/run/monitor --timeout 10000 --file testbase/testbase.js --reporter mochawesome --charts true --exit",
+        "test": "npx mocha test/run/monitor/Liquidity --timeout 10000 --file testbase/testbase.js --reporter mochawesome --charts true --exit",
         "cytest:api1": "npx cypress run --spec \"cypress/e2e/1-api-test/*\"  --record --key=830bc120-4052-444f-8adf-dbe234b5748c",
         "cytest:smoke": "npx cypress run --spec \"**/*.smoke.cy.js\"  --record --key=830bc120-4052-444f-8adf-dbe234b5748c"
     },
