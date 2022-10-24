@@ -3,7 +3,7 @@ const sdkCommonFunction = require('../../../constant/sdkCommonFunction');
 const chainCommonFunction = require('../../../constant/chainCommonFunction');
 const commonFunction = require('../../../constant/commonFunction');
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
-const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
+const backendApi_schemas = require("../../../schemas/backendApi_schemas");
 const addingContent = require('../../../testbase/addingContent');
 
 //Require the dev-dependencies
@@ -15,15 +15,14 @@ const { BackendApi } = require('../../../lib/Incognito/BackendApi');
 
 describe('[Class] Balance', () => {
 
-    let account = {
-        privateKey: null,
-        otaKey: null,
-    }
-    let backendApi = new BackendApi()
 
-    after('Before_Initdata', async() => {
-        it('Initdata', async() => {
-            //TODO
+    let backendApi = new BackendApi(ENV.Backend)
+
+    describe('TC001_Profile', async() => {
+        it('CallAPI', async() => {
+            let response = await backendApi.authProfile()
+
+            await validateSchemaCommand.validateSchema(backendApi_schemas.authenProfileSchemas, response.data)
         })
     })
 })

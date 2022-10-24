@@ -2,7 +2,7 @@ var ENV = {
     FullNode: { url: "https://testnet.incognito.org/fullnode", authPath: "" },
     CoinService: { url: "https://api-coinservice-staging.incognito.org", authPath: "auth/new-token" },
     PubsubService: { url: "http://51.161.117.193:9096", authPath: "" },
-    Backend: { url: "https://staging-api-service.incognito.org", authPath: "" },
+    Backend: { url: "https://staging-api-service.incognito.org", authPath: "auth/new-token" },
     BackendTool: { url: "http://34.123.53.141", authPath: "" },
     Web3: { url: "https://kovan.infura.io/v3/", authPath: "" },
     WebService: { url: "https://api-webapp-staging.incognito.org", authPath: "" }
