@@ -22,4 +22,12 @@ describe('[Class] Login', () => {
             await validateSchemaCommand.validateSchema(backendApi_schemas.authenProfileSchemas, response.data)
         })
     })
+
+    describe('TC002_DisableFunctionConfig', async() => {
+        it('CallAPI', async() => {
+            let response = await backendApi.disableFunctionConfig()
+
+            await validateSchemaCommand.validateSchema(backendApi_schemas.disableFunctionConfigSchemas, response.data)
+        })
+    })
 })

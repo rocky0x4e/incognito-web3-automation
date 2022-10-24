@@ -113,7 +113,77 @@
      }
  };
 
+ const disableFunctionConfigSchemas = {
+     "$id": "authenProfileSchemas",
+     "type": "object",
+     "$ref": "#/definitions/Welcome3",
+     "definitions": {
+         "Welcome3": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "Result": {
+                     "type": "object",
+                     "additionalProperties": {
+                         "$ref": "#/definitions/Result"
+                     }
+                 },
+                 "Error": {
+                     "type": "null"
+                 }
+             },
+             "required": [
+                 "Error",
+                 "Result"
+             ],
+             "title": "Welcome3"
+         },
+         "Result": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "ID": {
+                     "type": "integer"
+                 },
+                 "CreatedAt": {
+                     "type": "string",
+                 },
+                 "UpdatedAt": {
+                     "type": "string",
+                 },
+                 "DeletedAt": {
+                     "type": "null"
+                 },
+                 "Name": {
+                     "type": "string"
+                 },
+                 "Descriptions": {
+                     "type": "string"
+                 },
+                 "Disable": {
+                     "type": "boolean"
+                 },
+                 "Message": {
+                     "type": "string"
+                 }
+             },
+             "required": [
+                 "CreatedAt",
+                 "DeletedAt",
+                 "Descriptions",
+                 "Disable",
+                 "ID",
+                 "Message",
+                 "Name",
+                 "UpdatedAt"
+             ],
+             "title": "Result"
+         }
+     }
+ };
+
  module.exports = {
      getOtaGenerateSchemas,
-     authenProfileSchemas
+     authenProfileSchemas,
+     disableFunctionConfigSchemas
  }

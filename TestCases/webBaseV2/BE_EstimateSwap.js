@@ -361,10 +361,6 @@ describe('[Class] EstimateTrade', async() => {
             chai.assert.equal(response.Error, 'No tradeable network found')
         });
     });
-
-
-
-
 });
 
 const selectToken = async(symbol, network = null) => {
