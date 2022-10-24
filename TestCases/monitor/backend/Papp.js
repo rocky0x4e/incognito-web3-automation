@@ -17,5 +17,13 @@ describe('[Class] Login', () => {
         })
     })
 
+    describe('TC002_UniswapToken', async() => {
+        it('CallAPI', async() => {
+            let response = await backendApi.uniswapToken()
+
+            await validateSchemaCommand.validateSchema(backendApi_schemas.uniSwapTokenSchemas, response.data)
+        })
+    })
+
 
 })

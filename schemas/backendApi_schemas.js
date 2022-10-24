@@ -348,10 +348,123 @@
      }
  };
 
+ const uniSwapTokenSchemas = {
+     "$id": "uniSwapTokenSchemas",
+     "type": "object",
+     "$ref": "#/definitions/Welcome3",
+     "definitions": {
+         "Welcome3": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "Result": {
+                     "type": "array",
+                     "items": {
+                         "$ref": "#/definitions/Result"
+                     }
+                 },
+                 "Error": {
+                     "type": "null"
+                 }
+             },
+             "required": [
+                 "Error",
+                 "Result"
+             ],
+             "title": "Welcome3"
+         },
+         "Result": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "ID": {
+                     "type": "string"
+                 },
+                 "ContractID": {
+                     "type": "string"
+                 },
+                 "ContractIDGetRate": {
+                     "type": "string"
+                 },
+                 "Name": {
+                     "type": "string"
+                 },
+                 "Symbol": {
+                     "type": "string"
+                 },
+                 "Decimals": {
+                     "type": "integer"
+                 },
+                 "PDecimals": {
+                     "type": "integer"
+                 },
+                 "Protocol": {
+                     "$ref": "#/definitions/Protocol"
+                 },
+                 "PricePrv": {
+                     "type": "number"
+                 },
+                 "Verify": {
+                     "type": "boolean"
+                 },
+                 "IsPopular": {
+                     "type": "boolean"
+                 },
+                 "Priority": {
+                     "type": "integer"
+                 },
+                 "DappID": {
+                     "type": "integer"
+                 },
+                 "CurrencyType": {
+                     "type": "integer"
+                 },
+                 "NetworkName": {
+                     "type": "string"
+                 },
+                 "NetworkID": {
+                     "type": "integer"
+                 },
+                 "MovedUnifiedToken": {
+                     "type": "boolean"
+                 }
+             },
+             "required": [
+                 "ContractID",
+                 "ContractIDGetRate",
+                 "CurrencyType",
+                 "DappID",
+                 "Decimals",
+                 "ID",
+                 "IsPopular",
+                 "MovedUnifiedToken",
+                 "Name",
+                 "NetworkID",
+                 "NetworkName",
+                 "PDecimals",
+                 "PricePrv",
+                 "Priority",
+                 "Protocol",
+                 "Symbol",
+                 "Verify"
+             ],
+             "title": "Result"
+         },
+         "Protocol": {
+             "type": "string",
+             "enum": [
+                 "uniswap"
+             ],
+             "title": "Protocol"
+         }
+     }
+ };
+
  module.exports = {
      getOtaGenerateSchemas,
      authenProfileSchemas,
      disableFunctionConfigSchemas,
      lastVersionSchemas,
-     tradeTokenSchemas
+     tradeTokenSchemas,
+     uniSwapTokenSchemas
  }
