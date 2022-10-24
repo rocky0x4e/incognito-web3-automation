@@ -1,15 +1,14 @@
 const Ajv = require('ajv');
 const definitionsHelper = require("./schema-definitions");
 
-module.exports.getSchemaError = async(getAjvError) => {
+async function getSchemaError(getAjvError) {
     return console.log(
         `Field: ${getAjvError[0]["dataPath"]} is invalid. Cause: ${getAjvError[0]["message"]}`
     );
 
 };
 
-module.exports.validateSchema = async(userSchema, userData) => {
-
+async function validateSchema(userSchema, userData) {
     var ajv = new Ajv({ allErrors: true });
     var valid = ajv.validate(userSchema, userData);
     if (valid) {
@@ -20,3 +19,8 @@ module.exports.validateSchema = async(userSchema, userData) => {
         throw new Error(JSON.stringify(ajv.errors[0]));
     }
 };
+
+module.exports = {
+    getSchemaError,
+    validateSchema
+}

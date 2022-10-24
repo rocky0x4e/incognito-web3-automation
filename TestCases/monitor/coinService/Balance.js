@@ -21,7 +21,7 @@ describe('[Class] Balance', () => {
     }
     let coinServiceApi = new CoinServiceApi()
 
-    after('Before_Initdata', async() => {
+    describe('Before_Initdata', async() => {
         it('Initdata', async() => {
             let privateKey = (await config.getAccount('main7')).privateKey
 
@@ -33,7 +33,7 @@ describe('[Class] Balance', () => {
         })
     })
 
-    after('TC001_GetKeyInfo', async() => {
+    describe('TC001_GetKeyInfo', async() => {
         it('CallAPI', async() => {
 
             console.log("hoanh", account);
@@ -43,7 +43,7 @@ describe('[Class] Balance', () => {
         })
     })
 
-    after('TC002_CheckKeyImage', async() => {
+    describe('TC002_CheckKeyImage', async() => {
         it('CallAPI', async() => {
             let keyImages = [
                 "7w0f383GlwJli1+7+5ocpLimo5iD6hZzmpL52Yh3EKM=",
@@ -56,7 +56,7 @@ describe('[Class] Balance', () => {
         })
     })
 
-    after('TC003_TokenInfo', async() => {
+    describe('TC003_TokenInfo', async() => {
         it('CallAPI', async() => {
             let
                 TokenIDs = [
@@ -71,7 +71,7 @@ describe('[Class] Balance', () => {
         })
     })
 
-    describe('TC004_CheckBalancePrvAfterSend', async() => {
+    describe.skip('TC004_CheckBalancePrvAfterSend', async() => {
 
         let node
         let sender
@@ -83,16 +83,12 @@ describe('[Class] Balance', () => {
         it('STEP_InitData', async() => {
             amountTranfer = await commonFunction.randomNumber(1000)
             node = new IncNode(ENV.urlFullNode)
+
             sender = new IncAccount((await config.getAccount('2')).privateKey).attachTo(node)
-            sender.useSdk.setKey()
+            await sender.initSdkInstance()
+
             receiver = new IncAccount((await config.getAccount('3')).privateKey).attachTo(node)
-            receiver.useSdk.setKey()
-
-            // console.log('sender.privateK', sender.privateK);
-            // sender.accoutSdk = sender.useSdk.init()
-
-            // console.log('receiver.privateK', receiver.privateK);
-            // receiver.accoutSdk = sender.useSdk.init()
+            await receiver.initSdkInstance()
         });
 
         it('STEP_CheckBalanceCli', async() => {
@@ -106,29 +102,16 @@ describe('[Class] Balance', () => {
         }).timeout(50000)
 
         it('STEP_CheckBalanceSdk', async() => {
-            sender.accountSdk = await sdkCommonFunction.initAccount(sender.privateK)
-            sender.balanceSdk = await sdkCommonFunction.checkBalance({
-                account: sender.accountSdk,
-                otaKey: sender.otaPrivateK
-            })
+            sender.balanceSdk = await sender.useSdk.getBalanceAll()
             await addingContent.addContent('sender.balanceSdk', sender.balanceSdk)
 
-            receiver.accountSdk = await sdkCommonFunction.initAccount(receiver.privateK)
-            receiver.balanceSdk = await sdkCommonFunction.checkBalance({
-                account: receiver.accountSdk,
-                otaKey: receiver.otaPrivateK
-            })
+            receiver.balanceSdk = await receiver.useSdk.getBalanceAll()
             await addingContent.addContent('receiver.balanceSdk', receiver.balanceSdk)
         }).timeout(100000)
 
         it('STEP_Send', async() => {
 
             let tx = await sender.useCli.send(receiver, amountTranfer)
-                // let tx = await sdkCommonFunction.send({
-                //     account: sender.accoutSdk,
-                //     paymentAddress: receiver.paymentK,
-                //     amountTransfer: amountTranfer,
-                // })
 
             console.log(`Send PRV : ${tx}`);
             await addingContent.addContent('tx', tx)
@@ -146,18 +129,10 @@ describe('[Class] Balance', () => {
             await addingContent.addContent('receiver.balanceCLI', receiver.balanceCLI)
             receiver.newBalance = receiver.balanceCLI
 
-            sender.accountSdk = await sdkCommonFunction.initAccount(sender.privateK)
-            sender.balanceSdk = await sdkCommonFunction.checkBalance({
-                account: sender.accountSdk,
-                otaKey: sender.otaPrivateK
-            })
+            sender.balanceSdk = await sender.useSdk.getBalanceAll()
             await addingContent.addContent('sender.balanceSdk', sender.balanceSdk)
 
-            receiver.accountSdk = await sdkCommonFunction.initAccount(receiver.privateK)
-            receiver.balanceSdk = await sdkCommonFunction.checkBalance({
-                account: receiver.accountSdk,
-                otaKey: receiver.otaPrivateK
-            })
+            receiver.balanceSdk = await receiver.useSdk.getBalanceAll()
             await addingContent.addContent('receiver.balanceSdk', receiver.balanceSdk)
 
             chai.expect(sender.balanceCLI[PRV]).to.equal(sender.balanceSdk[PRV])

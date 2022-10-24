@@ -1,8 +1,7 @@
-const validateSchemaCommand = require("../../../../schemas/validateSchemaCommand");
-const coinServiceApi_schemas = require("../../../../schemas/coinServiceApi_schemas");
+const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
+const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
 let chai = require('chai');
-const { CoinServiceApi } = require('../../../../lib/Incognito/CoinService/CoinServiceApi');
-
+const { CoinServiceApi } = require("../../../lib/Incognito/CoinService/CoinServiceApi");
 
 
 describe('[Class] Liquidity', () => {
@@ -12,8 +11,7 @@ describe('[Class] Liquidity', () => {
     const pool_PRV_ETH = '0000000000000000000000000000000000000000000000000000000000000004-3ee31eba6376fc16cadb52c8765f20b6ebff92c0b1c5ab5fc78c8c25703bb19e-407b251bb4a262391cad3fda612f9b0fd5c282ed0624815450a0cfa53410c6ec'
 
     let coinServiceApi = new CoinServiceApi()
-
-    //Testcase
+        //Testcase
     describe('TC001_PoolShare', async() => {
         it('TC001_CallAPI', async() => {
 
