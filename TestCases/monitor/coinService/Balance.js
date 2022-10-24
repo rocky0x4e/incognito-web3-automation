@@ -97,7 +97,14 @@ describe('[Class] Balance', () => {
         })
     })
 
-    describe.skip('TC006_CheckBalancePrvAfterSend', async() => {
+    describe('TC006_SubmitOtaKey', async() => {
+        it('CallAPI', async() => {
+
+            let response = await coinServiceApi.submitOtaKey(account.otaKey)
+        })
+    })
+
+    describe.skip('TC007_CheckBalancePrvAfterSend', async() => {
 
         let node
         let sender
@@ -170,7 +177,7 @@ describe('[Class] Balance', () => {
         }).timeout(100000)
     })
 
-    describe.skip('TC007_CheckBalanceTokenAfterSend', async() => {
+    describe.skip('TC008_CheckBalanceTokenAfterSend', async() => {
 
         let accountSend = {
             balanceCLI: 0,

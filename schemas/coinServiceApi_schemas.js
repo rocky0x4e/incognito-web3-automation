@@ -2304,6 +2304,31 @@ const getTxByPubKeySchemas = {
     }
 };
 
+const submitOtaKeySchemas = {
+    "$id": "TxBySenderSchemas",
+    "type": "object",
+    "$ref": "#/definitions/Welcome1",
+    "definitions": {
+        "Welcome1": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Result": {
+                    "type": "string",
+                },
+                "Error": {
+                    "type": "null"
+                }
+            },
+            "required": [
+                "Error",
+                "Result"
+            ],
+            "title": "Welcome1"
+        }
+    }
+};
+
 module.exports = {
     getTokenListSchemas,
     getLitsPoolSchemas,
@@ -2322,5 +2347,6 @@ module.exports = {
     getWithdrawHistorySchemas,
     getWithdrawFeeHistorySchemas,
     getTxBySenderSchemas,
-    getTxByPubKeySchemas
+    getTxByPubKeySchemas,
+    submitOtaKeySchemas
 };
