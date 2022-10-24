@@ -9,8 +9,8 @@ var ENV = {
 }
 
 const os = require("os")
-var DEVICE_ID = `${os.hostname()}_${os.platform()}`
-var DEVICE_TOKEN = `${JSON.stringify(os.userInfo())}`
+var DEVICE_ID = 'E5879478-BAC2-4F61-9666-ED10FE1CFF11'
+var DEVICE_TOKEN = "d86fLH6M89Q:APA91bGIlqIBpUczDapIP0lIPYXuBS996k8K15PV6jbNTWO53lLZontF0b8gd2NWrdpg5A-imdVd_rOcGmvH-fkMaLuXFHJA3ksdRioMUg_pTObKvbCBWUN-n45oR4SVsbX30-h07P98"
 
 
 let config = require("./config.json")

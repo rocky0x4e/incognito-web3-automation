@@ -8,13 +8,10 @@ const addingContent = require('../../../testbase/addingContent');
 
 //Require the dev-dependencies
 let chai = require('chai');
-const { IncAccount } = require('../../../lib/Incognito/Account/Account');
-const { IncNode } = require('../../../lib/Incognito/IncNode');
 const { ENV } = require('../../../global');
 const { BackendApi } = require('../../../lib/Incognito/BackendApi');
 
-describe('[Class] Balance', () => {
-
+describe('[Class] Login', () => {
 
     let backendApi = new BackendApi(ENV.Backend)
 

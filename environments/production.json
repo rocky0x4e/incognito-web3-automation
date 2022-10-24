@@ -13,7 +13,7 @@
     },
     "Backend": {
         "url": "https://api-service.incognito.org",
-        "authPath": ""
+        "authPath": "auth/new-token"
     },
     "BackendTool": {
         "url": "http://34.123.53.141",

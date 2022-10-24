@@ -372,7 +372,6 @@ const selectToken = async(symbol, network = null) => {
     network = network ? network.toLowerCase() : null
     let currencyType = await convertNetworkToCurrencyType(network, symbol)
 
-    console.log("hoanh1", symbol, currencyType);
     if (symbol == 'prv') {
         return '0000000000000000000000000000000000000000000000000000000000000004'
     } else {
