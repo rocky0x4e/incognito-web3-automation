@@ -1,0 +1,10 @@
+zlab
+log
+node_modules
+report
+.cache
+mochawesome-report
+test/scratch
+scratch*
+.cache*
+bin
