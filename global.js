@@ -1,11 +1,11 @@
 var ENV = {
-    "urlFullNode": "https://testnet.incognito.org/fullnode",
-    "urlCoinService": "https://api-coinservice-staging.incognito.org",
-    "urlPubsubService": "http://51.161.117.193:9096",
-    "urlBackend": "https://staging-api-service.incognito.org",
-    "urlBackendTool": "http://34.123.53.141",
-    "urlWeb3": "https://kovan.infura.io/v3/",
-    "urlWebService": "https://api-webapp-staging.incognito.org"
+    FullNode: { url: "https://testnet.incognito.org/fullnode", authPath: "" },
+    CoinService: { url: "https://api-coinservice-staging.incognito.org", authPath: "auth/new-token" },
+    PubsubService: { url: "http://51.161.117.193:9096", authPath: "" },
+    Backend: { url: "https://staging-api-service.incognito.org", authPath: "" },
+    BackendTool: { url: "http://34.123.53.141", authPath: "" },
+    Web3: { url: "https://kovan.infura.io/v3/", authPath: "" },
+    WebService: { url: "https://api-webapp-staging.incognito.org", authPath: "" }
 }
 
 const os = require("os")
@@ -14,6 +14,7 @@ var DEVICE_TOKEN = `${JSON.stringify(os.userInfo())}`
 
 
 let config = require("./config.json")
+const { IncAccountGroup } = require("./lib/Incognito/Account/Account")
 let envName = (typeof process.env.ENV == "undefined") ? config.environment : process.env.ENV
 try {
     console.debug(`Loading environment: ${envName}`)
