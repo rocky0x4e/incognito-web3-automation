@@ -71,7 +71,33 @@ describe('[Class] Balance', () => {
         })
     })
 
-    describe.skip('TC004_CheckBalancePrvAfterSend', async() => {
+    describe('TC004_GetTxsBySender', async() => {
+        it('CallAPI', async() => {
+            let keyImages = [
+                "Wgff+rv59epyKHIjko4mkpiS5BFpopejqD7dkLFExGA=",
+                "Alyc63FVuOpiTgk16o8BDAaQfL5hxMFv28H/djaoZPU="
+            ]
+
+            let response = await coinServiceApi.getTxsBySender({ shardID: 3, keyImages })
+
+            await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getTxBySenderSchemas, response.data)
+        })
+    })
+
+    describe('TC005_GetTxsByPubKey', async() => {
+        it('CallAPI', async() => {
+            let pubkeys = [
+                "/14cdQwaARSCnYPwI2GRw5NnnwPKF3Kp5qQ9SDrzNZs=",
+                "aN6XseTePHYUf5j/myolNTr6okGvaBSqe2stlMKLZRs="
+            ]
+
+            let response = await coinServiceApi.getTxsByPubkey({ pubkeys })
+
+            await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getTxByPubKeySchemas, response.data)
+        })
+    })
+
+    describe.skip('TC006_CheckBalancePrvAfterSend', async() => {
 
         let node
         let sender
@@ -144,7 +170,7 @@ describe('[Class] Balance', () => {
         }).timeout(100000)
     })
 
-    describe.skip('TC005_CheckBalanceTokenAfterSend', async() => {
+    describe.skip('TC007_CheckBalanceTokenAfterSend', async() => {
 
         let accountSend = {
             balanceCLI: 0,
