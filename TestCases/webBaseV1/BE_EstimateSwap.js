@@ -113,7 +113,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC004_PANCAKE_ETH(UT)_BUSD(BSC)_BSC', async() => {
+    describe('TC004_PANCAKE_ETH(UT)_BUSD(BSC)_BSC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'bsc'
@@ -145,7 +145,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC005_PANCAKE_CAKE(BSC)_BUSD(BSC)_BSC', async() => {
+    describe('TC005_PANCAKE_CAKE(BSC)_BUSD(BSC)_BSC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'bsc'
@@ -177,7 +177,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC006_PANCAKE_BNB(BSC)_DAI(UT)_INC', async() => {
+    describe('TC006_PANCAKE_BNB(BSC)_DAI(UT)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'bsc'
@@ -209,7 +209,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC007_PANCAKE_USDT(UT)_DAI(UT)_INC', async() => {
+    describe('TC007_PANCAKE_USDT(UT)_DAI(UT)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'bsc'
@@ -241,7 +241,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC008_PANCAKE_BUSD(BSC)_DAI(UT)_INC', async() => {
+    describe('TC008_PANCAKE_BUSD(BSC)_DAI(UT)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'bsc'
@@ -273,7 +273,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC009_PANCAKE_ETH(UT)_BUSD(BSC)_INC', async() => {
+    describe('TC009_PANCAKE_ETH(UT)_BUSD(BSC)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'bsc'
@@ -305,7 +305,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC010_PANCAKE_CAKE(BSC)_BUSD(BSC)_INC', async() => {
+    describe('TC010_PANCAKE_CAKE(BSC)_BUSD(BSC)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'bsc'
@@ -339,7 +339,7 @@ describe('[Class] EstimateTrade', async() => {
 
     //UNISWAP_PLG
 
-    after('TC011_UNI_MATIC(PLG)_USDT(UT)_PLG', async() => {
+    describe('TC011_UNI_MATIC(PLG)_USDT(UT)_PLG', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -378,7 +378,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC012_UNI_MATIC(UT)_USDT(UT)_PLG', async() => {
+    describe('TC012_UNI_MATIC(UT)_USDT(UT)_PLG', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -417,7 +417,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC013_UNI_USDT(UT)_DAI(PLG)_PLG', async() => {
+    describe('TC013_UNI_USDT(UT)_DAI(PLG)_PLG', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -456,7 +456,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC014_UNI_WETH(PLG)_USDT(UT)_PLG', async() => {
+    describe('TC014_UNI_WETH(PLG)_USDT(UT)_PLG', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -495,7 +495,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC015_UNI_UST(PLG)_AAVE(PLG)_PLG', async() => {
+    describe('TC015_UNI_UST(PLG)_AAVE(PLG)_PLG', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -534,7 +534,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC016_UNI_MATIC(PLG)_USDT(UT)_INC', async() => {
+    describe('TC016_UNI_MATIC(PLG)_USDT(UT)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -573,7 +573,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC017_UNI_MATIC(UT)_USDT(UT)_INC', async() => {
+    describe('TC017_UNI_MATIC(UT)_USDT(UT)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -612,7 +612,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC018_UNI_USDT(UT)_DAI(PLG)_INC', async() => {
+    describe('TC018_UNI_USDT(UT)_DAI(PLG)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -651,7 +651,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC019_UNI_WETH(PLG)_USDT(UT)_INC', async() => {
+    describe('TC019_UNI_WETH(PLG)_USDT(UT)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -689,7 +689,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC020_UNI_UST(PLG)_AAVE(PLG)_INC', async() => {
+    describe('TC020_UNI_UST(PLG)_AAVE(PLG)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -730,7 +730,7 @@ describe('[Class] EstimateTrade', async() => {
 
     //CURVE_PLG
 
-    after('TC021_CURVE_WETH(PLG)_USDT(UT)_PLG', async() => {
+    describe('TC021_CURVE_WETH(PLG)_USDT(UT)_PLG', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -769,7 +769,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC022_CURVE_DAI(PLG)_USDC(PLG)_PLG', async() => {
+    describe('TC022_CURVE_DAI(PLG)_USDC(PLG)_PLG', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -808,7 +808,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC023_CURVE_USDT(UT)_WBTC(PLG)_PLG', async() => {
+    describe('TC023_CURVE_USDT(UT)_WBTC(PLG)_PLG', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -847,7 +847,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC024_CURVE_USDT(UT)_USDC(UT)_PLG', async() => {
+    describe('TC024_CURVE_USDT(UT)_USDC(UT)_PLG', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -886,7 +886,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC025_CURVE_WETH(PLG)_USDT(UT)_INC', async() => {
+    describe('TC025_CURVE_WETH(PLG)_USDT(UT)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -925,7 +925,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC026_CURVE_DAI(PLG)_USDC(PLG)_INC', async() => {
+    describe('TC026_CURVE_DAI(PLG)_USDC(PLG)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -964,7 +964,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC027_CURVE_USDT(UT)_WBTC(PLG)_INC', async() => {
+    describe('TC027_CURVE_USDT(UT)_WBTC(PLG)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
@@ -1003,7 +1003,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    after('TC028_CURVE_USDT(UT)_USDC(UT)_INC', async() => {
+    describe('TC028_CURVE_USDT(UT)_USDC(UT)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'

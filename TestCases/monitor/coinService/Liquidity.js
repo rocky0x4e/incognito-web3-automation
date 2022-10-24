@@ -1,7 +1,7 @@
-const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
-const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
+const validateSchemaCommand = require("../../../../schemas/validateSchemaCommand");
+const coinServiceApi_schemas = require("../../../../schemas/coinServiceApi_schemas");
 let chai = require('chai');
-const { CoinServiceApi } = require('../../../lib/Incognito/CoinService/CoinServiceApi');
+const { CoinServiceApi } = require('../../../../lib/Incognito/CoinService/CoinServiceApi');
 
 
 
@@ -21,9 +21,6 @@ describe('[Class] Liquidity', () => {
 
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getPoolShareSchemas, response.data);
 
-            chai.expect(response.data.Result).to.have.lengthOf.above(1);
-            chai.expect(response.data.Result).to.have.lengthOf.above(1);
-            chai.expect(response.data.Result).to.have.lengthOf.above(1);
             chai.expect(response.data.Result).to.have.lengthOf.above(1);
 
         })
@@ -88,7 +85,4 @@ describe('[Class] Liquidity', () => {
             chai.expect(response.data.Result).to.have.lengthOf.above(0);
         })
     })
-
-
-
 })

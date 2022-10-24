@@ -49,7 +49,7 @@ describe('[Class] EvmShield', async() => {
             chai.expect(response.Result).have.property('ID')
             chai.assert.notEqual(response.Result.ID, 0)
 
-            chai.expect(response.Result).have.property('TokenFee1')
+            chai.expect(response.Result).have.property('TokenFee')
             chai.assert.equal(response.Result.TokenFee, 0)
         });
     });
@@ -234,7 +234,7 @@ describe('[Class] EvmShield', async() => {
         });
     });
 
-    after('TC007_PLG_Request_Shield_MATIC', async() => {
+    describe('TC007_PLG_Request_Shield_MATIC', async() => {
         it('STEP_Call_Api_Gen_Shield_Address', async() => {
 
             let addressType = 1
@@ -270,7 +270,7 @@ describe('[Class] EvmShield', async() => {
         });
     });
 
-    after('TC008_PLG_Request_Shield_DAI', async() => {
+    describe('TC008_PLG_Request_Shield_DAI', async() => {
         it('STEP_Call_Api_Gen_Shield_Address', async() => {
 
             let addressType = 1
@@ -306,7 +306,7 @@ describe('[Class] EvmShield', async() => {
         });
     });
 
-    after('TC009_PLG_Request_Shield_MANA', async() => {
+    describe('TC009_PLG_Request_Shield_MANA', async() => {
         it('STEP_Call_Api_Gen_Shield_Address', async() => {
 
             let addressType = 1
@@ -342,7 +342,7 @@ describe('[Class] EvmShield', async() => {
         });
     });
 
-    after('TC007_FTM_Request_Shield_FTM', async() => {
+    describe('TC007_FTM_Request_Shield_FTM', async() => {
         it('STEP_Call_Api_Gen_Shield_Address', async() => {
 
             let addressType = 1
@@ -378,7 +378,7 @@ describe('[Class] EvmShield', async() => {
         });
     });
 
-    after('TC008_FTM_Request_Shield_USDC', async() => {
+    describe('TC008_FTM_Request_Shield_USDC', async() => {
         it('STEP_Call_Api_Gen_Shield_Address', async() => {
 
             let addressType = 1
@@ -414,7 +414,7 @@ describe('[Class] EvmShield', async() => {
         });
     });
 
-    after('TC009_PLG_Request_Shield_AVAX', async() => {
+    describe('TC009_PLG_Request_Shield_AVAX', async() => {
         it('STEP_Call_Api_Gen_Shield_Address', async() => {
 
             let addressType = 1

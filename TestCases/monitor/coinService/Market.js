@@ -50,7 +50,6 @@ describe('[Class] Market', () => {
                     chai.expect(item.Price).to.be.above(0);
                 }
             }
-
         })
     })
 
@@ -62,9 +61,6 @@ describe('[Class] Market', () => {
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getLitsPairSchemas, response.data);
 
             chai.expect(response.data.Result).to.have.lengthOf.above(1);
-
         })
     })
-
-
 })

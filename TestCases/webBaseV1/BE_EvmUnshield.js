@@ -244,7 +244,7 @@ describe('[Class] EvmUnshield', async() => {
         });
     });
 
-    after('TC006_ETH_Request_Unshield_BNB_BSC', async() => {
+    describe('TC006_ETH_Request_Unshield_BNB_BSC', async() => {
         it('STEP_Call_Api_Gen_Shield_Address', async() => {
 
             let addressType = 2
@@ -289,7 +289,7 @@ describe('[Class] EvmUnshield', async() => {
         });
     });
 
-    after('TC007_ETH_Request_Unshield_USDC_UT', async() => {
+    describe('TC007_ETH_Request_Unshield_USDC_UT', async() => {
         it('STEP_Call_Api_Gen_Shield_Address', async() => {
 
             let addressType = 2
@@ -334,7 +334,7 @@ describe('[Class] EvmUnshield', async() => {
         });
     });
 
-    after('TC008_ETH_Request_Unshield_USDC_BSC', async() => {
+    describe('TC008_ETH_Request_Unshield_USDC_BSC', async() => {
         it('STEP_Call_Api_Gen_Shield_Address', async() => {
 
             let addressType = 2
@@ -379,7 +379,7 @@ describe('[Class] EvmUnshield', async() => {
         });
     });
 
-    after('TC009_ETH_Request_Unshield_BUSD_BSC', async() => {
+    describe('TC009_ETH_Request_Unshield_BUSD_BSC', async() => {
         it('STEP_Call_Api_Gen_Shield_Address', async() => {
 
             let addressType = 2

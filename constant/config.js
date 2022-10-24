@@ -103,8 +103,6 @@ const getAccount = async(expectedName) => {
     return account
 }
 
-
-
 const currencyType = {
     1: "eth",
     2: "btc",
@@ -208,8 +206,6 @@ const getOutchainFullnode = async(network) => {
         }
     }
 }
-
-
 
 module.exports = {
     getAccount,

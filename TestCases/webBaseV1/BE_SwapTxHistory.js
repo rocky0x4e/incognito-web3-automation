@@ -19,7 +19,7 @@ describe('[Class] SwapStatus', async() => {
     describe('TC001_Plg_Success', async() => {
         it('STEP_Call_Api_Swap_Status', async() => {
 
-            listTx = ['0fe3a27694cf9703212194a0a13312356ed1b9807d8a9a89c053c040642a332b']
+            listTx = ['1108ebb9b138264346fd31c02ed5b08e0819190eab7c45c46b49d46409558972']
 
             let response = await webServiceApi.Api_SwapStatus(listTx)
 
@@ -126,7 +126,7 @@ describe('[Class] SwapStatus', async() => {
     describe('TC004_Tx_Not_Found', async() => {
         it('STEP_Call_Api_Swap_Status', async() => {
 
-            listTx = ['e50b163b5030f2fcba65bb52d001be4637def1af53bde07070e66ef7eb841ffe']
+            listTx = ['085a16ec5e6ff5784faa858e9fbb094aad87793a8a34d1007ab571b27ef4a602']
 
             let response = await webServiceApi.Api_SwapStatus(listTx)
 
