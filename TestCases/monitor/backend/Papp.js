@@ -25,5 +25,13 @@ describe('[Class] Login', () => {
         })
     })
 
+    describe('TC003_CurveToken', async() => {
+        it('CallAPI', async() => {
+            let response = await backendApi.curveToken()
+
+            await validateSchemaCommand.validateSchema(backendApi_schemas.curveTokenSchemas, response.data)
+        })
+    })
+
 
 })
