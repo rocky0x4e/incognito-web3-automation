@@ -181,6 +181,7 @@
          }
      }
  };
+
  const lastVersionSchemas = {
      "$id": "authenProfileSchemas",
      "type": "object",
@@ -235,9 +236,122 @@
      }
  };
 
+ const tradeTokenSchemas = {
+     "$id": "tradeTokenSchemas",
+     "type": "object",
+     "$ref": "#/definitions/Welcome6",
+     "definitions": {
+         "Welcome6": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "Result": {
+                     "type": "array",
+                     "items": {
+                         "$ref": "#/definitions/Result"
+                     }
+                 },
+                 "Error": {
+                     "type": "null"
+                 }
+             },
+             "required": [
+                 "Error",
+                 "Result"
+             ],
+             "title": "Welcome6"
+         },
+         "Result": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "ID": {
+                     "type": "string"
+                 },
+                 "ContractID": {
+                     "type": "string"
+                 },
+                 "ContractIDGetRate": {
+                     "type": "string"
+                 },
+                 "Name": {
+                     "type": "string"
+                 },
+                 "Symbol": {
+                     "type": "string"
+                 },
+                 "Decimals": {
+                     "type": "integer"
+                 },
+                 "PDecimals": {
+                     "type": "integer"
+                 },
+                 "Protocol": {
+                     "$ref": "#/definitions/Protocol"
+                 },
+                 "PricePrv": {
+                     "type": "number"
+                 },
+                 "Verify": {
+                     "type": "boolean"
+                 },
+                 "IsPopular": {
+                     "type": "boolean"
+                 },
+                 "Priority": {
+                     "type": "integer"
+                 },
+                 "DappID": {
+                     "type": "integer"
+                 },
+                 "CurrencyType": {
+                     "type": "integer"
+                 },
+                 "NetworkName": {
+                     "type": "string"
+                 },
+                 "NetworkID": {
+                     "type": "integer"
+                 },
+                 "MovedUnifiedToken": {
+                     "type": "boolean"
+                 }
+             },
+             "required": [
+                 "ContractID",
+                 "ContractIDGetRate",
+                 "CurrencyType",
+                 "DappID",
+                 "Decimals",
+                 "ID",
+                 "IsPopular",
+                 "MovedUnifiedToken",
+                 "Name",
+                 "NetworkID",
+                 "NetworkName",
+                 "PDecimals",
+                 "PricePrv",
+                 "Priority",
+                 "Protocol",
+                 "Symbol",
+                 "Verify"
+             ],
+             "title": "Result"
+         },
+         "Protocol": {
+             "type": "string",
+             "enum": [
+                 "pancake"
+             ],
+             "title": "Protocol"
+         }
+     }
+ };
+
  module.exports = {
      getOtaGenerateSchemas,
      authenProfileSchemas,
      disableFunctionConfigSchemas,
-     lastVersionSchemas
+     lastVersionSchemas,
+     tradeTokenSchemas
  }
