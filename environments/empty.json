@@ -1,9 +1,30 @@
 {
-    "urlFullNode": "",
-    "urlCoinService": "",
-    "urlPubsubService": "",
-    "urlBackend": "",
-    "urlBackendTool": "",
-    "urlWeb3": "",
-    "urlWebService": ""
+    "FullNode": {
+        "url": "",
+        "authPath": ""
+    },
+    "CoinService": {
+        "url": "",
+        "authPath": ""
+    },
+    "PubsubService": {
+        "url": "",
+        "authPath": ""
+    },
+    "Backend": {
+        "url": "",
+        "authPath": ""
+    },
+    "BackendTool": {
+        "url": "",
+        "authPath": ""
+    },
+    "Web3": {
+        "url": "",
+        "authPath": ""
+    },
+    "WebService": {
+        "url": "",
+        "authPath": ""
+    }
 }
