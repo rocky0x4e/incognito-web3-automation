@@ -30,4 +30,12 @@ describe('[Class] Login', () => {
             await validateSchemaCommand.validateSchema(backendApi_schemas.disableFunctionConfigSchemas, response.data)
         })
     })
+
+    describe('TC003_LastVersion', async() => {
+        it('CallAPI', async() => {
+            let response = await backendApi.lastVersion()
+
+            await validateSchemaCommand.validateSchema(backendApi_schemas.lastVersionSchemas, response.data)
+        })
+    })
 })

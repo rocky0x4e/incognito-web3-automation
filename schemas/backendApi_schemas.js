@@ -181,9 +181,63 @@
          }
      }
  };
+ const lastVersionSchemas = {
+     "$id": "authenProfileSchemas",
+     "type": "object",
+     "$ref": "#/definitions/Welcome3",
+     "definitions": {
+         "Welcome3": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "Result": {
+                     "$ref": "#/definitions/Result"
+                 },
+                 "Error": {
+                     "type": "null"
+                 }
+             },
+             "required": [
+                 "Error",
+                 "Result"
+             ],
+             "title": "Welcome3"
+         },
+         "Result": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "Description": {
+                     "type": "string"
+                 },
+                 "Version": {
+                     "type": "string"
+                 },
+                 "Link": {
+                     "type": "string",
+                 },
+                 "Platform": {
+                     "type": "string"
+                 },
+                 "CreatedAt": {
+                     "type": "string",
+                 }
+             },
+             "required": [
+                 "CreatedAt",
+                 "Description",
+                 "Link",
+                 "Platform",
+                 "Version"
+             ],
+             "title": "Result"
+         }
+     }
+ };
 
  module.exports = {
      getOtaGenerateSchemas,
      authenProfileSchemas,
-     disableFunctionConfigSchemas
+     disableFunctionConfigSchemas,
+     lastVersionSchemas
  }
