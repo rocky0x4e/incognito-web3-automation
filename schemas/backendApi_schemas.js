@@ -1234,6 +1234,309 @@
      }
  };
 
+ const tradeRewardHistorySchemas = {
+     "$id": "tradeRewardHistorySchemas",
+     "type": "object",
+     "$ref": "#/definitions/Welcome9",
+     "definitions": {
+         "Welcome9": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "Result": {
+                     "$ref": "#/definitions/Result"
+                 },
+                 "Error": {
+                     "type": "null"
+                 }
+             },
+             "required": [
+                 "Error",
+                 "Result"
+             ],
+             "title": "Welcome9"
+         },
+         "Result": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "History": {
+                     "type": "array",
+                     "items": {
+                         "$ref": "#/definitions/History"
+                     }
+                 },
+                 "Limit": {
+                     "type": "integer"
+                 },
+                 "Page": {
+                     "type": "integer"
+                 },
+                 "Total": {
+                     "type": "integer"
+                 }
+             },
+             "required": [
+                 "History",
+                 "Limit",
+                 "Page",
+                 "Total"
+             ],
+             "title": "Result"
+         },
+         "History": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "CreatedAt": {
+                     "type": "string",
+
+                 },
+                 "TradeType": {
+                     "type": "integer"
+                 },
+                 "SumTotalVolume": {
+                     "type": "number"
+                 },
+                 "TotalVolume": {
+                     "type": "number"
+                 },
+                 "RewardAmount": {
+                     "type": "integer"
+                 },
+                 "FromTime": {
+                     "type": "string",
+
+                 },
+                 "ToTime": {
+                     "type": "string",
+
+                 },
+                 "Status": {
+                     "type": "integer"
+                 },
+                 "Tx": {
+                     "type": "string"
+                 }
+             },
+             "required": [
+                 "CreatedAt",
+                 "FromTime",
+                 "RewardAmount",
+                 "Status",
+                 "SumTotalVolume",
+                 "ToTime",
+                 "TotalVolume",
+                 "TradeType",
+                 "Tx"
+             ],
+             "title": "History"
+         }
+     }
+ };
+
+ const uniswapRewardHistorySchemas = {
+     "$id": "uniswapRewardHistorySchemas",
+     "type": "object",
+     "$ref": "#/definitions/Welcome9",
+     "definitions": {
+         "Welcome9": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "Result": {
+                     "$ref": "#/definitions/Result"
+                 },
+                 "Error": {
+                     "type": "null"
+                 }
+             },
+             "required": [
+                 "Error",
+                 "Result"
+             ],
+             "title": "Welcome9"
+         },
+         "Result": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "History": {
+                     "type": "array",
+                     "items": {
+                         "$ref": "#/definitions/History"
+                     }
+                 },
+                 "Limit": {
+                     "type": "integer"
+                 },
+                 "Page": {
+                     "type": "integer"
+                 },
+                 "Total": {
+                     "type": "integer"
+                 }
+             },
+             "required": [
+                 "History",
+                 "Limit",
+                 "Page",
+                 "Total"
+             ],
+             "title": "Result"
+         },
+         "History": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "CreatedAt": {
+                     "type": "string",
+
+                 },
+                 "TradeType": {
+                     "type": "integer"
+                 },
+                 "SumTotalVolume": {
+                     "type": "number"
+                 },
+                 "TotalVolume": {
+                     "type": "number"
+                 },
+                 "RewardAmount": {
+                     "type": "integer"
+                 },
+                 "FromTime": {
+                     "type": "string",
+
+                 },
+                 "ToTime": {
+                     "type": "string",
+
+                 },
+                 "Status": {
+                     "type": "integer"
+                 },
+                 "Tx": {
+                     "type": "string"
+                 }
+             },
+             "required": [
+                 "CreatedAt",
+                 "FromTime",
+                 "RewardAmount",
+                 "Status",
+                 "SumTotalVolume",
+                 "ToTime",
+                 "TotalVolume",
+                 "TradeType",
+                 "Tx"
+             ],
+             "title": "History"
+         }
+     }
+ };
+
+ const curveRewardHistorySchemas = {
+     "$id": "curveRewardHistorySchemas",
+     "type": "object",
+     "$ref": "#/definitions/Welcome9",
+     "definitions": {
+         "Welcome9": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "Result": {
+                     "$ref": "#/definitions/Result"
+                 },
+                 "Error": {
+                     "type": "null"
+                 }
+             },
+             "required": [
+                 "Error",
+                 "Result"
+             ],
+             "title": "Welcome9"
+         },
+         "Result": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "History": {
+                     "type": "array",
+                     "items": {
+                         "$ref": "#/definitions/History"
+                     }
+                 },
+                 "Limit": {
+                     "type": "integer"
+                 },
+                 "Page": {
+                     "type": "integer"
+                 },
+                 "Total": {
+                     "type": "integer"
+                 }
+             },
+             "required": [
+                 "History",
+                 "Limit",
+                 "Page",
+                 "Total"
+             ],
+             "title": "Result"
+         },
+         "History": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "CreatedAt": {
+                     "type": "string",
+
+                 },
+                 "TradeType": {
+                     "type": "integer"
+                 },
+                 "SumTotalVolume": {
+                     "type": "number"
+                 },
+                 "TotalVolume": {
+                     "type": "number"
+                 },
+                 "RewardAmount": {
+                     "type": "integer"
+                 },
+                 "FromTime": {
+                     "type": "string",
+
+                 },
+                 "ToTime": {
+                     "type": "string",
+
+                 },
+                 "Status": {
+                     "type": "integer"
+                 },
+                 "Tx": {
+                     "type": "string"
+                 }
+             },
+             "required": [
+                 "CreatedAt",
+                 "FromTime",
+                 "RewardAmount",
+                 "Status",
+                 "SumTotalVolume",
+                 "ToTime",
+                 "TotalVolume",
+                 "TradeType",
+                 "Tx"
+             ],
+             "title": "History"
+         }
+     }
+ };
+
  module.exports = {
      getOtaGenerateSchemas,
      authenProfileSchemas,
@@ -1244,5 +1547,8 @@
      curveTokenSchemas,
      tradeHistorySchemas,
      uniswapHistorySchemas,
-     curveHistorySchemas
+     curveHistorySchemas,
+     tradeRewardHistorySchemas,
+     uniswapRewardHistorySchemas,
+     curveRewardHistorySchemas
  }

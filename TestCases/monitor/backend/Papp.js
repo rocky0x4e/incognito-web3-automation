@@ -59,5 +59,29 @@ describe('[Class] Papp', async() => {
         })
     })
 
+    describe('TC007_TradeRewardHistory', async() => {
+        it('CallAPI', async() => {
+            let response = await backendApi.tradeRewardHistory(account.paymentK)
+
+            await validateSchemaCommand.validateSchema(backendApi_schemas.tradeRewardHistorySchemas, response.data)
+        })
+    })
+
+    describe('TC008_UniswapRewardHistory', async() => {
+        it('CallAPI', async() => {
+            let response = await backendApi.uniswapRewardHistory(account.paymentK)
+
+            await validateSchemaCommand.validateSchema(backendApi_schemas.uniswapRewardHistorySchemas, response.data)
+        })
+    })
+
+    describe('TC009_CurveRewardHistory', async() => {
+        it('CallAPI', async() => {
+            let response = await backendApi.curveRewardHistory(account.paymentK)
+
+            await validateSchemaCommand.validateSchema(backendApi_schemas.curveRewardHistorySchemas, response.data)
+        })
+    })
+
 
 })
