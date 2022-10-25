@@ -14,7 +14,6 @@ var DEVICE_TOKEN = `${JSON.stringify(os.userInfo())}`
 
 
 let config = require("./config.json")
-const { IncAccountGroup } = require("./lib/Incognito/Account/Account")
 let envName = (typeof process.env.ENV == "undefined") ? config.environment : process.env.ENV
 try {
     console.debug(`Loading environment: ${envName}`)
