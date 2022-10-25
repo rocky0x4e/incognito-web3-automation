@@ -36,7 +36,6 @@ describe('[Class] Balance', () => {
     describe('TC001_GetKeyInfo', async() => {
         it('CallAPI', async() => {
 
-            console.log("hoanh", account);
             let response = await coinServiceApi.getKeyInfo({ otaKey: account.otaKey })
 
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getGetKeyInfoSchemas, response.data)

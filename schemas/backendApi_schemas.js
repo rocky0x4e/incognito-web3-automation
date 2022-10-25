@@ -565,6 +565,229 @@
      }
  };
 
+ const tradeHistorySchemas = {
+     "$id": "tradeHistorySchemas",
+     "type": "object",
+     "$ref": "#/definitions/Welcome8",
+     "definitions": {
+         "Welcome8": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "Result": {
+                     "$ref": "#/definitions/Result"
+                 },
+                 "Error": {
+                     "type": "null"
+                 }
+             },
+             "required": [
+                 "Error",
+                 "Result"
+             ],
+             "title": "Welcome8"
+         },
+         "Result": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "History": {
+                     "type": "array",
+                     "items": {
+                         "$ref": "#/definitions/History"
+                     }
+                 },
+                 "Limit": {
+                     "type": "integer"
+                 },
+                 "Page": {
+                     "type": "integer"
+                 },
+                 "Total": {
+                     "type": "integer"
+                 }
+             },
+             "required": [
+                 "History",
+                 "Limit",
+                 "Page",
+                 "Total"
+             ],
+             "title": "Result"
+         },
+         "History": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "id": {
+                     "type": "integer"
+                 },
+                 "userID": {
+                     "type": "integer"
+                 },
+                 "walletAddress": {
+                     "type": "string"
+                 },
+                 "sellTokenId": {
+                     "type": "string"
+                 },
+                 "buyTokenId": {
+                     "type": "string"
+                 },
+                 "srcSymbol": {
+                     "type": "string"
+                 },
+                 "destSymbol": {
+                     "type": "string"
+                 },
+                 "srcContractAddress": {
+                     "type": "string"
+                 },
+                 "destContractAddress": {
+                     "type": "string"
+                 },
+                 "amount": {
+                     "type": "string",
+                 },
+                 "mintAccept": {
+                     "type": "string",
+                 },
+                 "amountOut": {
+                     "type": "string",
+
+                 },
+                 "tradingPath": {
+                     "type": "array",
+                     "items": {
+                         "type": "string"
+                     }
+                 },
+                 "statusCode": {
+                     "type": "integer"
+                 },
+                 "status": {
+                     "type": "string"
+                 },
+                 "statusDetail": {
+                     "type": "string"
+                 },
+                 "feeToken": {
+                     "type": "string"
+                 },
+                 "fee": {
+                     "type": "string"
+                 },
+                 "feeLevel": {
+                     "type": "integer"
+                 },
+                 "requestTx": {
+                     "type": "string"
+                 },
+                 "submitProofTx": {
+                     "type": "string"
+                 },
+                 "executeSwapTx": {
+                     "type": "string"
+                 },
+                 "withdrawTx": {
+                     "type": "string"
+                 },
+                 "mintTx": {
+                     "type": "string"
+                 },
+                 "requestime": {
+                     "type": "integer"
+                 },
+                 "respondTxs": {
+                     "type": "array",
+                     "items": {
+                         "type": "string"
+                     }
+                 },
+                 "unifiedReward": {
+                     "$ref": "#/definitions/UnifiedReward"
+                 },
+                 "unifiedStatus": {
+                     "$ref": "#/definitions/UnifiedStatus"
+                 },
+                 "refurnTx": {
+                     "type": "string"
+                 }
+             },
+             "required": [
+                 "amount",
+                 "amountOut",
+                 "buyTokenId",
+                 "destContractAddress",
+                 "destSymbol",
+                 "executeSwapTx",
+                 "fee",
+                 "feeLevel",
+                 "feeToken",
+                 "id",
+                 "mintAccept",
+                 "requestTx",
+                 "requestime",
+                 "respondTxs",
+                 "sellTokenId",
+                 "srcContractAddress",
+                 "srcSymbol",
+                 "status",
+                 "statusCode",
+                 "statusDetail",
+                 "submitProofTx",
+                 "tradingPath",
+                 "userID",
+                 "walletAddress",
+                 "withdrawTx"
+             ],
+             "title": "History"
+         },
+         "UnifiedReward": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "Status": {
+                     "type": "integer"
+                 },
+                 "Amount": {
+                     "type": "number"
+                 },
+                 "Reward": {
+                     "type": "number"
+                 }
+             },
+             "required": [
+                 "Amount",
+                 "Reward",
+                 "Status"
+             ],
+             "title": "UnifiedReward"
+         },
+         "UnifiedStatus": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "Fee": {
+                     "type": "number"
+                 },
+                 "ReceivedAmount": {
+                     "type": "number"
+                 },
+                 "Status": {
+                     "type": "integer"
+                 }
+             },
+             "required": [
+                 "Fee",
+                 "ReceivedAmount",
+                 "Status"
+             ],
+             "title": "UnifiedStatus"
+         }
+     }
+ };
+
  module.exports = {
      getOtaGenerateSchemas,
      authenProfileSchemas,
@@ -572,5 +795,6 @@
      lastVersionSchemas,
      tradeTokenSchemas,
      uniSwapTokenSchemas,
-     curveTokenSchemas
+     curveTokenSchemas,
+     tradeHistorySchemas
  }
