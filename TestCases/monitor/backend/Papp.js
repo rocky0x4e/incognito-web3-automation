@@ -43,5 +43,21 @@ describe('[Class] Papp', async() => {
         })
     })
 
+    describe('TC005_UniswapHistory', async() => {
+        it('CallAPI', async() => {
+            let response = await backendApi.uniswapHistory(account.paymentK)
+
+            await validateSchemaCommand.validateSchema(backendApi_schemas.uniswapHistorySchemas, response.data)
+        })
+    })
+
+    describe('TC006_CurveHistory', async() => {
+        it('CallAPI', async() => {
+            let response = await backendApi.curveHistory(account.paymentK)
+
+            await validateSchemaCommand.validateSchema(backendApi_schemas.curveHistorySchemas, response.data)
+        })
+    })
+
 
 })
