@@ -3,19 +3,27 @@ const backendApi_schemas = require("../../../schemas/backendApi_schemas");
 const { BackendApi } = require('../../../lib/Incognito/BackendApi');
 const { IncAccount } = require("../../../lib/Incognito/Account/Account");
 const { ENV } = require('../../../global');
-const config = require('../../../constant/config');
+const listAccount = require('../../../constant/listAccount.json');
 
-describe('[Class] Papp', async() => {
 
-    let privateKey = (await config.getAccount('main7')).privateKey
-    let backendApi = new BackendApi(ENV.Backend)
-    let account = new IncAccount(privateKey)
+// let privateKey = (await config.getAccount('main7')).privateKey
+let privateKey = listAccount.main7
+var backendApi = new BackendApi(ENV.Backend)
+var account = new IncAccount(privateKey)
+
+describe('[CLASS] Papp', async() => {
 
     describe('TC001_PancakeTradeToken', async() => {
         it('CallAPI', async() => {
             let response = await backendApi.tradeToken()
 
             await validateSchemaCommand.validateSchema(backendApi_schemas.tradeTokenSchemas, response.data)
+        })
+
+        it('CallAPI_2', async() => {
+            let response = await backendApi.uniswapToken()
+
+            await validateSchemaCommand.validateSchema(backendApi_schemas.uniSwapTokenSchemas, response.data)
         })
     })
 
@@ -82,6 +90,5 @@ describe('[Class] Papp', async() => {
             await validateSchemaCommand.validateSchema(backendApi_schemas.curveRewardHistorySchemas, response.data)
         })
     })
-
 
 })
