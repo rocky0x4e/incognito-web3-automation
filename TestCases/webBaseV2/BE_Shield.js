@@ -227,7 +227,7 @@ describe('[Class]BEShield', async() => {
 
             beShieldAddress = response.Result.Address
 
-    
+
             chai.expect(response.Result).have.property('Address')
             chai.expect(response.Result).to.have.property('EstimateFee')
             chai.expect(response.Result).to.have.property('ExpiredAt')
