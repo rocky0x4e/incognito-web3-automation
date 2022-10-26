@@ -1,4 +1,5 @@
 const config = require('../../../constant/config');
+const listAccount = require('../../../constant/listAccount.json');
 const sdkCommonFunction = require('../../../constant/sdkCommonFunction');
 const chainCommonFunction = require('../../../constant/chainCommonFunction');
 const commonFunction = require('../../../constant/commonFunction');
@@ -13,13 +14,16 @@ const { IncNode } = require('../../../lib/Incognito/IncNode');
 const { CoinServiceApi } = require('../../../lib/Incognito/CoinService/CoinServiceApi');
 const { ENV } = require('../../../global');
 
-describe('[Class] Balance', () => {
+let node = new IncNode(ENV.urlFullNode)
+let sender = new IncAccount(listAccount['2']).attachTo(node)
+let receiver = new IncAccount(listAccount['3']).attachTo(node)
+let account = {
+    privateKey: null,
+    otaKey: null,
+}
+let coinServiceApi = new CoinServiceApi()
 
-    let account = {
-        privateKey: null,
-        otaKey: null,
-    }
-    let coinServiceApi = new CoinServiceApi()
+describe('[Class] Balance', () => {
 
     describe('Before_Initdata', async() => {
         it('Initdata', async() => {
@@ -103,23 +107,15 @@ describe('[Class] Balance', () => {
         })
     })
 
-    describe.skip('TC007_CheckBalancePrvAfterSend', async() => {
+    describe('TC007_CheckBalancePrvAfterSend', async() => {
 
-        let node
-        let sender
-        let receiver
         let amountTranfer = 0
         const PRV = '0000000000000000000000000000000000000000000000000000000000000004'
 
 
         it('STEP_InitData', async() => {
             amountTranfer = await commonFunction.randomNumber(1000)
-            node = new IncNode(ENV.urlFullNode)
-
-            sender = new IncAccount((await config.getAccount('2')).privateKey).attachTo(node)
             await sender.initSdkInstance()
-
-            receiver = new IncAccount((await config.getAccount('3')).privateKey).attachTo(node)
             await receiver.initSdkInstance()
         });
 
