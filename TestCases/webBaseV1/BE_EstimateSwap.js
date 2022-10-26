@@ -1243,7 +1243,7 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    describe.only('TC028_CURVE_USDT(UT)_USDC(UT)_INC', async() => {
+    describe('TC028_CURVE_USDT(UT)_USDC(UT)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
