@@ -1,9 +1,29 @@
 {
-    "urlFullNode": "https://mainnet.incognito.org/fullnode",
-    "urlCoinService": "https://api-coinservice.incognito.org",
-    "urlPubsubService": "https://api-coinservice.incognito.org/txservice",
-    "urlBackend": "https://api-service.incognito.org",
-    "urlBackendTool": "http://34.123.53.141",
-    "urlWeb3": "https://mainnet.infura.io/v3/",
-    "urlWebService": "https://api-webapp.incognito.org"
+    "FullNode": {
+        "url": "https://mainnet.incognito.org/fullnode",
+        "authPath": ""
+    },
+    "CoinService": {
+        "url": "https://api-coinservice.incognito.org",
+        "authPath": ""
+    },
+    "PubsubService": {
+        "url": "https://api-coinservice.incognito.org/txservice",
+        "authPath": ""
+    },
+    "Backend": {
+        "url": "https://api-service.incognito.org",
+        "authPath": ""
+    },
+    "BackendTool": {
+        "url": "http://34.123.53.141",
+        "authPath": ""
+    },
+    "Web3": {
+        "url": "https://mainnet.infura.io/v3/",
+        "authPath": ""
+    },
+    "WebService": {
+        "url": "https://api-webapp.incognito.org"
+    }
 }
