@@ -578,13 +578,13 @@
  };
 
  const swapStatusSchemas = {
-     "$id": "genShieldAddressSchemas",
+     "$id": "swapStatusSchemas",
      "type": "object",
-     "$ref": "#/definitions/Welcome5",
+     "$ref": "#/definitions/Welcome9",
      "definitions": {
-         "Welcome5": {
+         "Welcome9": {
              "type": "object",
-             "additionalProperties": true,
+             "additionalProperties": false,
              "properties": {
                  "Result": {
                      "$ref": "#/definitions/Result"
@@ -593,46 +593,54 @@
              "required": [
                  "Result"
              ],
-             "title": "Welcome5"
+             "title": "Welcome9"
          },
-         "Status": {
-             "type": "string",
-             "enum": [
-                 "accepted"
+         "Result": {
+             "type": "object",
+             "additionalProperties": true,
+             "properties": {},
+             "required": [
+
              ],
-             "title": "Status"
+             "title": "Result"
          },
-         "Network": {
-             "type": "string",
-             "enum": [
-                 "bsc",
-                 "plg",
-                 "eth"
+
+         "NetworkResult": {
+             "type": "object",
+             "additionalProperties": false,
+             "properties": {
+                 "is_redeposit": {
+                     "type": "boolean"
+                 },
+                 "network": {
+                     "type": "string"
+                 },
+                 "redeposit_inctx": {
+                     "type": "string"
+                 },
+                 "redeposit_status": {
+                     "type": "string"
+                 },
+                 "swap_outcome": {
+                     "type": "string"
+                 },
+                 "swap_tx": {
+                     "type": "string"
+                 },
+                 "swap_tx_status": {
+                     "type": "string"
+                 }
+             },
+             "required": [
+                 "is_redeposit",
+                 "network",
+                 "redeposit_inctx",
+                 "redeposit_status",
+                 "swap_outcome",
+                 "swap_tx",
+                 "swap_tx_status"
              ],
-             "title": "Network"
-         },
-         "PurpleSwapOutcome": {
-             "type": "string",
-             "enum": [
-                 "success",
-                 "failed"
-             ],
-             "title": "PurpleSwapOutcome"
-         },
-         "Error": {
-             "type": "string",
-             "enum": [
-                 "not found"
-             ],
-             "title": "Error"
-         },
-         "FluffySwapOutcome": {
-             "type": "string",
-             "enum": [
-                 "reverted",
-                 "success"
-             ],
-             "title": "FluffySwapOutcome"
+             "title": "NetworkResult"
          }
      }
  };
