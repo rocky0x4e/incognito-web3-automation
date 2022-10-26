@@ -14,7 +14,8 @@ module.exports = {
         // './Testcases/monitor/coinService/Market.js',
         // './Testcases/monitor/coinService/Pdex.js',
         // './Testcases/webBaseV1/BE_EstimateSwap.js',
-        './Testcases/webBaseV1/BE_EvmShield.js',
+        // './Testcases/webBaseV1/BE_EvmShield.js',
+        './Testcases/webBaseV1/BE_EvmUnshield.js',
     ],
     reporter: 'node_modules/mochawesome',
     'reporter-option': [
