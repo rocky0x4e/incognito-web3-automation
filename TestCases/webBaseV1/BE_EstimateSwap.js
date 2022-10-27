@@ -1,6 +1,6 @@
 //Require the dev-dependencies
 const validateSchemaCommand = require("../../schemas/validateSchemaCommand");
-const addingContent = require('../../testbase/addingContent');
+const addingContent = require('../../lib/Utils/AddingContent');
 const webServiceApi_schemas = require("../../schemas/webServiceApi_schemas");
 let chai = require('chai');
 const csCommonFunction = require('../../constant/csCommonFunction');

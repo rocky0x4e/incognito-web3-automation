@@ -5,7 +5,8 @@ const chainCommonFunction = require('../../../constant/chainCommonFunction');
 const commonFunction = require('../../../constant/commonFunction');
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
-const addingContent = require('../../../testbase/addingContent');
+const addingContent = require("../../../lib/Utils/AddingContent");
+
 
 //Require the dev-dependencies
 let chai = require('chai');

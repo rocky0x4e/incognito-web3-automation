@@ -9,7 +9,6 @@ const { ENV } = require("../../global");
 const webServiceApi_schemas = require("../../schemas/webServiceApi_schemas");
 const validateSchemaCommand = require("../../schemas/validateSchemaCommand");
 const _ = require('lodash');
-const addingContent = require('../../testbase/addingContent');
 
 let webServiceApi = new WebServiceApi(ENV.WebService)
 

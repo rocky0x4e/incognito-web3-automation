@@ -6,11 +6,9 @@ let chai = require('chai');
 const csCommonFunction = require('../../constant/csCommonFunction');
 const commonFunction = require('../../constant/commonFunction');
 const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
-const addingContent = require('../../../testbase/addingContent');
 const { ENV } = require('../../global');
 const { CoinServiceApi } = require('../../lib/Incognito/CoinService/CoinServiceApi');
 const validateSchemaCommand = require("../../schemas/validateSchemaCommand");
-const addingContent = require('../../testbase/addingContent');
 const webServiceApi_schemas = require("../../schemas/webServiceApi_schemas");
 const coinServiceApi_schemas = require("../../schemas/coinServiceApi_schemas");
 

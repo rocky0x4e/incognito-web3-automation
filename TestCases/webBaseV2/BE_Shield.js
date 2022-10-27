@@ -11,7 +11,6 @@ const common = require('../../../constant/commonFunction');
 const api = require('../../../constant/api');
 const backendApi = require('../../../models/backendApi');
 const webServiceApi = require('../../../models/webServiceApi');
-const addingContent = require('../../../testbase/addingContent');
 
 let beTokenAuthen
 let paymentAddress = '12sfV7Vo27Rz3aT4c2kyiTpvziwXjviQMMrp5gsFfupAvoDveHhQLunAWvqTao46DSEYpnbMpGYxuc4a9KGU7BppPM9uZtfVCqPAQ18WtPEijsLmYxVL1MWWDggDZHfRmhtxmVijadCjXyr7iC9X'
