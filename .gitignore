@@ -8,3 +8,5 @@ test/scratch
 scratch*
 .cache*
 bin
+.idea
+.vscode

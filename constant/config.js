@@ -6,6 +6,55 @@ global.urlFullNodeHieu
 
 global.ENV = 'mainnet'
 
+const setENV = async(network = 'testnet2') => {
+    global.ENV = network
+
+    if (global.ENV == 'mainnet') {
+        global.urlFullNode = 'https://mainnet.incognito.org/fullnode'
+        global.urlFullNodeHieu = 'http://localhost:9999'
+        global.urlCoinService = 'https://api-coinservice.incognito.org'
+        global.urlPubsubService = 'https://api-coinservice.incognito.org/txservice'
+        global.urlBackend = 'https://api-service.incognito.org'
+        global.urlBackendTool = 'http://34.123.53.141'
+        global.urlWeb3 = 'https://mainnet.infura.io/v3/'
+        global.urlWebService = 'https://api-webapp.incognito.org'
+
+    } else if (global.ENV == 'testnet2') {
+        global.urlFullNode = 'https://testnet.incognito.org/fullnode'
+        global.urlFullNodeHieu = 'http://localhost:9999'
+        global.urlCoinService = 'https://api-coinservice-staging.incognito.org'
+        global.urlPubsubService = 'http://51.161.117.193:9096'
+        global.urlBackend = 'https://staging-api-service.incognito.org'
+        global.urlBackendTool = 'http://34.123.53.141'
+        global.urlWeb3 = 'https://kovan.infura.io/v3/'
+        global.urlWebService = 'https://api-webapp-staging.incognito.org'
+
+    } else if (global.ENV == 'testnet1') {
+        global.urlFullNode = 'https://testnet1.incognito.org/fullnode'
+        global.urlFullNodeHieu = 'http://localhost:9999'
+        global.urlCoinService = 'http://51.195.4.15:4095'
+        global.urlPubsubService = 'http://51.195.4.15:4096'
+        global.urlBackend = 'https://dev-api-service.incognito.org'
+        global.urlBackendTool = 'http://34.123.53.141'
+        global.urlWeb3 = 'https://kovan.infura.io/v3/'
+        global.urlWebService = 'https://api-webapp-staging.incognito.org'
+
+    } else if (global.ENV == 'local') {
+        global.urlFullNode = 'http://139.162.55.124:8334/'
+        global.urlFullNodeHieu = 'http://localhost:9999'
+        global.urlCoinService = 'http://51.89.21.38:4095'
+        global.urlPubsubService = 'http://51.89.21.38:5095'
+        global.urlBackend = 'https://staging-api-service.incognito.org'
+        global.urlBackendTool = 'http://34.123.53.141'
+        global.urlWeb3 = 'https://kovan.infura.io/v3/'
+        global.urlWebService = 'https://api-webapp-staging.incognito.org'
+    }
+
+    console.log("Change ENV success : " + network);
+}
+
+setENV(global.ENV)
+
 global.apiLog = {
     url: "",
     body: "",
@@ -52,53 +101,6 @@ global.listAccount = [{
 const getAccount = async(expectedName) => {
     let account = listAccount.find(item => item.name == expectedName)
     return account
-}
-
-const setENV = async(network = 'testnet2') => {
-    global.ENV = network
-
-    if (global.ENV == 'mainnet') {
-        global.urlFullNode = 'https://mainnet.incognito.org/fullnode'
-        global.urlFullNodeHieu = 'http://localhost:9999'
-        global.urlCoinService = 'https://api-coinservice.incognito.org'
-        global.urlPubsubService = 'https://api-coinservice.incognito.org/txservice'
-        global.urlBackend = 'https://api-service.incognito.org'
-        global.urlBackendTool = 'http://34.123.53.141'
-        global.urlWeb3 = 'https://mainnet.infura.io/v3/'
-        global.urlWebService = 'https://api-webapp.incognito.org'
-
-    } else if (global.ENV == 'testnet2') {
-        global.urlFullNode = 'https://testnet.incognito.org/fullnode'
-        global.urlFullNodeHieu = 'http://localhost:9999'
-        global.urlCoinService = 'https://api-coinservice-staging.incognito.org'
-        global.urlPubsubService = 'http://51.161.117.193:9096'
-        global.urlBackend = 'https://staging-api-service.incognito.org'
-        global.urlBackendTool = 'http://34.123.53.141'
-        global.urlWeb3 = 'https://kovan.infura.io/v3/'
-        global.urlWebService = 'https://api-webapp-staging.incognito.org'
-
-    } else if (global.ENV == 'testnet1') {
-        global.urlFullNode = 'https://testnet1.incognito.org/fullnode'
-        global.urlFullNodeHieu = 'http://localhost:9999'
-        global.urlCoinService = 'http://51.195.4.15:4095'
-        global.urlPubsubService = 'http://51.195.4.15:4096'
-        global.urlBackend = 'https://dev-api-service.incognito.org'
-        global.urlBackendTool = 'http://34.123.53.141'
-        global.urlWeb3 = 'https://kovan.infura.io/v3/'
-        global.urlWebService = 'https://api-webapp-staging.incognito.org'
-
-    } else if (global.ENV == 'local') {
-        global.urlFullNode = 'http://139.162.55.124:8334/'
-        global.urlFullNodeHieu = 'http://localhost:9999'
-        global.urlCoinService = 'http://51.89.21.38:4095'
-        global.urlPubsubService = 'http://51.89.21.38:5095'
-        global.urlBackend = 'https://staging-api-service.incognito.org'
-        global.urlBackendTool = 'http://34.123.53.141'
-        global.urlWeb3 = 'https://kovan.infura.io/v3/'
-        global.urlWebService = 'https://api-webapp-staging.incognito.org'
-    }
-
-    console.log("Change ENV success : " + network);
 }
 
 const currencyType = {
@@ -204,9 +206,6 @@ const getOutchainFullnode = async(network) => {
         }
     }
 }
-
-setENV(global.ENV)
-
 
 module.exports = {
     getAccount,

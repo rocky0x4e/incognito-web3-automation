@@ -1736,6 +1736,599 @@ const getWithdrawFeeHistorySchemas = {
     }
 };
 
+const getTxBySenderSchemas = {
+    "$id": "TxBySenderSchemas",
+    "type": "object",
+    "$ref": "#/definitions/Welcome3",
+    "definitions": {
+        "Welcome3": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Result"
+                    }
+                },
+                "Error": {
+                    "type": "null"
+                }
+            },
+            "required": [
+                "Error",
+                "Result"
+            ],
+            "title": "Welcome3"
+        },
+        "Result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "TxDetail": {
+                    "$ref": "#/definitions/TxDetail"
+                },
+                "FromShardID": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "FromShardID",
+                "TxDetail"
+            ],
+            "title": "Result"
+        },
+        "TxDetail": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "BlockHash": {
+                    "type": "string"
+                },
+                "BlockHeight": {
+                    "type": "integer"
+                },
+                "TxSize": {
+                    "type": "integer"
+                },
+                "Index": {
+                    "type": "integer"
+                },
+                "ShardID": {
+                    "type": "integer"
+                },
+                "Hash": {
+                    "type": "string"
+                },
+                "Version": {
+                    "type": "integer"
+                },
+                "Type": {
+                    "type": "string"
+                },
+                "LockTime": {
+                    "type": "string",
+
+                },
+                "Fee": {
+                    "type": "integer"
+                },
+                "Image": {
+                    "type": "string"
+                },
+                "IsPrivacy": {
+                    "type": "boolean"
+                },
+                "Proof": {
+                    "type": "null"
+                },
+                "ProofDetail": {
+                    "$ref": "#/definitions/ProofDetail"
+                },
+                "InputCoinPubKey": {
+                    "type": "string"
+                },
+                "OutputCoinPubKey": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "OutputCoinSND": {
+                    "type": "null"
+                },
+                "TokenInputCoinPubKey": {
+                    "type": "string"
+                },
+                "TokenOutputCoinPubKey": {
+                    "anyOf": [{
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "TokenOutputCoinSND": {
+                    "type": "null"
+                },
+                "SigPubKey": {
+                    "type": "string"
+                },
+                "Metatype": {
+                    "type": "integer"
+                },
+                "Metadata": {
+                    "type": "string"
+                },
+                "CustomTokenData": {
+                    "type": "string"
+                },
+                "PrivacyCustomTokenID": {
+                    "type": "string"
+                },
+                "PrivacyCustomTokenName": {
+                    "type": "string"
+                },
+                "PrivacyCustomTokenSymbol": {
+                    "type": "string"
+                },
+                "PrivacyCustomTokenData": {
+                    "type": "string"
+                },
+                "PrivacyCustomTokenProofDetail": {
+                    "$ref": "#/definitions/ProofDetail"
+                },
+                "PrivacyCustomTokenIsPrivacy": {
+                    "type": "boolean"
+                },
+                "PrivacyCustomTokenFee": {
+                    "type": "integer"
+                },
+                "IsInMempool": {
+                    "type": "boolean"
+                },
+                "IsInBlock": {
+                    "type": "boolean"
+                },
+                "Info": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "BlockHash",
+                "BlockHeight",
+                "CustomTokenData",
+                "Fee",
+                "Hash",
+                "Image",
+                "Index",
+                "Info",
+                "InputCoinPubKey",
+                "IsInBlock",
+                "IsInMempool",
+                "IsPrivacy",
+                "LockTime",
+                "Metadata",
+                "Metatype",
+                "OutputCoinPubKey",
+                "OutputCoinSND",
+                "PrivacyCustomTokenData",
+                "PrivacyCustomTokenFee",
+                "PrivacyCustomTokenID",
+                "PrivacyCustomTokenIsPrivacy",
+                "PrivacyCustomTokenName",
+                "PrivacyCustomTokenProofDetail",
+                "PrivacyCustomTokenSymbol",
+                "Proof",
+                "ProofDetail",
+                "ShardID",
+                "SigPubKey",
+                "TokenInputCoinPubKey",
+                "TokenOutputCoinPubKey",
+                "TokenOutputCoinSND",
+                "TxSize",
+                "Type",
+                "Version"
+            ],
+            "title": "TxDetail"
+        },
+        "ProofDetail": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "InputCoins": {
+                    "anyOf": [{
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/PutCoin"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "OutputCoins": {
+                    "anyOf": [{
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/PutCoin"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "InputCoins",
+                "OutputCoins"
+            ],
+            "title": "ProofDetail"
+        },
+        "PutCoin": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Version": {
+                    "type": "integer"
+                },
+                "Index": {
+                    "type": "integer"
+                },
+                "Info": {
+                    "type": "string"
+                },
+                "PublicKey": {
+                    "type": "string"
+                },
+                "Commitment": {
+                    "type": "string"
+                },
+                "KeyImage": {
+                    "type": "string"
+                },
+                "TxRandom": {
+                    "type": "string"
+                },
+                "Value": {
+                    "type": "string",
+
+                },
+                "Randomness": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "Commitment",
+                "Index",
+                "Info",
+                "KeyImage",
+                "PublicKey",
+                "Randomness",
+                "TxRandom",
+                "Value",
+                "Version"
+            ],
+            "title": "PutCoin"
+        }
+    }
+};
+
+const getTxByPubKeySchemas = {
+    "$id": "TxBySenderSchemas",
+    "type": "object",
+    "$ref": "#/definitions/Welcome10",
+    "definitions": {
+        "Welcome10": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Result"
+                    }
+                },
+                "Error": {
+                    "type": "null"
+                }
+            },
+            "required": [
+                "Error",
+                "Result"
+            ],
+            "title": "Welcome10"
+        },
+        "Result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "TxDetail": {
+                    "$ref": "#/definitions/TxDetail"
+                },
+                "FromShardID": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "FromShardID",
+                "TxDetail"
+            ],
+            "title": "Result"
+        },
+        "TxDetail": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "BlockHash": {
+                    "type": "string"
+                },
+                "BlockHeight": {
+                    "type": "integer"
+                },
+                "TxSize": {
+                    "type": "integer"
+                },
+                "Index": {
+                    "type": "integer"
+                },
+                "ShardID": {
+                    "type": "integer"
+                },
+                "Hash": {
+                    "type": "string"
+                },
+                "Version": {
+                    "type": "integer"
+                },
+                "Type": {
+                    "type": "string"
+                },
+                "LockTime": {
+                    "type": "string",
+
+                },
+                "Fee": {
+                    "type": "integer"
+                },
+                "Image": {
+                    "type": "string"
+                },
+                "IsPrivacy": {
+                    "type": "boolean"
+                },
+                "Proof": {
+                    "type": "null"
+                },
+                "ProofDetail": {
+                    "$ref": "#/definitions/ProofDetail"
+                },
+                "InputCoinPubKey": {
+                    "type": "string"
+                },
+                "OutputCoinPubKey": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "OutputCoinSND": {
+                    "type": "null"
+                },
+                "TokenInputCoinPubKey": {
+                    "type": "string"
+                },
+                "TokenOutputCoinPubKey": {
+                    "anyOf": [{
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "TokenOutputCoinSND": {
+                    "type": "null"
+                },
+                "SigPubKey": {
+                    "type": "string"
+                },
+                "Metatype": {
+                    "type": "integer"
+                },
+                "Metadata": {
+                    "type": "string"
+                },
+                "CustomTokenData": {
+                    "type": "string"
+                },
+                "PrivacyCustomTokenID": {
+                    "type": "string"
+                },
+                "PrivacyCustomTokenName": {
+                    "type": "string"
+                },
+                "PrivacyCustomTokenSymbol": {
+                    "type": "string"
+                },
+                "PrivacyCustomTokenData": {
+                    "type": "string"
+                },
+                "PrivacyCustomTokenProofDetail": {
+                    "$ref": "#/definitions/ProofDetail"
+                },
+                "PrivacyCustomTokenIsPrivacy": {
+                    "type": "boolean"
+                },
+                "PrivacyCustomTokenFee": {
+                    "type": "integer"
+                },
+                "IsInMempool": {
+                    "type": "boolean"
+                },
+                "IsInBlock": {
+                    "type": "boolean"
+                },
+                "Info": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "BlockHash",
+                "BlockHeight",
+                "CustomTokenData",
+                "Fee",
+                "Hash",
+                "Image",
+                "Index",
+                "Info",
+                "InputCoinPubKey",
+                "IsInBlock",
+                "IsInMempool",
+                "IsPrivacy",
+                "LockTime",
+                "Metadata",
+                "Metatype",
+                "OutputCoinPubKey",
+                "OutputCoinSND",
+                "PrivacyCustomTokenData",
+                "PrivacyCustomTokenFee",
+                "PrivacyCustomTokenID",
+                "PrivacyCustomTokenIsPrivacy",
+                "PrivacyCustomTokenName",
+                "PrivacyCustomTokenProofDetail",
+                "PrivacyCustomTokenSymbol",
+                "Proof",
+                "ProofDetail",
+                "ShardID",
+                "SigPubKey",
+                "TokenInputCoinPubKey",
+                "TokenOutputCoinPubKey",
+                "TokenOutputCoinSND",
+                "TxSize",
+                "Type",
+                "Version"
+            ],
+            "title": "TxDetail"
+        },
+        "ProofDetail": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "InputCoins": {
+                    "anyOf": [{
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/PutCoin"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "OutputCoins": {
+                    "anyOf": [{
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/PutCoin"
+                            }
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                }
+            },
+            "required": [
+                "InputCoins",
+                "OutputCoins"
+            ],
+            "title": "ProofDetail"
+        },
+        "PutCoin": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Version": {
+                    "type": "integer"
+                },
+                "Index": {
+                    "type": "integer"
+                },
+                "Info": {
+                    "type": "string"
+                },
+                "PublicKey": {
+                    "type": "string"
+                },
+                "Commitment": {
+                    "type": "string"
+                },
+                "KeyImage": {
+                    "type": "string"
+                },
+                "TxRandom": {
+                    "type": "string"
+                },
+                "Value": {
+                    "type": "string",
+
+                },
+                "Randomness": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "Commitment",
+                "Index",
+                "Info",
+                "KeyImage",
+                "PublicKey",
+                "Randomness",
+                "TxRandom",
+                "Value",
+                "Version"
+            ],
+            "title": "PutCoin"
+        }
+    }
+};
+
+const submitOtaKeySchemas = {
+    "$id": "TxBySenderSchemas",
+    "type": "object",
+    "$ref": "#/definitions/Welcome1",
+    "definitions": {
+        "Welcome1": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Result": {
+                    "type": "string",
+                },
+                "Error": {
+                    "type": "null"
+                }
+            },
+            "required": [
+                "Error",
+                "Result"
+            ],
+            "title": "Welcome1"
+        }
+    }
+};
+
 module.exports = {
     getTokenListSchemas,
     getLitsPoolSchemas,
@@ -1752,5 +2345,8 @@ module.exports = {
     getPoolDetailSchemas,
     getContributeHistorySchemas,
     getWithdrawHistorySchemas,
-    getWithdrawFeeHistorySchemas
+    getWithdrawFeeHistorySchemas,
+    getTxBySenderSchemas,
+    getTxByPubKeySchemas,
+    submitOtaKeySchemas
 };

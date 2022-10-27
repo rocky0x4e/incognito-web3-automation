@@ -1,5 +1,5 @@
 const addContext = require('mochawesome/addContext');
-const addingContent = require("./addingContent");
+const addingContent = require("../lib/Utils/AddingContent");
 
 beforeEach(function() {
     addingContent.resetContent()

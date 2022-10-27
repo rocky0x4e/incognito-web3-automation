@@ -164,7 +164,6 @@ const getTokenContract = async(tokenID, network = null) => {
             if (token.CurrencyType == 25) {
                 let item
 
-                // console.log('hoanh', token.TokenID, network);
                 switch (network.toLowerCase()) {
                     case 'eth':
                         item = token.ListUnifiedToken.find(element => element.Network == 'Ethereum');
