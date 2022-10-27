@@ -1,20 +1,18 @@
 const config = require('../../../constant/config');
 const listAccount = require('../../../constant/listAccount.json');
-const sdkCommonFunction = require('../../../constant/sdkCommonFunction');
 const chainCommonFunction = require('../../../constant/chainCommonFunction');
 const commonFunction = require('../../../constant/commonFunction');
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
 const addingContent = require("../../../lib/Utils/AddingContent");
-
-
-//Require the dev-dependencies
 let chai = require('chai');
 const { IncAccount } = require('../../../lib/Incognito/Account/Account');
 const { IncNode } = require('../../../lib/Incognito/IncNode');
 const { CoinServiceApi } = require('../../../lib/Incognito/CoinService/CoinServiceApi');
 const { ENV } = require('../../../global');
 
+
+//init
 let node = new IncNode(ENV.urlFullNode)
 let sender = new IncAccount(listAccount['2']).attachTo(node)
 let receiver = new IncAccount(listAccount['3']).attachTo(node)
@@ -108,7 +106,7 @@ describe('[Class] Balance', () => {
         })
     })
 
-    describe('TC007_CheckBalancePrvAfterSend', async() => {
+    describe.skip('TC007_CheckBalancePrvAfterSend', async() => {
 
         let amountTranfer = 0
         const PRV = '0000000000000000000000000000000000000000000000000000000000000004'
@@ -174,70 +172,39 @@ describe('[Class] Balance', () => {
     })
 
     describe.skip('TC008_CheckBalanceTokenAfterSend', async() => {
-
-        let accountSend = {
-            balanceCLI: 0,
-            balanceSdk: 0,
-            privateKey: 0,
-            paymentAddress: 0,
-            accoutSdk: 0,
-            oldBalance: 0,
-            newBalance: 0
-        }
-        let accountReceive = {
-            balanceCLI: 0,
-            balanceSdk: 0,
-            privateKey: 0,
-            paymentAddress: 0,
-            oldBalance: 0,
-            newBalance: 0
-        }
         let amountTranfer = 0
         let USDT = '076a4423fa20922526bd50b0d7b0dc1c593ce16e15ba141ede5fb5a28aa3f229'
 
 
         it('STEP_InitData', async() => {
             amountTranfer = await commonFunction.randomNumber(1000)
-
-            account1 = await config.getAccount("3")
-            accountSend.privateKey = account1.privateKey
-            console.log('accountSend.privateKey', accountSend.privateKey);
-            accountSend.accoutSdk = await sdkCommonFunction.initAccount(accountSend.privateKey)
-
-            account2 = await config.getAccount("2")
-            accountReceive.privateKey = account2.privateKey
-            accountReceive.paymentAddress = (await cliCommonFunction.keyInfo(account2.privateKey)).PaymentAddress
-            console.log('accountReceive.paymentAddress', accountReceive.paymentAddress);
-            accountReceive.accoutSdk = await sdkCommonFunction.initAccount(accountReceive.privateKey)
+            await sender.initSdkInstance()
+            await receiver.initSdkInstance()
         });
 
         it('STEP_CheckBalanceCli', async() => {
-            accountSend.balanceCLI = await cliCommonFunction.loadBalance(accountSend.privateKey)
-            await addingContent.addContent('accountSend.balanceCLI', accountSend.balanceCLI)
-            accountSend.oldBalance = accountSend.balanceCLI
+            sender.balanceCLI = await sender.useCli.getBalance(USDT)
+            await addingContent.addContent('sender.balanceCLI', sender.balanceCLI)
+            sender.oldBalance = sender.balanceCLI
 
-            accountReceive.balanceCLI = await cliCommonFunction.loadBalance(accountReceive.privateKey)
-            await addingContent.addContent('accountReceive.balanceCLI', accountReceive.balanceCLI)
-            accountReceive.oldBalance = accountReceive.balanceCLI
+            receiver.balanceCLI = await receiver.useCli.getBalance(USDT)
+            await addingContent.addContent('receiver.balanceCLI', receiver.balanceCLI)
+            receiver.oldBalance = receiver.balanceCLI
         }).timeout(1000000)
 
         it('STEP_CheckBalanceSdk', async() => {
-            accountSend.balanceSdk = await sdkCommonFunction.checkBalance({ account: accountSend.accoutSdk })
-            await addingContent.addContent('accountSend.balanceSdk', accountSend.balanceSdk)
+            sender.balanceSdk = await sender.useSdk.getBalance(USDT)
+            await addingContent.addContent('sender.balanceSdk', sender.balanceSdk)
 
-            accountReceive.balanceSdk = await sdkCommonFunction.checkBalance({ account: accountReceive.accoutSdk })
-            await addingContent.addContent('accountReceive.balanceSdk', accountReceive.balanceSdk)
+            receiver.balanceSdk = await receiver.useSdk.getBalance(USDT)
+            await addingContent.addContent('receiver.balanceSdk', receiver.balanceSdk)
 
         }).timeout(1000000)
 
         it('STEP_Send', async() => {
 
-            let tx = await sdkCommonFunction.sendToken({
-                account: accountSend.accoutSdk,
-                tokenId: USDT,
-                paymentAddress: accountReceive.paymentAddress,
-                amountTransfer: amountTranfer
-            })
+            let tx = await sender.useCli.send(receiver, amountTranfer, USDT)
+
             console.log(`Send Token : ${tx}`);
             await addingContent.addContent('tx', tx)
             await chainCommonFunction.waitForTxInBlock(tx)
@@ -246,25 +213,25 @@ describe('[Class] Balance', () => {
         it('STEP_CompareBalance', async() => {
             await commonFunction.sleep(20000)
 
-            accountSend.balanceCLI = await cliCommonFunction.loadBalance(accountSend.privateKey)
-            await addingContent.addContent('accountSend.balanceCLI', accountSend.balanceCLI)
-            accountSend.newBalance = accountSend.balanceCLI
+            sender.balanceCLI = sender.useCli.getBalanceAll()
+            await addingContent.addContent('sender.balanceCLI ', sender.balanceCLI)
+            sender.newBalance = sender.balanceCLI
 
-            accountReceive.balanceCLI = await cliCommonFunction.loadBalance(accountReceive.privateKey)
-            await addingContent.addContent('accountReceive.balanceCLI', accountReceive.balanceCLI)
-            accountReceive.newBalance = accountReceive.balanceCLI
+            receiver.balanceCLI = receiver.useCli.getBalanceAll()
+            await addingContent.addContent('receiver.balanceCLI ', receiver.balanceCLI)
+            receiver.newBalance = receiver.balanceCLI
 
-            accountSend.balanceSdk = await sdkCommonFunction.checkBalance({ account: accountSend.accoutSdk })
-            await addingContent.addContent('accountSend.balanceSdk', accountSend.balanceSdk)
+            sender.balanceSdk = sender.useCli.getBalanceAll()
+            await addingContent.addContent('sender.balanceSdk', sender.balanceSdk)
 
-            accountReceive.balanceSdk = await sdkCommonFunction.checkBalance({ account: accountReceive.accoutSdk })
-            await addingContent.addContent('accountReceive.balanceSdk', accountReceive.balanceSdk)
+            receiver.balanceSdk = receiver.useCli.getBalanceAll()
+            await addingContent.addContent('receiver.balanceSdk', receiver.balanceSdk)
 
-            chai.expect(accountSend.balanceCLI[USDT]).to.equal(accountSend.balanceSdk[USDT])
-            chai.expect(accountReceive.balanceCLI[USDT]).to.equal(accountReceive.balanceSdk[USDT])
+            chai.expect(sender.balanceCLI[USDT]).to.equal(sender.balanceSdk[USDT])
+            chai.expect(receiver.balanceCLI[USDT]).to.equal(receiver.balanceSdk[USDT])
 
-            chai.expect(accountSend.newBalance[USDT]).to.equal(accountSend.oldBalance[USDT] - amountTranfer)
-            chai.expect(accountReceive.newBalance[USDT]).to.equal(accountReceive.oldBalance[USDT] + amountTranfer)
+            chai.expect(sender.newBalance[USDT]).to.equal(sender.oldBalance[USDT] - amountTranfer)
+            chai.expect(receiver.newBalance[USDT]).to.equal(receiver.oldBalance[USDT] + amountTranfer)
 
         }).timeout(1000000)
     })
