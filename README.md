@@ -10,6 +10,7 @@ Please strictly follow this [W3schools' JS coding convention](https://www.w3scho
 - Line max length = 120
 
 ## structure:
+```
 .
 ├── bin (binary files for cli tools)
 ├── environments (contain json file describe pre-define environments)
@@ -31,5 +32,4 @@ Please strictly follow this [W3schools' JS coding convention](https://www.w3scho
 ├── package.json
 ├── package-lock.json
 └── README.md
-
-
+```
