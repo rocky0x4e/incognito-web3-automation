@@ -10,3 +10,7 @@ scratch*
 bin
 .idea
 .vscode
+.mocharc.js
+package-lock.json
+environments
+config.json
