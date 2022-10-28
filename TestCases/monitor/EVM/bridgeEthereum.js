@@ -67,7 +67,7 @@ describe(`[Ethereum brigde]`, async() =>{
         })
     })
 
-    describe.skip(`[WEB3] Deposit token`, async() => {
+    describe(`[WEB3] Deposit token`, async() => {
         it(`Get balance before deposit`, async() =>{
             accountInfoBefore.extTokenBal = await web3.eth.getBalance(extAccount.address)
             await console.log('accountInfoBefore.extTokenBal: ',accountInfoBefore.extTokenBal )
@@ -117,9 +117,6 @@ describe(`[Ethereum brigde]`, async() =>{
             console.log('accountInfoAfter: ',accountInfoAfter.incTokenBal )
             chai.assert.notEqual(accountInfoBefore.incTokenBal,accountInfoAfter.incTokenBal, 'mint token unsuceessfull')
         })
-        // it('Verify balance', async() => {
-            
-        // })
     })
 })
 
