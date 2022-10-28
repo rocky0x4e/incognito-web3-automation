@@ -455,7 +455,6 @@ describe('[Class] EstimateTrade', async() => {
                 'data',
                 response.data
             )
-            console.log('hoanh response.data', response.data);
 
             if (response.data.Result.Networks.plg[0].AppName == appName) {
                 chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)

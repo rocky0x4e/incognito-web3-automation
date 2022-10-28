@@ -1,6 +1,3 @@
-process.env.NODE_ENV = "test";
-
-//Require the dev-dependencies
 let chai = require("chai");
 const GenAction = require("../../lib/Utils/GenAction");
 const { WebServiceApi } = require("../../lib/Incognito/WebServiceApi");
