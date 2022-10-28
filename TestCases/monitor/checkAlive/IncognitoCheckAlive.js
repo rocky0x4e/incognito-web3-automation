@@ -1,6 +1,6 @@
-const { IncNode } = require("../../lib/Incognito/IncNode");
+const { IncNode } = require("../../../lib/Incognito/IncNode");
 const chai = require('chai');
-const { wait } = require("../../lib/Utils/Timer");
+const { wait } = require("../../../lib/Utils/Timer");
 const { incFullnodes } = require("./data");
 const gap = 15
 
