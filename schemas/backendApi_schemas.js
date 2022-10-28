@@ -1537,6 +1537,522 @@
      }
  };
 
+ const generateShieldAddressSchemas = {
+    "$id": "generateShieldAddressSchemas",
+    "type": "object",
+    "$ref": "#/definitions/Welcome6",
+    "definitions": {
+        "Welcome6": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Result": {
+                    "$ref": "#/definitions/Result"
+                },
+                "Error": {
+                    "type": "null"
+                }
+            },
+            "required": [
+                "Error",
+                "Result"
+            ],
+            "title": "Welcome6"
+        },
+        "Result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "ID": {
+                    "type": "integer"
+                },
+                "Address": {
+                    "type": "string"
+                },
+                "ExpiredAt": {
+                    "type": "string"
+                },
+                "EstimateFee": {
+                    "type": "number"
+                },
+                "TokenFee": {
+                    "type": "integer"
+                },
+                "Decentralized": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "Address",
+                "Decentralized",
+                "EstimateFee",
+                "ExpiredAt",
+                "ID",
+                "TokenFee"
+            ],
+            "title": "Result"
+        }
+    }
+ };
+
+ const historyTokenAccountSchemas = {
+    "$id": "historyTokenAccountSchemas",
+    "type": "object",
+    "$ref": "#/definitions/Welcome2",
+    "definitions": {
+        "Welcome2": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Result": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Result"
+                    }
+                },
+                "Error": {
+                    "type": "null"
+                }
+            },
+            "required": [
+                "Error",
+                "Result"
+            ],
+            "title": "Welcome2"
+        },
+        "Result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "ID": {
+                    "type": "integer"
+                },
+                "UserID": {
+                    "type": "integer"
+                },
+                "Address": {
+                    "$ref": "#/definitions/Address"
+                },
+                "ExpiredAt": {
+                    "type": "string"
+                },
+                "EstFeeAt": {
+                    "type": "null"
+                },
+                "AddressType": {
+                    "type": "integer"
+                },
+                "Status": {
+                    "type": "integer"
+                },
+                "StatusMessage": {
+                    "type": "string"
+                },
+                "StatusDetail": {
+                    "type": "string"
+                },
+                "CurrencyType": {
+                    "type": "integer"
+                },
+                "Network": {
+                    "$ref": "#/definitions/Network"
+                },
+                "WalletAddress": {
+                    "type": "string"
+                },
+                "UserPaymentAddress": {
+                    "type": "string"
+                },
+                "RequestedAmount": {
+                    "type": "string"
+                },
+                "ReceivedAmount": {
+                    "type": "string"
+                },
+                "IncognitoAmount": {
+                    "type": "string"
+                },
+                "EthereumTx": {
+                    "type": "string"
+                },
+                "IncognitoTx": {
+                    "type": "string"
+                },
+                "Erc20TokenTx": {
+                    "type": "string"
+                },
+                "PrivacyTokenAddress": {
+                    "$ref": "#/definitions/PrivacyTokenAddress"
+                },
+                "Erc20TokenAddress": {
+                    "type": "string"
+                },
+                "CreatedAt": {
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "type": "string"
+                },
+                "Decentralized": {
+                    "type": "integer"
+                },
+                "OutChainTx": {
+                    "type": "string"
+                },
+                "InChainTx": {
+                    "type": "string"   
+                },
+                "TokenFee": {
+                    "type": "string"
+                },
+                "PrivacyFee": {
+                    "type": "string"
+                },
+                "OutChainPrivacyFee": {
+                    "type": "string"
+                },
+                "OutChainTokenFee": {
+                    "type": "string"
+                },
+                "BurnTokenFee": {
+                    "type": "string"
+                },
+                "BurnPrivacyFee": {
+                    "type": "string"
+                },
+                "IncognitoTxToPayOutsideChainFee": {
+                    "type": "string"
+                },
+                "Note": {
+                    "type": "string"
+                },
+                "Memo": {
+                    "type": "string"
+                },
+                "TxReceive": {
+                    "type": "string"
+                },
+                "UnifiedStatus": {
+                    "type": "null"
+                },
+                "UnifiedReward": {
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/UnifiedReward"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "Decimals": {
+                    "type": "integer"
+                },
+                "PDecimals": {
+                    "type": "integer"
+                },
+                "Symbol": {
+                    "type": "string"
+                },
+                "TxRefundBlacklist": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "Address",
+                "AddressType",
+                "BurnPrivacyFee",
+                "BurnTokenFee",
+                "CreatedAt",
+                "CurrencyType",
+                "Decentralized",
+                "Decimals",
+                "Erc20TokenAddress",
+                "Erc20TokenTx",
+                "EstFeeAt",
+                "EthereumTx",
+                "ExpiredAt",
+                "ID",
+                "InChainTx",
+                "IncognitoAmount",
+                "IncognitoTx",
+                "IncognitoTxToPayOutsideChainFee",
+                "Memo",
+                "Network",
+                "Note",
+                "OutChainPrivacyFee",
+                "OutChainTokenFee",
+                "OutChainTx",
+                "PDecimals",
+                "PrivacyFee",
+                "PrivacyTokenAddress",
+                "ReceivedAmount",
+                "RequestedAmount",
+                "Status",
+                "StatusDetail",
+                "StatusMessage",
+                "Symbol",
+                "TokenFee",
+                "TxReceive",
+                "TxRefundBlacklist",
+                "UnifiedReward",
+                "UnifiedStatus",
+                "UpdatedAt",
+                "UserID",
+                "UserPaymentAddress",
+                "WalletAddress"
+            ],
+            "title": "Result"
+        },
+        "UnifiedReward": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Status": {
+                    "type": "integer"
+                },
+                "Amount": {
+                    "type": "integer"
+                },
+                "Reward": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "Amount",
+                "Reward",
+                "Status"
+            ],
+            "title": "UnifiedReward"
+        },
+        "Address": {
+            "type": "string",
+            "enum": [
+                "0x960F5C14b99221f05B0d65a94B703DeDb3f6E5E5",
+                "Deposit from app!"
+            ],
+            "title": "Address"
+        },
+        "Network": {
+            "type": "string",
+            "enum": [
+                "Ethereum"
+            ],
+            "title": "Network"
+        },
+        "PrivacyTokenAddress": {
+            "type": "string",
+            "enum": [
+                "ffd8d42dc40a8d166ea4848baf8b5f6e9fe0e9c30d60062eb7d44a8df9e00854"
+            ],
+            "title": "PrivacyTokenAddress"
+        }
+    }
+ };
+
+ const historyTokenAccountDetailSchemas = {
+    "$id": "historyTokenAccountDetailSchemas",
+    "type": "object", 
+    "$ref": "#/definitions/Welcome3",
+    "definitions": {
+        "Welcome3": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Result": {
+                    "$ref": "#/definitions/Result"
+                },
+                "Error": {
+                    "type": "null"
+                }
+            },
+            "required": [
+                "Error",
+                "Result"
+            ],
+            "title": "Welcome3"
+        },
+        "Result": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "ID": {
+                    "type": "integer"
+                },
+                "UserID": {
+                    "type": "integer"
+                },
+                "Address": {
+                    "type": "string"
+                },
+                "ExpiredAt": {
+                    "type": "string"
+                },
+                "EstFeeAt": {
+                    "type": "null"
+                },
+                "AddressType": {
+                    "type": "integer"
+                },
+                "Status": {
+                    "type": "integer"
+                },
+                "StatusMessage": {
+                    "type": "string"
+                },
+                "StatusDetail": {
+                    "type": "string"
+                },
+                "CurrencyType": {
+                    "type": "integer"
+                },
+                "Network": {
+                    "type": "string"
+                },
+                "WalletAddress": {
+                    "type": "string"
+                },
+                "UserPaymentAddress": {
+                    "type": "string"
+                },
+                "RequestedAmount": {
+                    "type": "string"
+                },
+                "ReceivedAmount": {
+                    "type": "string"
+                },
+                "IncognitoAmount": {
+                    "type": "string"
+                },
+                "EthereumTx": {
+                    "type": "string"
+                },
+                "IncognitoTx": {
+                    "type": "string"
+                },
+                "Erc20TokenTx": {
+                    "type": "string"
+                },
+                "PrivacyTokenAddress": {
+                    "type": "string"
+                },
+                "Erc20TokenAddress": {
+                    "type": "string"
+                },
+                "CreatedAt": {
+                    "type": "string"
+                },
+                "UpdatedAt": {
+                    "type": "string"
+                },
+                "Decentralized": {
+                    "type": "integer"
+                },
+                "OutChainTx": {
+                    "type": "string"
+                },
+                "InChainTx": {
+                    "type": "string"
+                },
+                "TokenFee": {
+                    "type": "string"
+                },
+                "PrivacyFee": {
+                    "type": "string"
+                },
+                "OutChainPrivacyFee": {
+                    "type": "string"
+                },
+                "OutChainTokenFee": {
+                    "type": "string"
+                },
+                "BurnTokenFee": {
+                    "type": "string"
+                },
+                "BurnPrivacyFee": {
+                    "type": "string"
+                },
+                "IncognitoTxToPayOutsideChainFee": {
+                    "type": "string"
+                },
+                "Note": {
+                    "type": "string"
+                },
+                "Memo": {
+                    "type": "string"
+                },
+                "TxReceive": {
+                    "type": "string"
+                },
+                "UnifiedStatus": {
+                    "type": "null"
+                },
+                "UnifiedReward": {
+                    "type": "null"
+                },
+                "Decimals": {
+                    "type": "integer"
+                },
+                "PDecimals": {
+                    "type": "integer"
+                },
+                "Symbol": {
+                    "type": "string"
+                },
+                "TxRefundBlacklist": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "Address",
+                "AddressType",
+                "BurnPrivacyFee",
+                "BurnTokenFee",
+                "CreatedAt",
+                "CurrencyType",
+                "Decentralized",
+                "Decimals",
+                "Erc20TokenAddress",
+                "Erc20TokenTx",
+                "EstFeeAt",
+                "EthereumTx",
+                "ExpiredAt",
+                "ID",
+                "InChainTx",
+                "IncognitoAmount",
+                "IncognitoTx",
+                "IncognitoTxToPayOutsideChainFee",
+                "Memo",
+                "Network",
+                "Note",
+                "OutChainPrivacyFee",
+                "OutChainTokenFee",
+                "OutChainTx",
+                "PDecimals",
+                "PrivacyFee",
+                "PrivacyTokenAddress",
+                "ReceivedAmount",
+                "RequestedAmount",
+                "Status",
+                "StatusDetail",
+                "StatusMessage",
+                "Symbol",
+                "TokenFee",
+                "TxReceive",
+                "TxRefundBlacklist",
+                "UnifiedReward",
+                "UnifiedStatus",
+                "UpdatedAt",
+                "UserID",
+                "UserPaymentAddress",
+                "WalletAddress"
+            ],
+            "title": "Result"
+        }
+    }
+};
+
+
  module.exports = {
      getOtaGenerateSchemas,
      authenProfileSchemas,
@@ -1550,5 +2066,8 @@
      curveHistorySchemas,
      tradeRewardHistorySchemas,
      uniswapRewardHistorySchemas,
-     curveRewardHistorySchemas
+     curveRewardHistorySchemas,
+     generateShieldAddressSchemas,
+     historyTokenAccountSchemas,
+     historyTokenAccountDetailSchemas
  }
