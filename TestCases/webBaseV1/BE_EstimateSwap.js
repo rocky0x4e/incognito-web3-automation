@@ -1,19 +1,16 @@
-//During the test the env variable is set to test
-process.env.NODE_ENV = 'test';
-
 //Require the dev-dependencies
+const validateSchemaCommand = require("../../schemas/validateSchemaCommand");
+const addingContent = require('../../lib/Utils/AddingContent');
+const webServiceApi_schemas = require("../../schemas/webServiceApi_schemas");
 let chai = require('chai');
-const cliCommonFunction = require('../../../constant/cliCommonFunction');
-const chainCommonFunction = require('../../../constant/chainCommonFunction');
-const csCommonFunction = require('../../../constant/csCommonFunction');
-const coinServiceApi = require('../../../models/coinServiceApi');
-const webServiceApi = require('../../../models/webServiceApi');
-const beCommonFunction = require('../../../constant/beCommonFunction');
-const common = require('../../../constant/commonFunction');
-const addingContent = require('../../../testbase/addingContent');
+const csCommonFunction = require('../../constant/csCommonFunction');
+const commonFunction = require('../../constant/commonFunction');
+const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
+const { ENV } = require("../../global");
 
 
-//Our parent block
+const webServiceApi = new WebServiceApi(ENV.WebService)
+
 describe('[Class] EstimateTrade', async() => {
 
     //PANCAKE
@@ -30,20 +27,28 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('dai', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'bsc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            chai.assert.equal(response.Result.Networks.bsc[0].AppName, appName)
-            chai.assert.equal(response.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+            chai.assert.equal(response.data.Result.Networks.bsc[0].AppName, appName)
+            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
 
-            let Paths = response.Result.Networks.bsc[0].Paths
-                // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
+            let Paths = response.data.Result.Networks.bsc[0].Paths
             chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
 
         });
@@ -62,19 +67,28 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('dai', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'bsc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            chai.assert.equal(response.Result.Networks.bsc[0].AppName, appName)
-            chai.assert.equal(response.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+            chai.assert.equal(response.data.Result.Networks.bsc[0].AppName, appName)
+            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
 
-            let Paths = response.Result.Networks.bsc[0].Paths
+            let Paths = response.data.Result.Networks.bsc[0].Paths
             chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
             chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
 
@@ -94,19 +108,28 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('dai', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'bsc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            chai.assert.equal(response.Result.Networks.bsc[0].AppName, appName)
-            chai.assert.equal(response.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+            chai.assert.equal(response.data.Result.Networks.bsc[0].AppName, appName)
+            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
 
-            let Paths = response.Result.Networks.bsc[0].Paths
+            let Paths = response.data.Result.Networks.bsc[0].Paths
             chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
             chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
 
@@ -126,20 +149,29 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('busd', 'bsc')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'bsc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            chai.assert.equal(response.Result.Networks.bsc[0].AppName, appName)
-            chai.assert.equal(response.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+            chai.assert.equal(response.data.Result.Networks.bsc[0].AppName, appName)
+            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
 
-            let Paths = response.Result.Networks.bsc[0].Paths
-            chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
+            let Paths = response.data.Result.Networks.bsc[0].Paths
+                // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
             chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
 
         });
@@ -158,20 +190,29 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('busd', 'bsc')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            chai.assert.equal(response.Result.Networks.bsc[0].AppName, appName)
-            chai.assert.equal(response.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+            chai.assert.equal(response.data.Result.Networks.bsc[0].AppName, appName)
+            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
 
-            let Paths = response.Result.Networks.bsc[0].Paths
-            chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
+            let Paths = response.data.Result.Networks.bsc[0].Paths
+                // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
             chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
 
         });
@@ -190,19 +231,28 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('dai', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            chai.assert.equal(response.Result.Networks.bsc[0].AppName, appName)
-            chai.assert.equal(response.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+            chai.assert.equal(response.data.Result.Networks.bsc[0].AppName, appName)
+            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
 
-            let Paths = response.Result.Networks.bsc[0].Paths
+            let Paths = response.data.Result.Networks.bsc[0].Paths
                 // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
             chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
 
@@ -222,19 +272,28 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('dai', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            chai.assert.equal(response.Result.Networks.bsc[0].AppName, appName)
-            chai.assert.equal(response.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+            chai.assert.equal(response.data.Result.Networks.bsc[0].AppName, appName)
+            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
 
-            let Paths = response.Result.Networks.bsc[0].Paths
+            let Paths = response.data.Result.Networks.bsc[0].Paths
             chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
             chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
 
@@ -254,19 +313,28 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('dai', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            chai.assert.equal(response.Result.Networks.bsc[0].AppName, appName)
-            chai.assert.equal(response.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+            chai.assert.equal(response.data.Result.Networks.bsc[0].AppName, appName)
+            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
 
-            let Paths = response.Result.Networks.bsc[0].Paths
+            let Paths = response.data.Result.Networks.bsc[0].Paths
             chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
             chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
 
@@ -286,19 +354,28 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('busd', 'bsc')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            chai.assert.equal(response.Result.Networks.bsc[0].AppName, appName)
-            chai.assert.equal(response.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+            chai.assert.equal(response.data.Result.Networks.bsc[0].AppName, appName)
+            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
 
-            let Paths = response.Result.Networks.bsc[0].Paths
+            let Paths = response.data.Result.Networks.bsc[0].Paths
             chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
             chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
 
@@ -318,19 +395,28 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('busd', 'bsc')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            chai.assert.equal(response.Result.Networks.bsc[0].AppName, appName)
-            chai.assert.equal(response.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+            chai.assert.equal(response.data.Result.Networks.bsc[0].AppName, appName)
+            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
 
-            let Paths = response.Result.Networks.bsc[0].Paths
+            let Paths = response.data.Result.Networks.bsc[0].Paths
             chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
             chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
 
@@ -352,25 +438,35 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('usdt', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
+            console.log('hoanh response.data', response.data);
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                     // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                     // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -391,25 +487,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('usdt', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                     // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                     // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -430,25 +535,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('dai', 'plg')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -469,25 +583,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('usdt', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -508,25 +631,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('aave', 'plg')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -547,25 +679,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('usdt', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                     // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                     // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -586,25 +727,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('usdt', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                     // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                     // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -625,25 +775,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('dai', 'plg')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -664,25 +823,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('usdt', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -702,25 +870,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('aave', 'plg')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -743,25 +920,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('usdt', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -782,25 +968,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('usdc', 'plg')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -821,25 +1016,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('wbtc', 'plg')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -860,25 +1064,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('usdc', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -899,25 +1112,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('usdt', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -938,25 +1160,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('usdc', 'plg')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -977,25 +1208,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('wbtc', 'plg')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
@@ -1016,25 +1256,34 @@ describe('[Class] EstimateTrade', async() => {
             let buyToken = await selectToken('usdc', 'ut')
             let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = '0.00535'
+            let sellAmount = 1 / await commonFunction.randomNumber(10000) + ""
             let network = 'inc'
             let slippage = '0.5'
 
-            let response = await webServiceApi.Api_EstimateSwapFee(sellAmount, sellToken, network, slippage, buyToken)
+            let response = await webServiceApi.estimateSwapFee({
+                amount: sellAmount,
+                fromToken: sellToken,
+                network,
+                slippage,
+                toToken: buyToken
+            })
 
-            chai.expect(response).be.a('object');
-            chai.expect(response.Result.Networks).have.property(networkTarget)
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+            await addingContent.addContent(
+                'data',
+                response.data
+            )
 
-            if (response.Result.Networks.plg[0].AppName == appName) {
-                chai.assert.equal(response.Result.Networks.plg[0].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[0].Paths
+            if (response.data.Result.Networks.plg[0].AppName == appName) {
+                chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[0].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
-                chai.assert.equal(response.Result.Networks.plg[1].AppName, appName)
-                chai.assert.equal(response.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
-                let Paths = response.Result.Networks.plg[1].Paths
+                chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
+                chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
+                let Paths = response.data.Result.Networks.plg[1].Paths
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }

@@ -3,17 +3,15 @@ process.env.NODE_ENV = 'test';
 
 //Require the dev-dependencies
 let chai = require('chai');
-const cliCommonFunction = require('../../../constant/cliCommonFunction');
-const chainCommonFunction = require('../../../constant/chainCommonFunction');
-const csCommonFunction = require('../../../constant/csCommonFunction');
-const coinServiceApi = require('../../../models/coinServiceApi');
-const webServiceApi = require('../../../models/webServiceApi');
-const beCommonFunction = require('../../../constant/beCommonFunction');
-const common = require('../../../constant/commonFunction');
-const addingContent = require('../../../testbase/addingContent');
+const csCommonFunction = require('../../constant/csCommonFunction');
+const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
+const { ENV } = require("../../global");
+const webServiceApi_schemas = require("../../schemas/webServiceApi_schemas");
+const validateSchemaCommand = require("../../schemas/validateSchemaCommand");
 
 
-//Our parent block
+let webServiceApi = new WebServiceApi(ENV.WebService)
+    //Our parent block
 describe('[Class] EvmShield', async() => {
 
     let paymentAddress = '12sjGWHkv1otCQkQ7se1Zr8yjdMQtVCJcvY5tJD5Ea6PjnDrShhuNTK5WZsbnK6ABAAUPUwtcWpbcpgkC3JGYd7QhFME4eSjEAr5Ff75ZikmevabbtsnAE13oq5iNZS627iZVgKuZE3PgTwjhxAi'
@@ -25,32 +23,22 @@ describe('[Class] EvmShield', async() => {
             let network = 'eth'
             let privacyTokenAddress = await selectToken('eth', 'eth')
 
-            let response = await webServiceApi.Api_GenShieldAddress(
+            let response = await webServiceApi.genShieldAddress({
                 addressType,
                 network,
                 privacyTokenAddress,
-                paymentAddress)
+                walletAddress: paymentAddress
+            })
 
             //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genShieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('Address')
-            chai.assert.notEqual(response.Result.Address, '')
-
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.assert.equal(response.Result.Decentralized, 2)
-
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.assert.notEqual(response.Result.EstimateFee, 0)
-
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.assert.equal(response.Result.ExpiredAt, '0001-01-01T00:00:00Z')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, 0)
-
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.assert.equal(response.Result.TokenFee, 0)
+            chai.assert.notEqual(response.data.Result.Address, '')
+            chai.assert.equal(response.data.Result.Decentralized, 2)
+            chai.assert.notEqual(response.data.Result.EstimateFee, 0)
+            chai.assert.equal(response.data.Result.ExpiredAt, '0001-01-01T00:00:00Z')
+            chai.assert.notEqual(response.data.Result.ID, 0)
+            chai.assert.equal(response.data.Result.TokenFee, 0)
         });
     });
 
@@ -61,32 +49,24 @@ describe('[Class] EvmShield', async() => {
             let network = 'eth'
             let privacyTokenAddress = await selectToken('usdt', 'eth')
 
-            let response = await webServiceApi.Api_GenShieldAddress(
+            let response = await webServiceApi.genShieldAddress({
                 addressType,
                 network,
                 privacyTokenAddress,
-                paymentAddress)
+                walletAddress: paymentAddress
+            })
 
             //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genShieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('Address')
-            chai.assert.notEqual(response.Result.Address, '')
+            //verify
 
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.assert.equal(response.Result.Decentralized, 2)
-
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.assert.notEqual(response.Result.EstimateFee, 0)
-
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.assert.equal(response.Result.ExpiredAt, '0001-01-01T00:00:00Z')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, 0)
-
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.assert.notEqual(response.Result.TokenFee, 0)
+            chai.assert.notEqual(response.data.Result.Address, '')
+            chai.assert.equal(response.data.Result.Decentralized, 2)
+            chai.assert.notEqual(response.data.Result.EstimateFee, 0)
+            chai.assert.equal(response.data.Result.ExpiredAt, '0001-01-01T00:00:00Z')
+            chai.assert.notEqual(response.data.Result.ID, 0)
+            chai.assert.notEqual(response.data.Result.TokenFee, 0)
         });
     });
 
@@ -97,32 +77,22 @@ describe('[Class] EvmShield', async() => {
             let network = 'eth'
             let privacyTokenAddress = await selectToken('zum', 'eth')
 
-            let response = await webServiceApi.Api_GenShieldAddress(
+            let response = await webServiceApi.genShieldAddress({
                 addressType,
                 network,
                 privacyTokenAddress,
-                paymentAddress)
+                walletAddress: paymentAddress
+            })
 
             //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genShieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('Address')
-            chai.assert.notEqual(response.Result.Address, '')
-
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.assert.equal(response.Result.Decentralized, 2)
-
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.assert.notEqual(response.Result.EstimateFee, 0)
-
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.assert.equal(response.Result.ExpiredAt, '0001-01-01T00:00:00Z')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, 0)
-
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.assert.notEqual(response.Result.TokenFee, 0)
+            chai.assert.notEqual(response.data.Result.Address, '')
+            chai.assert.equal(response.data.Result.Decentralized, 2)
+            chai.assert.notEqual(response.data.Result.EstimateFee, 0)
+            chai.assert.equal(response.data.Result.ExpiredAt, '0001-01-01T00:00:00Z')
+            chai.assert.notEqual(response.data.Result.ID, 0)
+            chai.assert.notEqual(response.data.Result.TokenFee, 0)
         });
     });
 
@@ -133,32 +103,23 @@ describe('[Class] EvmShield', async() => {
             let network = 'bsc'
             let privacyTokenAddress = await selectToken('bnb', 'bsc')
 
-            let response = await webServiceApi.Api_GenShieldAddress(
+            let response = await webServiceApi.genShieldAddress({
                 addressType,
                 network,
                 privacyTokenAddress,
-                paymentAddress)
+                walletAddress: paymentAddress
+            })
 
             //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genShieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('Address')
-            chai.assert.notEqual(response.Result.Address, '')
 
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.assert.equal(response.Result.Decentralized, 3)
-
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.assert.equal(response.Result.ExpiredAt, '0001-01-01T00:00:00Z')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, 0)
-
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.assert.notEqual(response.Result.EstimateFee, 0)
-
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.assert.equal(response.Result.TokenFee, 0)
+            chai.assert.notEqual(response.data.Result.Address, '')
+            chai.assert.equal(response.data.Result.Decentralized, 3)
+            chai.assert.equal(response.data.Result.ExpiredAt, '0001-01-01T00:00:00Z')
+            chai.assert.notEqual(response.data.Result.ID, 0)
+            chai.assert.notEqual(response.data.Result.EstimateFee, 0)
+            chai.assert.equal(response.data.Result.TokenFee, 0)
         });
     });
 
@@ -169,32 +130,22 @@ describe('[Class] EvmShield', async() => {
             let network = 'bsc'
             let privacyTokenAddress = await selectToken('usdc', 'bsc')
 
-            let response = await webServiceApi.Api_GenShieldAddress(
+            let response = await webServiceApi.genShieldAddress({
                 addressType,
                 network,
                 privacyTokenAddress,
-                paymentAddress)
+                walletAddress: paymentAddress
+            })
 
             //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genShieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('Address')
-            chai.assert.notEqual(response.Result.Address, '')
-
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.assert.equal(response.Result.Decentralized, 3)
-
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.assert.equal(response.Result.ExpiredAt, '0001-01-01T00:00:00Z')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, 0)
-
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.assert.notEqual(response.Result.EstimateFee, 0)
-
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.assert.notEqual(response.Result.TokenFee, 0)
+            chai.assert.notEqual(response.data.Result.Address, '')
+            chai.assert.equal(response.data.Result.Decentralized, 3)
+            chai.assert.equal(response.data.Result.ExpiredAt, '0001-01-01T00:00:00Z')
+            chai.assert.notEqual(response.data.Result.ID, 0)
+            chai.assert.notEqual(response.data.Result.EstimateFee, 0)
+            chai.assert.notEqual(response.data.Result.TokenFee, 0)
         });
     });
 
@@ -205,32 +156,22 @@ describe('[Class] EvmShield', async() => {
             let network = 'bsc'
             let privacyTokenAddress = await selectToken('alice', 'bsc')
 
-            let response = await webServiceApi.Api_GenShieldAddress(
+            let response = await webServiceApi.genShieldAddress({
                 addressType,
                 network,
                 privacyTokenAddress,
-                paymentAddress)
+                walletAddress: paymentAddress
+            })
 
             //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genShieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('Address')
-            chai.assert.notEqual(response.Result.Address, '')
-
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.assert.equal(response.Result.Decentralized, 3)
-
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.assert.equal(response.Result.ExpiredAt, '0001-01-01T00:00:00Z')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, 0)
-
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.assert.notEqual(response.Result.EstimateFee, 0)
-
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.assert.notEqual(response.Result.TokenFee, 0)
+            chai.assert.notEqual(response.data.Result.Address, '')
+            chai.assert.equal(response.data.Result.Decentralized, 3)
+            chai.assert.equal(response.data.Result.ExpiredAt, '0001-01-01T00:00:00Z')
+            chai.assert.notEqual(response.data.Result.ID, 0)
+            chai.assert.notEqual(response.data.Result.EstimateFee, 0)
+            chai.assert.notEqual(response.data.Result.TokenFee, 0)
         });
     });
 
@@ -241,32 +182,22 @@ describe('[Class] EvmShield', async() => {
             let network = 'plg'
             let privacyTokenAddress = await selectToken('matic', 'plg')
 
-            let response = await webServiceApi.Api_GenShieldAddress(
+            let response = await webServiceApi.genShieldAddress({
                 addressType,
                 network,
                 privacyTokenAddress,
-                paymentAddress)
+                walletAddress: paymentAddress
+            })
 
             //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genShieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('Address')
-            chai.assert.notEqual(response.Result.Address, '')
-
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.assert.equal(response.Result.Decentralized, 4)
-
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.assert.equal(response.Result.ExpiredAt, '0001-01-01T00:00:00Z')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, 0)
-
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.assert.notEqual(response.Result.EstimateFee, 0)
-
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.assert.equal(response.Result.TokenFee, 0)
+            chai.assert.notEqual(response.data.Result.Address, '')
+            chai.assert.equal(response.data.Result.Decentralized, 4)
+            chai.assert.equal(response.data.Result.ExpiredAt, '0001-01-01T00:00:00Z')
+            chai.assert.notEqual(response.data.Result.ID, 0)
+            chai.assert.notEqual(response.data.Result.EstimateFee, 0)
+            chai.assert.equal(response.data.Result.TokenFee, 0)
         });
     });
 
@@ -277,32 +208,21 @@ describe('[Class] EvmShield', async() => {
             let network = 'plg'
             let privacyTokenAddress = await selectToken('dai', 'plg')
 
-            let response = await webServiceApi.Api_GenShieldAddress(
+            let response = await webServiceApi.genShieldAddress({
                 addressType,
                 network,
                 privacyTokenAddress,
-                paymentAddress)
+                walletAddress: paymentAddress
+            })
 
-            //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genShieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('Address')
-            chai.assert.notEqual(response.Result.Address, '')
-
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.assert.equal(response.Result.Decentralized, 4)
-
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.assert.equal(response.Result.ExpiredAt, '0001-01-01T00:00:00Z')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, 0)
-
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.assert.notEqual(response.Result.EstimateFee, 0)
-
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.assert.notEqual(response.Result.TokenFee, 0)
+            chai.assert.notEqual(response.data.Result.Address, '')
+            chai.assert.equal(response.data.Result.Decentralized, 4)
+            chai.assert.equal(response.data.Result.ExpiredAt, '0001-01-01T00:00:00Z')
+            chai.assert.notEqual(response.data.Result.ID, 0)
+            chai.assert.notEqual(response.data.Result.EstimateFee, 0)
+            chai.assert.notEqual(response.data.Result.TokenFee, 0)
         });
     });
 
@@ -313,140 +233,96 @@ describe('[Class] EvmShield', async() => {
             let network = 'plg'
             let privacyTokenAddress = await selectToken('mana', 'plg')
 
-            let response = await webServiceApi.Api_GenShieldAddress(
+            let response = await webServiceApi.genShieldAddress({
                 addressType,
                 network,
                 privacyTokenAddress,
-                paymentAddress)
+                walletAddress: paymentAddress
+            })
 
-            //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genShieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('Address')
-            chai.assert.notEqual(response.Result.Address, '')
-
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.assert.equal(response.Result.Decentralized, 4)
-
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.assert.equal(response.Result.ExpiredAt, '0001-01-01T00:00:00Z')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, 0)
-
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.assert.notEqual(response.Result.EstimateFee, 0)
-
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.assert.notEqual(response.Result.TokenFee, 0)
+            chai.assert.notEqual(response.data.Result.Address, '')
+            chai.assert.equal(response.data.Result.Decentralized, 4)
+            chai.assert.equal(response.data.Result.ExpiredAt, '0001-01-01T00:00:00Z')
+            chai.assert.notEqual(response.data.Result.ID, 0)
+            chai.assert.notEqual(response.data.Result.EstimateFee, 0)
+            chai.assert.notEqual(response.data.Result.TokenFee, 0)
         });
     });
 
-    describe('TC007_FTM_Request_Shield_FTM', async() => {
+    describe('TC010_FTM_Request_Shield_FTM', async() => {
         it('STEP_Call_Api_Gen_Shield_Address', async() => {
 
             let addressType = 1
             let network = 'ftm'
             let privacyTokenAddress = await selectToken('ftm', 'ftm')
 
-            let response = await webServiceApi.Api_GenShieldAddress(
+            let response = await webServiceApi.genShieldAddress({
                 addressType,
                 network,
                 privacyTokenAddress,
-                paymentAddress)
+                walletAddress: paymentAddress
+            })
 
-            //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genShieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('Address')
-            chai.assert.notEqual(response.Result.Address, '')
-
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.assert.equal(response.Result.Decentralized, 5)
-
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.assert.equal(response.Result.ExpiredAt, '0001-01-01T00:00:00Z')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, 0)
-
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.assert.notEqual(response.Result.EstimateFee, 0)
-
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.assert.equal(response.Result.TokenFee, 0)
+            chai.assert.notEqual(response.data.Result.Address, '')
+            chai.assert.equal(response.data.Result.Decentralized, 5)
+            chai.assert.equal(response.data.Result.ExpiredAt, '0001-01-01T00:00:00Z')
+            chai.assert.notEqual(response.data.Result.ID, 0)
+            chai.assert.notEqual(response.data.Result.EstimateFee, 0)
+            chai.assert.equal(response.data.Result.TokenFee, 0)
         });
     });
 
-    describe('TC008_FTM_Request_Shield_USDC', async() => {
+    describe('TC011_FTM_Request_Shield_USDC', async() => {
         it('STEP_Call_Api_Gen_Shield_Address', async() => {
 
             let addressType = 1
             let network = 'ftm'
             let privacyTokenAddress = await selectToken('usdc', 'ftm')
 
-            let response = await webServiceApi.Api_GenShieldAddress(
+            let response = await webServiceApi.genShieldAddress({
                 addressType,
                 network,
                 privacyTokenAddress,
-                paymentAddress)
+                walletAddress: paymentAddress
+            })
 
-            //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genShieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('Address')
-            chai.assert.notEqual(response.Result.Address, '')
-
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.assert.equal(response.Result.Decentralized, 5)
-
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.assert.equal(response.Result.ExpiredAt, '0001-01-01T00:00:00Z')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, 0)
-
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.assert.notEqual(response.Result.EstimateFee, 0)
-
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.assert.notEqual(response.Result.TokenFee, 0)
+            chai.assert.notEqual(response.data.Result.Address, '')
+            chai.assert.equal(response.data.Result.Decentralized, 5)
+            chai.assert.equal(response.data.Result.ExpiredAt, '0001-01-01T00:00:00Z')
+            chai.assert.notEqual(response.data.Result.ID, 0)
+            chai.assert.notEqual(response.data.Result.EstimateFee, 0)
+            chai.assert.notEqual(response.data.Result.TokenFee, 0)
         });
     });
 
-    describe('TC009_PLG_Request_Shield_AVAX', async() => {
+    describe('TC012_PLG_Request_Shield_AVAX', async() => {
         it('STEP_Call_Api_Gen_Shield_Address', async() => {
 
             let addressType = 1
             let network = 'ftm'
             let privacyTokenAddress = await selectToken('avax', 'ftm')
 
-            let response = await webServiceApi.Api_GenShieldAddress(
+            let response = await webServiceApi.genShieldAddress({
                 addressType,
                 network,
                 privacyTokenAddress,
-                paymentAddress)
+                walletAddress: paymentAddress
+            })
 
-            //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genShieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('Address')
-            chai.assert.notEqual(response.Result.Address, '')
-
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.assert.equal(response.Result.Decentralized, 5)
-
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.assert.equal(response.Result.ExpiredAt, '0001-01-01T00:00:00Z')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, 0)
-
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.assert.notEqual(response.Result.EstimateFee, 0)
-
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.assert.notEqual(response.Result.TokenFee, 0)
+            chai.assert.notEqual(response.data.Result.Address, '')
+            chai.assert.equal(response.data.Result.Decentralized, 5)
+            chai.assert.equal(response.data.Result.ExpiredAt, '0001-01-01T00:00:00Z')
+            chai.assert.notEqual(response.data.Result.ID, 0)
+            chai.assert.notEqual(response.data.Result.EstimateFee, 0)
+            chai.assert.notEqual(response.data.Result.TokenFee, 0)
         });
     });
 

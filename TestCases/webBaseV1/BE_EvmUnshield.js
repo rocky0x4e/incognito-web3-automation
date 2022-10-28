@@ -3,24 +3,22 @@ process.env.NODE_ENV = 'test';
 
 //Require the dev-dependencies
 let chai = require('chai');
-const cliCommonFunction = require('../../../constant/cliCommonFunction');
-const chainCommonFunction = require('../../../constant/chainCommonFunction');
-const csCommonFunction = require('../../../constant/csCommonFunction');
-const coinServiceApi = require('../../../models/coinServiceApi');
-const webServiceApi = require('../../../models/webServiceApi');
-const beCommonFunction = require('../../../constant/beCommonFunction');
-const common = require('../../../constant/commonFunction');
+const csCommonFunction = require('../../constant/csCommonFunction');
+const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
+const { ENV } = require("../../global");
+const webServiceApi_schemas = require("../../schemas/webServiceApi_schemas");
+const validateSchemaCommand = require("../../schemas/validateSchemaCommand");
 const _ = require('lodash');
 
+let webServiceApi = new WebServiceApi(ENV.WebService)
 
-//Our parent block
 describe('[Class] EvmUnshield', async() => {
 
     let paymentAddress = '12sjGWHkv1otCQkQ7se1Zr8yjdMQtVCJcvY5tJD5Ea6PjnDrShhuNTK5WZsbnK6ABAAUPUwtcWpbcpgkC3JGYd7QhFME4eSjEAr5Ff75ZikmevabbtsnAE13oq5iNZS627iZVgKuZE3PgTwjhxAi'
     let addressOutchain = '0xDA0e0aDa73F37744803cb481b41C6d48265C06C8'
 
     describe('TC001_ETH_Request_Unshield_ETH_UT', async() => {
-        it('STEP_Call_Api_Gen_Shield_Address', async() => {
+        it('STEP_CallApi', async() => {
 
             let addressType = 1
             let incognitoAmount = '1200000'
@@ -37,35 +35,28 @@ describe('[Class] EvmUnshield', async() => {
                 privacyTokenAddress = childTokenAddress
             }
 
-            let response = await webServiceApi.Api_GenUnshieldAddress(
+            let response = await webServiceApi.genUnshieldAddress({
                 network,
                 requestedAmount,
                 addressType,
                 incognitoAmount,
-                addressOutchain,
-                privacyTokenAddress,
                 paymentAddress,
-                unifiedTokenID)
+                privacyTokenAddress,
+                walletAddress: paymentAddress,
+                unifiedTokenID
+            })
 
-            //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genUnshieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('FeeAddress')
-            chai.assert.notEqual(response.Result.FeeAddress, '')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, '')
-
-            chai.expect(response.Result).have.property('TokenFees')
-            chai.expect(response.Result.TokenFees).have.property('Level1')
-            chai.assert.notEqual(response.Result.TokenFees.Level1, '')
-
-            chai.assert.equal(response.Error, null)
+            chai.assert.notEqual(response.data.Result.FeeAddress, '')
+            chai.assert.notEqual(response.data.Result.ID, '')
+            chai.assert.notEqual(response.data.Result.TokenFees.Level1, '')
+            chai.assert.equal(response.data.Error, null)
         });
     });
 
     describe('TC002_ETH_Request_Unshield_ETH_ETH', async() => {
-        it('STEP_Call_Api_Gen_Shield_Address', async() => {
+        it('STEP_CallApi', async() => {
 
             let addressType = 1
             let incognitoAmount = '1200000'
@@ -82,35 +73,28 @@ describe('[Class] EvmUnshield', async() => {
                 privacyTokenAddress = childTokenAddress
             }
 
-            let response = await webServiceApi.Api_GenUnshieldAddress(
+            let response = await webServiceApi.genUnshieldAddress({
                 network,
                 requestedAmount,
                 addressType,
                 incognitoAmount,
-                addressOutchain,
-                privacyTokenAddress,
                 paymentAddress,
-                unifiedTokenID)
+                privacyTokenAddress,
+                walletAddress: paymentAddress,
+                unifiedTokenID
+            })
 
-            //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genUnshieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('FeeAddress')
-            chai.assert.notEqual(response.Result.FeeAddress, '')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, '')
-
-            chai.expect(response.Result).have.property('TokenFees')
-            chai.expect(response.Result.TokenFees).have.property('Level1')
-            chai.assert.notEqual(response.Result.TokenFees.Level1, '')
-
-            chai.assert.equal(response.Error, null)
+            chai.assert.notEqual(response.data.Result.FeeAddress, '')
+            chai.assert.notEqual(response.data.Result.ID, '')
+            chai.assert.notEqual(response.data.Result.TokenFees.Level1, '')
+            chai.assert.equal(response.data.Error, null)
         });
     });
 
     describe('TC003_ETH_Request_Unshield_USDT_UT', async() => {
-        it('STEP_Call_Api_Gen_Shield_Address', async() => {
+        it('STEP_CallApi', async() => {
 
             let addressType = 1
             let incognitoAmount = '1200000'
@@ -127,35 +111,28 @@ describe('[Class] EvmUnshield', async() => {
                 privacyTokenAddress = childTokenAddress
             }
 
-            let response = await webServiceApi.Api_GenUnshieldAddress(
+            let response = await webServiceApi.genUnshieldAddress({
                 network,
                 requestedAmount,
                 addressType,
                 incognitoAmount,
-                addressOutchain,
-                privacyTokenAddress,
                 paymentAddress,
-                unifiedTokenID)
+                privacyTokenAddress,
+                walletAddress: paymentAddress,
+                unifiedTokenID
+            })
 
-            //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genUnshieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('FeeAddress')
-            chai.assert.notEqual(response.Result.FeeAddress, '')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, '')
-
-            chai.expect(response.Result).have.property('TokenFees')
-            chai.expect(response.Result.TokenFees).have.property('Level1')
-            chai.assert.notEqual(response.Result.TokenFees.Level1, '')
-
-            chai.assert.equal(response.Error, null)
+            chai.assert.notEqual(response.data.Result.FeeAddress, '')
+            chai.assert.notEqual(response.data.Result.ID, '')
+            chai.assert.notEqual(response.data.Result.TokenFees.Level1, '')
+            chai.assert.equal(response.data.Error, null)
         });
     });
 
     describe('TC004_ETH_Request_Unshield_USDT_ETH', async() => {
-        it('STEP_Call_Api_Gen_Shield_Address', async() => {
+        it('STEP_CallApi', async() => {
 
             let addressType = 1
             let incognitoAmount = '1200000'
@@ -172,35 +149,28 @@ describe('[Class] EvmUnshield', async() => {
                 privacyTokenAddress = childTokenAddress
             }
 
-            let response = await webServiceApi.Api_GenUnshieldAddress(
+            let response = await webServiceApi.genUnshieldAddress({
                 network,
                 requestedAmount,
                 addressType,
                 incognitoAmount,
-                addressOutchain,
-                privacyTokenAddress,
                 paymentAddress,
-                unifiedTokenID)
+                privacyTokenAddress,
+                walletAddress: paymentAddress,
+                unifiedTokenID
+            })
 
-            //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genUnshieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('FeeAddress')
-            chai.assert.notEqual(response.Result.FeeAddress, '')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, '')
-
-            chai.expect(response.Result).have.property('TokenFees')
-            chai.expect(response.Result.TokenFees).have.property('Level1')
-            chai.assert.notEqual(response.Result.TokenFees.Level1, '')
-
-            chai.assert.equal(response.Error, null)
+            chai.assert.notEqual(response.data.Result.FeeAddress, '')
+            chai.assert.notEqual(response.data.Result.ID, '')
+            chai.assert.notEqual(response.data.Result.TokenFees.Level1, '')
+            chai.assert.equal(response.data.Error, null)
         });
     });
 
     describe('TC005_ETH_Request_Unshield_AAVE_ETH', async() => {
-        it('STEP_Call_Api_Gen_Shield_Address', async() => {
+        it('STEP_CallApi', async() => {
 
             let addressType = 1
             let incognitoAmount = '1200000'
@@ -217,35 +187,28 @@ describe('[Class] EvmUnshield', async() => {
                 privacyTokenAddress = childTokenAddress
             }
 
-            let response = await webServiceApi.Api_GenUnshieldAddress(
+            let response = await webServiceApi.genUnshieldAddress({
                 network,
                 requestedAmount,
                 addressType,
                 incognitoAmount,
-                addressOutchain,
-                privacyTokenAddress,
                 paymentAddress,
-                unifiedTokenID)
+                privacyTokenAddress,
+                walletAddress: paymentAddress,
+                unifiedTokenID
+            })
 
-            //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genUnshieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('FeeAddress')
-            chai.assert.notEqual(response.Result.FeeAddress, '')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, '')
-
-            chai.expect(response.Result).have.property('PrivacyFees')
-            chai.expect(response.Result.PrivacyFees).have.property('Level1')
-            chai.assert.notEqual(response.Result.PrivacyFees.Level1, '')
-
-            chai.assert.equal(response.Error, null)
+            chai.assert.notEqual(response.data.Result.FeeAddress, '')
+            chai.assert.notEqual(response.data.Result.ID, '')
+            chai.assert.notEqual(response.data.Result.PrivacyFees.Level1, '')
+            chai.assert.equal(response.data.Error, null)
         });
     });
 
     describe('TC006_ETH_Request_Unshield_BNB_BSC', async() => {
-        it('STEP_Call_Api_Gen_Shield_Address', async() => {
+        it('STEP_CallApi', async() => {
 
             let addressType = 2
             let incognitoAmount = '1200000'
@@ -262,35 +225,28 @@ describe('[Class] EvmUnshield', async() => {
                 privacyTokenAddress = childTokenAddress
             }
 
-            let response = await webServiceApi.Api_GenUnshieldAddress(
+            let response = await webServiceApi.genUnshieldAddress({
                 network,
                 requestedAmount,
                 addressType,
                 incognitoAmount,
-                addressOutchain,
-                privacyTokenAddress,
                 paymentAddress,
-                unifiedTokenID)
+                privacyTokenAddress,
+                walletAddress: paymentAddress,
+                unifiedTokenID
+            })
 
-            //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genUnshieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('FeeAddress')
-            chai.assert.notEqual(response.Result.FeeAddress, '')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, '')
-
-            chai.expect(response.Result).have.property('TokenFees')
-            chai.expect(response.Result.TokenFees).have.property('Level1')
-            chai.assert.notEqual(response.Result.TokenFees.Level1, '')
-
-            chai.assert.equal(response.Error, null)
+            chai.assert.notEqual(response.data.Result.FeeAddress, '')
+            chai.assert.notEqual(response.data.Result.ID, '')
+            chai.assert.notEqual(response.data.Result.TokenFees.Level1, '')
+            chai.assert.equal(response.data.Error, null)
         });
     });
 
     describe('TC007_ETH_Request_Unshield_USDC_UT', async() => {
-        it('STEP_Call_Api_Gen_Shield_Address', async() => {
+        it('STEP_CallApi', async() => {
 
             let addressType = 2
             let incognitoAmount = '1200000'
@@ -307,35 +263,28 @@ describe('[Class] EvmUnshield', async() => {
                 privacyTokenAddress = childTokenAddress
             }
 
-            let response = await webServiceApi.Api_GenUnshieldAddress(
+            let response = await webServiceApi.genUnshieldAddress({
                 network,
                 requestedAmount,
                 addressType,
                 incognitoAmount,
-                addressOutchain,
-                privacyTokenAddress,
                 paymentAddress,
-                unifiedTokenID)
+                privacyTokenAddress,
+                walletAddress: paymentAddress,
+                unifiedTokenID
+            })
 
-            //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genUnshieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('FeeAddress')
-            chai.assert.notEqual(response.Result.FeeAddress, '')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, '')
-
-            chai.expect(response.Result).have.property('TokenFees')
-            chai.expect(response.Result.TokenFees).have.property('Level1')
-            chai.assert.notEqual(response.Result.TokenFees.Level1, '')
-
-            chai.assert.equal(response.Error, null)
+            chai.assert.notEqual(response.data.Result.FeeAddress, '')
+            chai.assert.notEqual(response.data.Result.ID, '')
+            chai.assert.notEqual(response.data.Result.TokenFees.Level1, '')
+            chai.assert.equal(response.data.Error, null)
         });
     });
 
     describe('TC008_ETH_Request_Unshield_USDC_BSC', async() => {
-        it('STEP_Call_Api_Gen_Shield_Address', async() => {
+        it('STEP_CallApi', async() => {
 
             let addressType = 2
             let incognitoAmount = '1200000'
@@ -352,35 +301,28 @@ describe('[Class] EvmUnshield', async() => {
                 privacyTokenAddress = childTokenAddress
             }
 
-            let response = await webServiceApi.Api_GenUnshieldAddress(
+            let response = await webServiceApi.genUnshieldAddress({
                 network,
                 requestedAmount,
                 addressType,
                 incognitoAmount,
-                addressOutchain,
-                privacyTokenAddress,
                 paymentAddress,
-                unifiedTokenID)
+                privacyTokenAddress,
+                walletAddress: paymentAddress,
+                unifiedTokenID
+            })
 
-            //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genUnshieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('FeeAddress')
-            chai.assert.notEqual(response.Result.FeeAddress, '')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, '')
-
-            chai.expect(response.Result).have.property('TokenFees')
-            chai.expect(response.Result.TokenFees).have.property('Level1')
-            chai.assert.notEqual(response.Result.TokenFees.Level1, '')
-
-            chai.assert.equal(response.Error, null)
+            chai.assert.notEqual(response.data.Result.FeeAddress, '')
+            chai.assert.notEqual(response.data.Result.ID, '')
+            chai.assert.notEqual(response.data.Result.TokenFees.Level1, '')
+            chai.assert.equal(response.data.Error, null)
         });
     });
 
     describe('TC009_ETH_Request_Unshield_BUSD_BSC', async() => {
-        it('STEP_Call_Api_Gen_Shield_Address', async() => {
+        it('STEP_CallApi', async() => {
 
             let addressType = 2
             let incognitoAmount = '1200000'
@@ -397,30 +339,23 @@ describe('[Class] EvmUnshield', async() => {
                 privacyTokenAddress = childTokenAddress
             }
 
-            let response = await webServiceApi.Api_GenUnshieldAddress(
+            let response = await webServiceApi.genUnshieldAddress({
                 network,
                 requestedAmount,
                 addressType,
                 incognitoAmount,
-                addressOutchain,
-                privacyTokenAddress,
                 paymentAddress,
-                unifiedTokenID)
+                privacyTokenAddress,
+                walletAddress: paymentAddress,
+                unifiedTokenID
+            })
 
-            //verify
-            chai.expect(response).be.a('object');
+            validateSchemaCommand.validateSchema(webServiceApi_schemas.genUnshieldAddressSchemas, response.data)
 
-            chai.expect(response.Result).have.property('FeeAddress')
-            chai.assert.notEqual(response.Result.FeeAddress, '')
-
-            chai.expect(response.Result).have.property('ID')
-            chai.assert.notEqual(response.Result.ID, '')
-
-            chai.expect(response.Result).have.property('PrivacyFees')
-            chai.expect(response.Result.PrivacyFees).have.property('Level1')
-            chai.assert.notEqual(response.Result.PrivacyFees.Level1, '')
-
-            chai.assert.equal(response.Error, null)
+            chai.assert.notEqual(response.data.Result.FeeAddress, '')
+            chai.assert.notEqual(response.data.Result.ID, '')
+            chai.assert.notEqual(response.data.Result.PrivacyFees.Level1, '')
+            chai.assert.equal(response.data.Error, null)
         });
     });
 });
