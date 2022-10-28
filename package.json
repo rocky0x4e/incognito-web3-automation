@@ -28,7 +28,9 @@
         "table": "^6.8.0",
         "web3": "^1.8.0",
         "axios": "^1.1.2",
-        "winston": "^3.8.2"
+        "winston": "^3.8.2",
+        "ethereumjs-tx": "^2.1.2",
+        "ethereumjs-common": "^1.5.0"
 
     },
     "devDependencies": {
