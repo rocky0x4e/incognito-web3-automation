@@ -136,8 +136,8 @@ async function pickNewShield(WalletAddress,
   
     for (let i = 0 ; i <5; i++){
         let resAfter = await backendApi.historyByTokenAccount(WalletAddress, PrivacyTokenAddress,SignPublicKeyEncode)
-        console.log('resAfter.data.Result.length = ' + resAfter.data.Result.length + '----' + 'resBefore.data.Result.length = ' + resBefore.data.Result.length   )
-        console.log ('Waiting backend listen tx shield .... ')
+        // console.log('resAfter.data.Result.length = ' + resAfter.data.Result.length + '----' + 'resBefore.data.Result.length = ' + resBefore.data.Result.length   )
+        console.log ('[ %d ] Waiting backend listen tx shield .... ', i+1)
         if(resAfter.data.Result.length > resBefore.data.Result.length) {
             const idList = []
             for (const iterator of resAfter.data.Result) {
