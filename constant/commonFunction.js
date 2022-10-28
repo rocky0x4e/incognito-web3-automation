@@ -1706,6 +1706,7 @@ module.exports = {
     getPRVBalanceByPrivateKey,
     sendToken,
     randomNumber,
+    randomNumberInRange,
     getBalanceV2,
     submitCoinserviceOTA,
     submitFullnodeOTA,
