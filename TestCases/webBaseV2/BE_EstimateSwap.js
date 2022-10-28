@@ -77,12 +77,12 @@ describe("[Class] EstimateTrade", async() => {
             chai.assert.equal(response.data.Result.Networks.inc[0].AppName, "pdex");
             chai.assert.equal(response.data.Result.Networks.inc[0].CallContract, "");
             chai.assert.equal(response.data.Result.Networks.inc[0].AmountIn, amount);
-            chai.assert.equal(response.data.Result.Networks.inc[0].AmountInRaw, amount * decimalSellToken);
+            chai.assert.equal(response.data.Result.Networks.inc[0].AmountInRaw, Math.round(amount * decimalSellToken));
             chai.assert.equal(response.data.Result.Networks.inc[0].Fee[0].tokenid, fromToken);
 
             let Paths = response.data.Result.Networks.inc[0].Paths;
             chai.assert.equal(Paths[0], fromToken);
-            chai.assert.equal(Paths[Paths.length - 1], buyToken);
+            chai.assert.equal(Paths[Paths.length - 1], toToken);
             chai.assert.equal(response.Error, null);
         });
     });
@@ -250,7 +250,7 @@ const selectToken = async(symbol, network = null) => {
     if (symbol == "prv") {
         return "0000000000000000000000000000000000000000000000000000000000000004";
     } else {
-        let listToken = await webServiceApi.getListToken();
+        let listToken = await coinServiceApi.getListToken();
         for (const token of listToken) {
             if (token.Symbol.toLowerCase() == symbol && token.CurrencyType == currencyType) {
                 return token.TokenID;
@@ -261,7 +261,7 @@ const selectToken = async(symbol, network = null) => {
 };
 
 const convertNetworkToCurrencyType = async(network, symbol = null) => {
-    network = network.toLowerCase();
+    network = network ? network.toLowerCase() : null;
     let currencyType;
 
     switch (network) {
