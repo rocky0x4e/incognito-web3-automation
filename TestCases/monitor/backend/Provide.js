@@ -9,6 +9,8 @@ let chai = require('chai');
 const { IncAccount } = require('../../../lib/Incognito/Account/Account');
 const { IncNode } = require('../../../lib/Incognito/IncNode');
 const { CoinServiceApi } = require('../../../lib/Incognito/CoinService/CoinServiceApi');
+const { BackendApi } = require('../../../lib/Incognito/BackendApi');
+const { ENV } = require('../../../global');
 
 //init
 let node = new IncNode(ENV.urlFullNode);
@@ -19,18 +21,18 @@ let account = {
     otaKey: null
 };
 let coinServiceApi = new CoinServiceApi();
+var backendApi = new BackendApi(ENV.Backend);
 
-describe('[Class] Balance', () => {
-    describe('Before_InitData', async() => {
-        it('InitData', async() => {
-
+describe('[Class] Provide', () => {
+    describe('Before_InitData', async () => {
+        it('InitData', async () => {
             account.otaKey = sender.otaPrivateK;
             account.privateKey = sender.privateK;
         });
     });
 
-    describe('TC001_GetKeyInfo', async() => {
-        it('CallAPI', async() => {
+    describe('TC001_GetKeyInfo', async () => {
+        it('CallAPI', async () => {
             let response = await coinServiceApi.getKeyInfo({
                 otaKey: account.otaKey
             });
@@ -39,56 +41,58 @@ describe('[Class] Balance', () => {
         });
     });
 
-    describe('TC006_SubmitOtaKey', async() => {
-        it('CallAPI', async() => {
+    describe('TC006_SubmitOtaKey', async () => {
+        it('CallAPI', async () => {
             let response = await coinServiceApi.submitOtaKey(account.otaKey);
         });
-        it('Call RPC', async ()=>{
+        it.skip('Call RPC Authorize Submit Key', async () => {
             // let responseRPC = await
-        })
+            await sender.useRpc.submitKeyEnhanced();
+        });
     });
 
-    describe('TC007_CheckBalancePrvAfterSend', async() => {
-        let amountTransfer = 0;
+    describe('TC007_ProvidePRV', async () => {
+        let amountProvide = 0;
         const PRV = '0000000000000000000000000000000000000000000000000000000000000004';
 
-        it('STEP_InitData', async() => {
-            amountTransfer = await commonFunction.randomNumber(1000);
+        it('STEP_InitData', async () => {
+            amountProvide = await commonFunction.randomNumberInRange(1234000123, 10234000567);
             await sender.initSdkInstance();
             await receiver.initSdkInstance();
         });
 
-        it('STEP_CheckBalanceCli', async() => {
+        it.skip('STEP_CheckBalanceCli', async () => {
             sender.balanceCLI = await sender.useCli.getBalanceAll();
             await addingContent.addContent('sender.getBalanceAll', sender.balanceCLI);
             sender.oldBalance = sender.balanceCLI;
-
-            receiver.balanceCLI = await receiver.useCli.getBalanceAll();
-            await addingContent.addContent('receiver.getBalanceAll', receiver.balanceCLI);
-            receiver.oldBalance = receiver.balanceCLI;
         }).timeout(180000);
 
-        it('STEP_CheckBalanceSdk', async() => {
+        it.skip('STEP_CheckBalanceSdk', async () => {
             sender.balanceSdk = await sender.useSdk.getBalanceAll();
             await addingContent.addContent('sender.balanceSdk', sender.balanceSdk);
-
-            receiver.balanceSdk = await receiver.useSdk.getBalanceAll();
-            await addingContent.addContent('receiver.balanceSdk', receiver.balanceSdk);
         }).timeout(100000);
 
-        it('STEP_Send', async() => {
-            let amountTransfer=10000
-            var proof = await sender.useRpc.makeRawTx(receiver,amountTransfer)
+        it('STEP_Send Provide', async () => {
+            var proof = await sender.useRpc.makeRawTx(receiver, amountProvide);
 
-            console.log(`Send PROOF: ${JSON.stringify(proof)}`);
-            let tx = await sender.useCli.send(receiver, amountTransfer);
-            console.log(`Send PRV : ${tx}`);
+            // proof = JSON.stringify(proof)
+            console.log(`Send PROOF: ${proof.Base58CheckData}`);
+            let tx = proof['TxID'];
+            let provideResponse = await backendApi.provideSubmitRawData({
+                PStakeAddress: sender.paymentK,
+                transactionID: proof.TxID,
+                base58Proof: proof.Base58CheckData,
+                amount: amountProvide
+            });
+            console.log(`provide response: ${JSON.stringify(provideResponse)}`);
 
-            await addingContent.addContent('tx', tx);
-            await chainCommonFunction.waitForTxInBlock(tx);
+            //"SignPublicKeyEncode": "8a59a648a9cf47168e72e348b98d7bb296c67f7dd2d50cc9e043d2feb40b9cc8", zxv
+
+            // await addingContent.addContent('tx', tx);
+            // await chainCommonFunction.waitForTxInBlock(tx);
         }).timeout(50000);
 
-        it('STEP_CompareBalance', async() => {
+        it.skip('STEP_CompareBalance', async () => {
             await commonFunction.sleep(20000);
 
             sender.balanceCLI = await sender.useCli.getBalanceAll();
@@ -112,5 +116,4 @@ describe('[Class] Balance', () => {
             chai.expect(receiver.newBalance[PRV]).to.equal(receiver.oldBalance[PRV] + amountTransfer);
         }).timeout(100000);
     });
-
 });
