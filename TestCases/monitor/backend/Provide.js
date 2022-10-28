@@ -1,5 +1,4 @@
 const config = require('../../../constant/config');
-const listAccount = require('../../../constant/listAccount.json');
 const chainCommonFunction = require('../../../constant/chainCommonFunction');
 const commonFunction = require('../../../constant/commonFunction');
 const validateSchemaCommand = require('../../../schemas/validateSchemaCommand');
@@ -13,6 +12,14 @@ const { BackendApi } = require('../../../lib/Incognito/BackendApi');
 const { ENV } = require('../../../global');
 
 //init
+let listAccount = {
+    "main7": "112t8rniy8xiBEew6XBHHHv45SoSHyGyFKZ1MktSYvVS9phVseJJJA3qgLhD9QwbSvamoeTMca1rT4ih1VCFvy3bbfHXxjJe4q9t3hzvfaDr",
+    "2": "112t8rnY86q7sNHHZo9XEJMWgVds7kM913hc6pxqVrqzSA7LdMVZX6vgttLzGqNeHAjPofB5wHfNeKBGs6NZF7ZPfE5cge8ZC6TgtJPbuLru",
+    "3": "112t8rnaoYv9FppLCA7u84ay2K6ybXcCwykzCLoLT1bD9jXiSpbh8DpTKuaJD8t9Myvk2yR1hHxAu7Ac9gmox1NpKqX5ooTefprXjE1s1nd3",
+    "cjn": "112t8rnXMVKgMhGkU7NdjpgTqekHmdczd7XsMHckZH9xiqm2bVtC7JmyJdnvMAERWtQsq6NrXn7Pw8fyTLW3DBdi56M9tCq737gtji5f1CJN",
+    "smb": "112t8rnX2kQQbYdwiDm8eTWiac4xq6ioNgmJk17Z8ft4X5id2HmYe8iPqNtZrj87aKD3bE1UqgP11G1q7AVY3FFMEArkfbUwCr7CR2eDgSmb",
+    "zxv": "112t8rnXVMJJZzfF1naXvfE9nkTKwUwFWFeh8cfEyViG1vpA8A9khJk3mhyB1hDuJ4RbreDTsZpgJK4YcSxdEpXJKMEd8Vmp5UqKWwBcYzxv"
+}
 let node = new IncNode(ENV.urlFullNode);
 let sender = new IncAccount(listAccount['zxv']).attachTo(node);
 let receiver = new IncAccount(listAccount['cjn']).attachTo(node);
