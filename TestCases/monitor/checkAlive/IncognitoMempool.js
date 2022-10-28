@@ -1,7 +1,7 @@
-const { IncNode } = require("../../lib/Incognito/IncNode");
+const { IncNode } = require("../../../lib/Incognito/IncNode");
 const chai = require('chai');
-const { wait } = require("../../lib/Utils/Timer");
-const { addContent } = require("../../lib/Utils/addingContent");
+const { wait } = require("../../../lib/Utils/Timer");
+const { addContent } = require("../../../lib/Utils/AddingContent");
 const { incFullnodes } = require("./data");
 
 async function checkMempool(url) {
