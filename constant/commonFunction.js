@@ -1502,7 +1502,7 @@ const pDexV3SendPRV = async(privateKey, address, amount) => {
             "${privateKey}",
             {
                 "${address}": ${amount}
-            },   
+            },
             5,
             0
         ]
@@ -1609,6 +1609,14 @@ const randomNumber = async(number) => {
     return result
 }
 
+const randomNumberInRange = async(numberMin, numberMax) => {
+    let result = 0
+    while (result == 0) {
+        result = Math.floor(Math.random() * (numberMax - numberMin) + numberMin);
+    }
+    return result
+}
+
 const randomProperty = async(obj) => {
     const keys = Object.keys(obj);
 
@@ -1698,6 +1706,7 @@ module.exports = {
     getPRVBalanceByPrivateKey,
     sendToken,
     randomNumber,
+    randomNumberInRange,
     getBalanceV2,
     submitCoinserviceOTA,
     submitFullnodeOTA,
