@@ -28,7 +28,7 @@ describe('[Class]BEShield', async() => {
 
         it('STEP_genShieldAddressFromBankend', async() => {
 
-            let response = await backendApi.otaGenerate({
+            let response = await backendApi.otaGenerateShield({
                 CurrencyType: currenctType,
                 PaymentAddress: paymentAddress,
                 PrivacyTokenAddress: tokenID,
@@ -67,7 +67,7 @@ describe('[Class]BEShield', async() => {
 
         it('STEP_genShieldAddressFromBankend', async() => {
 
-            let response = await backendApi.otaGenerate({
+            let response = await backendApi.otaGenerateShield({
                 CurrencyType: currenctType,
                 PaymentAddress: paymentAddress,
                 PrivacyTokenAddress: tokenID,
@@ -106,7 +106,7 @@ describe('[Class]BEShield', async() => {
 
         it('STEP_genShieldAddressFromBankend', async() => {
 
-            let response = await backendApi.otaGenerate({
+            let response = await backendApi.otaGenerateShield({
                 CurrencyType: currenctType,
                 PaymentAddress: paymentAddress,
                 PrivacyTokenAddress: tokenID,
@@ -145,7 +145,7 @@ describe('[Class]BEShield', async() => {
 
         it('STEP_genShieldAddressFromBankend', async() => {
 
-            let response = await backendApi.otaGenerate({
+            let response = await backendApi.otaGenerateShield({
                 CurrencyType: currenctType,
                 PaymentAddress: paymentAddress,
                 PrivacyTokenAddress: tokenID,
@@ -184,7 +184,7 @@ describe('[Class]BEShield', async() => {
 
         it('STEP_genShieldAddressFromBankend', async() => {
 
-            let response = await backendApi.otaGenerate({
+            let response = await backendApi.otaGenerateShield({
                 CurrencyType: currenctType,
                 PaymentAddress: paymentAddress,
                 PrivacyTokenAddress: tokenID,
@@ -223,7 +223,7 @@ describe('[Class]BEShield', async() => {
 
         it('STEP_genShieldAddressFromBankend', async() => {
 
-            let response = await backendApi.otaGenerate({
+            let response = await backendApi.otaGenerateShield({
                 CurrencyType: currenctType,
                 PaymentAddress: paymentAddress,
                 PrivacyTokenAddress: tokenID,
