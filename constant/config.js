@@ -4,7 +4,7 @@ global.urlBackend
 global.urlBackendTool
 global.urlFullNodeHieu
 
-global.ENV = 'mainnet'
+global.ENV = 'testnet2'
 
 const setENV = async(network = 'testnet2') => {
     global.ENV = network
