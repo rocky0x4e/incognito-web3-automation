@@ -1,7 +1,8 @@
 {
     "FullNode": {
         "url": "https://testnet.incognito.org/fullnode",
-        "authPath": ""
+        "authPath": "",
+        "accessToken": "0ec910a54ffbf2a0bdfc0c8b05e8b5445e51a2ae54f659a35ac7ad9980e4fd2c"
     },
     "CoinService": {
         "url": "https://api-coinservice-staging.incognito.org",
