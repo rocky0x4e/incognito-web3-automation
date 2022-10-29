@@ -1,29 +1,20 @@
-//During the test the env variable is set to test
-process.env.NODE_ENV = 'test';
-
-//Require the dev-dependencies
 let chai = require('chai');
-const cliCommonFunction = require('../../../constant/cliCommonFunction');
-const chainCommonFunction = require('../../../constant/chainCommonFunction');
-const csCommonFunction = require('../../../constant/csCommonFunction');
-const beCommonFunction = require('../../../constant/beCommonFunction');
-const common = require('../../../constant/commonFunction');
-const api = require('../../../constant/api');
-const backendApi = require('../../../models/backendApi');
-const webServiceApi = require('../../../models/webServiceApi');
+const config = require('../../constant/config');
+const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
+const { BackendApi } = require('../../lib/Incognito/BackendApi');
+const { CoinServiceApi } = require('../../lib/Incognito/CoinServiceApi');
+const { IncRpc } = require('../../lib/Incognito/RPC/Rpc');
+const { ENV } = require('../../global');
 
-let beTokenAuthen
 let paymentAddress = '12sfV7Vo27Rz3aT4c2kyiTpvziwXjviQMMrp5gsFfupAvoDveHhQLunAWvqTao46DSEYpnbMpGYxuc4a9KGU7BppPM9uZtfVCqPAQ18WtPEijsLmYxVL1MWWDggDZHfRmhtxmVijadCjXyr7iC9X'
+
+let webServiceApi = new WebServiceApi(ENV.WebService)
+let coinServiceApi = new CoinServiceApi()
+let backendApi = new BackendApi(ENV.Backend)
+let incRpc = new IncRpc(ENV.FullNode.url)
 
 //Our parent block
 describe('[Class]BEShield', async() => {
-
-    //Before
-    before(async() => {
-        console.log("[Before]InitData");
-        beTokenAuthen = await beCommonFunction.newToken()
-        console.log({ beTokenAuthen });
-    });
 
     //Testcase
     describe('TC001_VerifyShieldZIL', async() => {
@@ -32,37 +23,31 @@ describe('[Class]BEShield', async() => {
 
         before(async() => {
             tokenID = await getTokenID('ZIL')
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
+            currenctType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-        //step 1 : gen ZIL shield address from BE
-        it('STEP_genShieldAddressFromBE', async() => {
+        it('STEP_genShieldAddressFromBankend', async() => {
 
-            let response = await backendApi.Api_OTA_Generate(beTokenAuthen, currenctType, 1, paymentAddress, paymentAddress, tokenID, 1)
+            let response = await backendApi.otaGenerateShield({
+                CurrencyType: currenctType,
+                PaymentAddress: paymentAddress,
+                PrivacyTokenAddress: tokenID,
+            })
 
-            beShieldAddress = response.Result.Address
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
+            beShieldAddress = response.data.Result.Address
 
         });
 
-        //step 2 : gen ZIL shield address from lam service
-        it('STEP_genShieldAddressFromBEWeb', async() => {
+        it('STEP_genShieldAddressFromWebService', async() => {
 
-            let response = await webServiceApi.Api_OTA_Shield('centralized', currenctType, 1, "0.00001", paymentAddress, paymentAddress, tokenID)
+            let response = await webServiceApi.genShieldAddress({
+                network: 'centralized',
+                currencyType: currenctType,
+                paymentAddress: paymentAddress,
+                privacyTokenAddress: tokenID,
+            })
 
-            beWebShieldAddress = response.Result.Address
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
-
+            beWebShieldAddress = response.data.Result.Address
         });
 
         //step 3 : compare 2 body
@@ -77,36 +62,31 @@ describe('[Class]BEShield', async() => {
 
         before(async() => {
             tokenID = await getTokenID('ZEC')
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
+            currenctType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-        //step 1 : gen ZIL shield address from BE
-        it('STEP_genShieldAddressFromBE', async() => {
+        it('STEP_genShieldAddressFromBankend', async() => {
 
-            let response = await backendApi.Api_OTA_Generate(beTokenAuthen, currenctType, 1, paymentAddress, paymentAddress, tokenID, 1)
+            let response = await backendApi.otaGenerateShield({
+                CurrencyType: currenctType,
+                PaymentAddress: paymentAddress,
+                PrivacyTokenAddress: tokenID,
+            })
 
-            beShieldAddress = response.Result.Address
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
+            beShieldAddress = response.data.Result.Address
 
         });
 
-        //step 2 : gen ZIL shield address from lam service
-        it('STEP_genShieldAddressFromBEWeb', async() => {
+        it('STEP_genShieldAddressFromWebService', async() => {
 
-            let response = await webServiceApi.Api_OTA_Shield('centralized', currenctType, 1, "0.00001", paymentAddress, paymentAddress, tokenID)
-            beWebShieldAddress = response.Result.Address
+            let response = await webServiceApi.genShieldAddress({
+                network: 'centralized',
+                currencyType: currenctType,
+                paymentAddress: paymentAddress,
+                privacyTokenAddress: tokenID,
+            })
 
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
-
+            beWebShieldAddress = response.data.Result.Address
         });
 
         //step 3 : compare 2 body
@@ -121,39 +101,31 @@ describe('[Class]BEShield', async() => {
 
         before(async() => {
             tokenID = await getTokenID('DASH')
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
+            currenctType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-        //step 1 : gen ZIL shield address from BE
-        it('STEP_genShieldAddressFromBE', async() => {
+        it('STEP_genShieldAddressFromBankend', async() => {
 
-            let response = await backendApi.Api_OTA_Generate(beTokenAuthen, currenctType, 1, paymentAddress, paymentAddress, tokenID, 1)
+            let response = await backendApi.otaGenerateShield({
+                CurrencyType: currenctType,
+                PaymentAddress: paymentAddress,
+                PrivacyTokenAddress: tokenID,
+            })
 
-
-            beShieldAddress = response.Result.Address
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
+            beShieldAddress = response.data.Result.Address
 
         });
 
-        //step 2 : gen ZIL shield address from lam service
-        it('STEP_genShieldAddressFromBEWeb', async() => {
+        it('STEP_genShieldAddressFromWebService', async() => {
 
-            let response = await webServiceApi.Api_OTA_Shield('centralized', currenctType, 1, "0.00001", paymentAddress, paymentAddress, tokenID)
+            let response = await webServiceApi.genShieldAddress({
+                network: 'centralized',
+                currencyType: currenctType,
+                paymentAddress: paymentAddress,
+                privacyTokenAddress: tokenID,
+            })
 
-
-            beWebShieldAddress = response.Result.Address
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
-
+            beWebShieldAddress = response.data.Result.Address
         });
 
         //step 3 : compare 2 body
@@ -168,39 +140,31 @@ describe('[Class]BEShield', async() => {
 
         before(async() => {
             tokenID = await getTokenID('NEO')
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
+            currenctType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-        //step 1 : gen ZIL shield address from BE
-        it('STEP_genShieldAddressFromBE', async() => {
+        it('STEP_genShieldAddressFromBankend', async() => {
 
-            let response = await backendApi.Api_OTA_Generate(beTokenAuthen, currenctType, 1, paymentAddress, paymentAddress, tokenID, 1)
+            let response = await backendApi.otaGenerateShield({
+                CurrencyType: currenctType,
+                PaymentAddress: paymentAddress,
+                PrivacyTokenAddress: tokenID,
+            })
 
-
-            beShieldAddress = response.Result.Address
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
+            beShieldAddress = response.data.Result.Address
 
         });
 
-        //step 2 : gen ZIL shield address from lam service
-        it('STEP_genShieldAddressFromBEWeb', async() => {
+        it('STEP_genShieldAddressFromWebService', async() => {
 
-            let response = await webServiceApi.Api_OTA_Shield('centralized', currenctType, 1, "0.00001", paymentAddress, paymentAddress, tokenID)
+            let response = await webServiceApi.genShieldAddress({
+                network: 'centralized',
+                currencyType: currenctType,
+                paymentAddress: paymentAddress,
+                privacyTokenAddress: tokenID,
+            })
 
-
-            beWebShieldAddress = response.Result.Address
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
-
+            beWebShieldAddress = response.data.Result.Address
         });
 
         //step 3 : compare 2 body
@@ -215,40 +179,31 @@ describe('[Class]BEShield', async() => {
 
         before(async() => {
             tokenID = await getTokenID('LTC')
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
+            currenctType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-        //step 1 : gen ZIL shield address from BE
-        it('STEP_genShieldAddressFromBE', async() => {
+        it('STEP_genShieldAddressFromBankend', async() => {
 
-            let response = await backendApi.Api_OTA_Generate(beTokenAuthen, currenctType, 1, paymentAddress, paymentAddress, tokenID, 1)
+            let response = await backendApi.otaGenerateShield({
+                CurrencyType: currenctType,
+                PaymentAddress: paymentAddress,
+                PrivacyTokenAddress: tokenID,
+            })
 
-
-            beShieldAddress = response.Result.Address
-
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
+            beShieldAddress = response.data.Result.Address
 
         });
 
-        //step 2 : gen ZIL shield address from lam service
-        it('STEP_genShieldAddressFromBEWeb', async() => {
+        it('STEP_genShieldAddressFromWebService', async() => {
 
-            let response = await webServiceApi.Api_OTA_Shield('centralized', currenctType, 1, "0.00001", paymentAddress, paymentAddress, tokenID)
+            let response = await webServiceApi.genShieldAddress({
+                network: 'centralized',
+                currencyType: currenctType,
+                paymentAddress: paymentAddress,
+                privacyTokenAddress: tokenID,
+            })
 
-
-            beWebShieldAddress = response.Result.Address
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
-
+            beWebShieldAddress = response.data.Result.Address
         });
 
         //step 3 : compare 2 body
@@ -263,39 +218,31 @@ describe('[Class]BEShield', async() => {
 
         before(async() => {
             tokenID = await getTokenID('DOT')
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
+            currenctType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-        //step 1 : gen ZIL shield address from BE
-        it('STEP_genShieldAddressFromBE', async() => {
+        it('STEP_genShieldAddressFromBankend', async() => {
 
-            let response = await backendApi.Api_OTA_Generate(beTokenAuthen, currenctType, 1, paymentAddress, paymentAddress, tokenID, 1)
+            let response = await backendApi.otaGenerateShield({
+                CurrencyType: currenctType,
+                PaymentAddress: paymentAddress,
+                PrivacyTokenAddress: tokenID,
+            })
 
-
-            beShieldAddress = response.Result.Address
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
+            beShieldAddress = response.data.Result.Address
 
         });
 
-        //step 2 : gen ZIL shield address from lam service
-        it('STEP_genShieldAddressFromBEWeb', async() => {
+        it('STEP_genShieldAddressFromWebService', async() => {
 
-            let response = await webServiceApi.Api_OTA_Shield('centralized', currenctType, 1, "0.00001", paymentAddress, paymentAddress, tokenID)
+            let response = await webServiceApi.genShieldAddress({
+                network: 'centralized',
+                currencyType: currenctType,
+                paymentAddress: paymentAddress,
+                privacyTokenAddress: tokenID,
+            })
 
-
-            beWebShieldAddress = response.Result.Address
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
-
+            beWebShieldAddress = response.data.Result.Address
         });
 
         //step 3 : compare 2 body
@@ -306,49 +253,30 @@ describe('[Class]BEShield', async() => {
 
     describe('TC007_VerifyShieldBTC', async() => {
 
-        let tokenID, beShieldAddress, beWebShieldAddress
+        let tokenID, currenctType, beShieldAddress, beWebShieldAddress
 
         before(async() => {
             tokenID = await getTokenID('BTC')
+            currenctType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-        //step 1 : gen ZIL shield address from BE
-        it('STEP_genShieldAddressFromBE', async() => {
-            url = global.urlFullNode
-            body = {
-                "jsonrpc": "1.0",
-                "method": "generateportalshieldmultisigaddress",
-                "params": [{
-                    "IncAddressStr": paymentAddress,
-                    "TokenID": tokenID
-                }],
-                "id": 1
-            }
-            let response = await api.post(url, body)
-            beShieldAddress = response.Result
+        it('STEP_genShieldAddressFromFullNode', async() => {
 
-            chai.expect(response).have.property('Result')
-            chai.expect(response).have.property('Error')
-            chai.expect(response).have.property('Params')
-            chai.expect(response).have.property('Method')
-            chai.expect(response).have.property('Jsonrpc')
-            chai.expect(response.Params[0]).have.property('IncAddressStr')
-            chai.expect(response.Params[0]).have.property('TokenID')
+            let response = await incRpc.generateportalshieldmultisigaddress(paymentAddress, tokenID)
 
+            beShieldAddress = response.data.Result
         });
 
-        //step 2 : gen ZIL shield address from lam service
-        it('STEP_genShieldAddressFromBEWeb', async() => {
-            url = 'http://51.161.117.193:9898/genshieldaddress'
-            body = {
-                "Network": "btc",
-                "BTCIncAddress": paymentAddress
-            }
-            response = await api.post(url, body)
-            beWebShieldAddress = response.Result
+        it('STEP_genShieldAddressFromWebService', async() => {
 
-            chai.expect(response).have.property('Result')
+            let response = await webServiceApi.genShieldAddress({
+                network: 'btc',
+                currencyType: currenctType,
+                paymentAddress: paymentAddress,
+                privacyTokenAddress: tokenID,
+            })
 
+            beWebShieldAddress = response.data.Result.Address
         });
 
         //step 3 : compare 2 body
