@@ -12,8 +12,8 @@ describe("[Class] Liquidity", () => {
 
     let coinServiceApi = new CoinServiceApi();
     //Testcase
-    describe("TC001_PoolShare", async () => {
-        it("TC001_CallAPI", async () => {
+    describe("TC001_PoolShare", async() => {
+        it("TC001_CallAPI", async() => {
             let response = await coinServiceApi.poolShare(NFT_ID);
 
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getPoolShareSchemas, response.data);
@@ -22,8 +22,8 @@ describe("[Class] Liquidity", () => {
         });
     });
 
-    describe("TC002_PoolDetail", async () => {
-        it("TC001_CallAPI", async () => {
+    describe("TC002_PoolDetail", async() => {
+        it("TC001_CallAPI", async() => {
             let poolIDs = [pool_PRV_USDT, pool_PRV_ETH];
 
             let response = await coinServiceApi.poolDetail({ poolIDs });
@@ -45,8 +45,8 @@ describe("[Class] Liquidity", () => {
         });
     });
 
-    describe("TC003_ContributeHistory", async () => {
-        it("TC001_CallAPI", async () => {
+    describe("TC003_ContributeHistory", async() => {
+        it("TC001_CallAPI", async() => {
             let response = await coinServiceApi.contributeHistory({ nftID: NFT_ID });
 
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getContributeHistorySchemas, response.data);
@@ -55,8 +55,8 @@ describe("[Class] Liquidity", () => {
         });
     });
 
-    describe("TC004_WithdrawHistory", async () => {
-        it("TC001_CallAPI", async () => {
+    describe("TC004_WithdrawHistory", async() => {
+        it("TC001_CallAPI", async() => {
             let response = await coinServiceApi.withdrawHistory({ nftID: NFT_ID });
 
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getWithdrawHistorySchemas, response.data);
@@ -65,8 +65,8 @@ describe("[Class] Liquidity", () => {
         });
     });
 
-    describe("TC005_WithdrawFeeHistory", async () => {
-        it("TC001_CallAPI", async () => {
+    describe("TC005_WithdrawFeeHistory", async() => {
+        it("TC001_CallAPI", async() => {
             let response = await coinServiceApi.withdrawFeeHistory({ nftID: NFT_ID });
 
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getWithdrawFeeHistorySchemas, response.data);
