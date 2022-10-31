@@ -15,8 +15,9 @@ var DEVICE_TOKEN = "d86fLH6M89Q:APA91bGIlqIBpUczDapIP0lIPYXuBS996k8K15PV6jbNTWO5
 
 let config = require("./config.json")
 let envName = (typeof process.env.ENV == "undefined") ? config.environment : process.env.ENV
+const { LOGGER } = require("./lib/Utils/LoggingManager")
 try {
-    console.debug(`Loading environment: ${envName}`)
+    LOGGER.info(`Loading environment: ${envName}`)
     ENV = require(`./environments/${envName}.json`)
 } catch (error) {
     throw `Environment "${envName}" not found, HALT`
