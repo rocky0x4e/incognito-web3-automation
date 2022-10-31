@@ -1313,7 +1313,6 @@ const selectToken = async(symbol, network = null) => {
         } else {
             for (const token of listToken) {
                 let currencyType = await convertNetworkToCurrencyType(symbol, network)
-                    // console.log("hoanh2", currencyType);
                 if (token.Symbol.toLowerCase() == symbol &&
                     token.CurrencyType == currencyType &&
                     token.Verified == true) {
