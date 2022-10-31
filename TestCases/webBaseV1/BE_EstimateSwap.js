@@ -3,13 +3,14 @@ const validateSchemaCommand = require("../../schemas/validateSchemaCommand");
 const addingContent = require('../../lib/Utils/AddingContent');
 const webServiceApi_schemas = require("../../schemas/webServiceApi_schemas");
 let chai = require('chai');
-const csCommonFunction = require('../../constant/csCommonFunction');
-const commonFunction = require('../../constant/commonFunction');
 const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
+const { CoinServiceApi } = require('../../lib/Incognito/CoinServiceApi');
+const GenAction = require('../../lib/Utils/GenAction');
 const { ENV } = require("../../global");
 
 
 const webServiceApi = new WebServiceApi(ENV.WebService)
+const coinServiceApi = new CoinServiceApi()
 
 describe('[Class] EstimateTrade', async() => {
 
@@ -22,12 +23,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('bnb', 'bsc')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('dai', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'bsc'
             let slippage = '0.5'
 
@@ -62,12 +63,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('usdt', 'ut')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('dai', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'bsc'
             let slippage = '0.5'
 
@@ -103,12 +104,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('busd', 'bsc')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('dai', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'bsc'
             let slippage = '0.5'
 
@@ -144,12 +145,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('eth', 'ut')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('busd', 'bsc')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'bsc'
             let slippage = '0.5'
 
@@ -185,12 +186,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('cake', 'bsc')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('busd', 'bsc')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
@@ -226,12 +227,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('bnb', 'bsc')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('dai', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
@@ -267,12 +268,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('usdt', 'ut')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('dai', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
@@ -308,12 +309,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('busd', 'bsc')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('dai', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
@@ -349,12 +350,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('eth', 'ut')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('busd', 'bsc')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
@@ -390,12 +391,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('cake', 'bsc')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('busd', 'bsc')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
@@ -433,12 +434,14 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('matic', 'plg')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('usdt', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            console.log('hoanh buyToken', buyToken);
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
+            console.log('hoanh buyTokenContract', buyTokenContract);
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
@@ -460,7 +463,8 @@ describe('[Class] EstimateTrade', async() => {
                 chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
                 chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
                 let Paths = response.data.Result.Networks.plg[0].Paths
-                    // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
+                console.log('hoanh Paths', Paths);
+                // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
                 chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
@@ -481,12 +485,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('matic', 'ut')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('usdt', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
@@ -529,12 +533,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('usdt', 'ut')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('dai', 'plg')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
@@ -577,12 +581,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('weth', 'plg')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('usdt', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
@@ -625,12 +629,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('ust', 'plg')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('aave', 'plg')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
@@ -673,12 +677,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('matic', 'plg')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('usdt', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
@@ -721,12 +725,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('matic', 'ut')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('usdt', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
@@ -769,12 +773,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('usdt', 'ut')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('dai', 'plg')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
@@ -817,12 +821,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('weth', 'plg')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('usdt', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
@@ -864,12 +868,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('ust', 'plg')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('aave', 'plg')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
@@ -914,12 +918,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('weth', 'plg')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('usdt', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
@@ -962,12 +966,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('dai', 'plg')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('usdc', 'plg')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
@@ -1010,12 +1014,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('usdt', 'ut')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('wbtc', 'plg')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
@@ -1058,12 +1062,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('usdt', 'ut')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('usdc', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'plg'
             let slippage = '0.5'
 
@@ -1106,12 +1110,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('weth', 'plg')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('usdt', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
@@ -1154,12 +1158,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('dai', 'plg')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('usdc', 'plg')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
@@ -1202,12 +1206,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('usdt', 'ut')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('wbtc', 'plg')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(100) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'inc'
             let slippage = '0.5'
 
@@ -1250,12 +1254,12 @@ describe('[Class] EstimateTrade', async() => {
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
             let sellToken = await selectToken('usdt', 'ut')
-            let sellTokenContract = await csCommonFunction.getTokenContract(sellToken, networkTarget)
+            let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('usdc', 'ut')
-            let buyTokenContract = await csCommonFunction.getTokenContract(buyToken, networkTarget)
+            let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
 
-            let sellAmount = 1 / await commonFunction.randomNumber(10000) + ""
+            let sellAmount = 1 / await GenAction.randomNumber(10000) + ""
             let network = 'inc'
             let slippage = '0.5'
 
@@ -1302,7 +1306,7 @@ const selectToken = async(symbol, network = null) => {
     network = network ? network.toLowerCase() : null
 
 
-    let listToken = await csCommonFunction.getListToken()
+    let listToken = await coinServiceApi.getListToken()
     for (const token of listToken) {
         if (symbol == 'prv') {
             return '0000000000000000000000000000000000000000000000000000000000000004'
