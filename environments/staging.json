@@ -27,40 +27,52 @@
     "WebService": {
         "url": "https://api-webapp-staging.incognito.org"
     },
-    "EthereumFullnode": [{
-        "url": "https://eth-goerli.g.alchemy.com/v2/qOolRKBtov0fk1r657-8qWmLrcfZCw87"
-    },
-    {
-        "url": "https://eth-goerli.g.alchemy.com/v2/qOolRKBtov0fk1r657-8qWmLrcfZCw87"
-    }],
-    "BSCFullnode": [{
-        "url": "https://data-seed-prebsc-1-s1.binance.org:8545"
-    },
-    {
-        "url": "https://data-seed-prebsc-2-s2.binance.org:8545"
-    },
-    {
-        "url": "https://data-seed-prebsc-2-s3.binance.org:8545"
-    },
-    {
-        "url": "https://data-seed-prebsc-2-s3.binance.org:8545"
-    }],
-    "PLGFullnode": [{
-        "url": "https://polygon-mumbai.g.alchemy.com/v2/V8SP0S8Q-sT35ca4VKH3Iwyvh8K8wTRn"
-    },
-    {
-        "url": "https://rpc-mumbai.maticvigil.com"
-    },
-    {
-        "url": "https://matic-mumbai.chainstacklabs.com"
-    }],
-    "FTMFullnode": [{
-        "url": "https://rpc.testnet.fantom.network"
-    }],
-    "AuroraFullnode": [{
-        "url": "https://testnet.aurora.dev"
-    }],
-    "AvaxFullnode": [{
-        "url": "https://api.avax-test.network/ext/C/rpc"
-    }]
+    "EthereumFullnode": [
+        {
+            "url": "https://eth-goerli.g.alchemy.com/v2/qOolRKBtov0fk1r657-8qWmLrcfZCw87"
+        },
+        {
+            "url": "https://eth-goerli.g.alchemy.com/v2/qOolRKBtov0fk1r657-8qWmLrcfZCw87"
+        }
+    ],
+    "BSCFullnode": [
+        {
+            "url": "https://data-seed-prebsc-1-s1.binance.org:8545"
+        },
+        {
+            "url": "https://data-seed-prebsc-2-s2.binance.org:8545"
+        },
+        {
+            "url": "https://data-seed-prebsc-2-s3.binance.org:8545"
+        },
+        {
+            "url": "https://data-seed-prebsc-2-s3.binance.org:8545"
+        }
+    ],
+    "PLGFullnode": [
+        {
+            "url": "https://polygon-mumbai.g.alchemy.com/v2/V8SP0S8Q-sT35ca4VKH3Iwyvh8K8wTRn"
+        },
+        {
+            "url": "https://rpc-mumbai.maticvigil.com"
+        },
+        {
+            "url": "https://matic-mumbai.chainstacklabs.com"
+        }
+    ],
+    "FTMFullnode": [
+        {
+            "url": "https://rpc.testnet.fantom.network"
+        }
+    ],
+    "AuroraFullnode": [
+        {
+            "url": "https://testnet.aurora.dev"
+        }
+    ],
+    "AvaxFullnode": [
+        {
+            "url": "https://api.avax-test.network/ext/C/rpc"
+        }
+    ]
 }
