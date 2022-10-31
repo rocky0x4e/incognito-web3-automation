@@ -1,7 +1,5 @@
 const config = require("../../../constant/config");
 const listAccount = require("../../../constant/listAccount.json");
-const chainCommonFunction = require("../../../constant/chainCommonFunction");
-const commonFunction = require("../../../constant/commonFunction");
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
 const addingContent = require("../../../lib/Utils/AddingContent");
@@ -9,6 +7,7 @@ let chai = require("chai");
 const { IncAccount } = require("../../../lib/Incognito/Account/Account");
 const { IncNode } = require("../../../lib/Incognito/IncNode");
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
+const GenAction = require("../../../lib/Utils/GenAction");
 
 //init
 let node = new IncNode(ENV.urlFullNode);
@@ -105,7 +104,7 @@ describe("[Class] Balance", () => {
         const PRV = "0000000000000000000000000000000000000000000000000000000000000004";
 
         it("STEP_InitData", async() => {
-            amountTransfer = await commonFunction.randomNumber(1000);
+            amountTransfer = await GenAction.randomNumber(1000);
             await sender.initSdkInstance();
             await receiver.initSdkInstance();
         });
@@ -133,7 +132,7 @@ describe("[Class] Balance", () => {
 
             console.log(`Send PRV : ${tx}`);
             await addingContent.addContent("tx", tx);
-            await chainCommonFunction.waitForTxInBlock(tx);
+            await node.getTransactionByHashRpc(tx);
         }).timeout(50000);
 
         it("STEP_CompareBalance", async() => {
@@ -194,7 +193,7 @@ describe("[Class] Balance", () => {
 
             console.log(`Send Token : ${tx}`);
             await addingContent.addContent("tx", tx);
-            await chainCommonFunction.waitForTxInBlock(tx);
+            await node.getTransactionByHashRpc(tx);
         }).timeout(1000000);
 
         it("STEP_CompareBalance", async() => {
