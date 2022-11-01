@@ -6,15 +6,14 @@ const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
 const { IncRpc } = require("../../../lib/Incognito/RPC/Rpc");
 const GenAction = require("../../../lib/Utils/GenAction");
 let chai = require("chai");
-const { ENV } = require("../../../global");
 
 let coinServiceApi = new CoinServiceApi();
-let rpc = new IncRpc(ENV.FullNode.url);
+let rpc = new IncRpc();
 let node = new IncNode()
 let sender = new IncAccount(listAccount[2], node)
 
 describe("[Class] Pdex", () => {
-    describe("TC001_TradePRVToToken", async() => {
+    describe.skip("TC001_TradePRVToToken", async() => {
         const PRV = '0000000000000000000000000000000000000000000000000000000000000004'
         const ZIL = '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc'
         let amountTrade = 0
@@ -40,7 +39,6 @@ describe("[Class] Pdex", () => {
         });
 
         it("STEP_Trade", async() => {
-
             tx = await sender.useSdk.swap({
                 tokenSell: PRV,
                 tokenBuy: ZIL,

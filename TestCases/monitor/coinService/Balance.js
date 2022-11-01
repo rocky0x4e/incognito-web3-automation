@@ -10,7 +10,7 @@ const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
 const GenAction = require("../../../lib/Utils/GenAction");
 
 //init
-let node = new IncNode(ENV.urlFullNode);
+let node = new IncNode();
 let sender = new IncAccount(listAccount["2"]).attachTo(node);
 let receiver = new IncAccount(listAccount["3"]).attachTo(node);
 let account = {
@@ -24,7 +24,7 @@ describe("[Class] Balance", () => {
         it("InitData", async() => {
             let privateKey = (await config.getAccount("main7")).privateKey;
 
-            let node = new IncNode(ENV.urlFullNode);
+            let node = new IncNode();
             let accountNode = new IncAccount(privateKey).attachTo(node);
 
             account.otaKey = accountNode.otaPrivateK;

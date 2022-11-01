@@ -9,7 +9,7 @@ const GenAction = require('../../lib/Utils/GenAction');
 const { ENV } = require("../../global");
 
 
-const webServiceApi = new WebServiceApi(ENV.WebService)
+const webServiceApi = new WebServiceApi()
 const coinServiceApi = new CoinServiceApi()
 
 describe('[Class] EstimateTrade', async() => {
@@ -437,9 +437,7 @@ describe('[Class] EstimateTrade', async() => {
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('usdt', 'ut')
-            console.log('hoanh buyToken', buyToken);
             let buyTokenContract = await coinServiceApi.getTokenContract(buyToken, networkTarget)
-            console.log('hoanh buyTokenContract', buyTokenContract);
 
             let sellAmount = 1 / await GenAction.randomNumber(100) + ""
             let network = 'plg'
@@ -463,8 +461,7 @@ describe('[Class] EstimateTrade', async() => {
                 chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
                 chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
                 let Paths = response.data.Result.Networks.plg[0].Paths
-                console.log('hoanh Paths', Paths);
-                // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
+                    // chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             } else {
                 chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)

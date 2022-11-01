@@ -6,7 +6,7 @@ const webServiceApi_schemas = require("../../schemas/webServiceApi_schemas");
 const validateSchemaCommand = require("../../schemas/validateSchemaCommand");
 
 
-let webServiceApi = new WebServiceApi(ENV.WebService)
+let webServiceApi = new WebServiceApi()
 let coinServiceApi = new CoinServiceApi()
     //Our parent block
 describe('[Class] EvmShield', async() => {

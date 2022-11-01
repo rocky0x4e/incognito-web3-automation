@@ -2,6 +2,7 @@ const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
 let chai = require("chai");
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
+const { ENV } = require("../../../global");
 
 describe("[Class] Market", () => {
     const tokenID_ETH_UT = "3ee31eba6376fc16cadb52c8765f20b6ebff92c0b1c5ab5fc78c8c25703bb19e";
