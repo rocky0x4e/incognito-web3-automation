@@ -1,6 +1,6 @@
 const Ajv = require("ajv");
 const { getLogger } = require("./../lib/Utils/LoggingManager");
-const logger = getLogger("BaseApi")
+const logger = getLogger("validateSchemaCommand")
 
 async function getSchemaError(getAjvError) {
     return logger.debug(
