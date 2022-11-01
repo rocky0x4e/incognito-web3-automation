@@ -370,9 +370,6 @@ describe('[Class]Unshield', async() => {
                 "Network": "btc"
             }
             response = await api.post(url, body)
-                // console.log({ url });
-                // console.log({ body });
-                // console.log({ response });
 
             webUnshieldFee = response.Result
 
@@ -386,9 +383,6 @@ describe('[Class]Unshield', async() => {
             url = 'http://51.161.119.66:8020/getestimatedunshieldingfee'
 
             response = await api.get(url)
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
 
             appUnshieldFee = response.Result
 
@@ -858,19 +852,16 @@ describe('[Class]Unshield', async() => {
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
             response = await webServiceApi.genUnshieldAddress({
-                    network: "centralized",
-                    requestedAmount: requestedAmount + "",
-                    addressType: 2,
-                    incognitoAmount: incognitoAmount + "",
-                    paymentAddress: outchainAddress,
-                    privacyTokenAddress: tokenID,
-                    walletAddress: paymentAddress,
-                    unifiedTokenID: "",
-                    currencyType
-                })
-                // console.log(body);
-                // console.log({ response });
-
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
             chai.expect(response.data).have.property('Error')
             chai.expect(response.data.Error).have.property('Code')
@@ -897,19 +888,16 @@ describe('[Class]Unshield', async() => {
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
             response = await webServiceApi.genUnshieldAddress({
-                    network: "centralized",
-                    requestedAmount: requestedAmount + "",
-                    addressType: 2,
-                    incognitoAmount: incognitoAmount + "",
-                    paymentAddress: outchainAddress,
-                    privacyTokenAddress: tokenID,
-                    walletAddress: paymentAddress,
-                    unifiedTokenID: "",
-                    currencyType
-                })
-                // console.log(body);
-                // console.log({ response });
-
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
             chai.expect(response.data).have.property('Error')
             chai.expect(response.data.Error).have.property('Code')
@@ -936,19 +924,16 @@ describe('[Class]Unshield', async() => {
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
             response = await webServiceApi.genUnshieldAddress({
-                    network: "centralized",
-                    requestedAmount: requestedAmount + "",
-                    addressType: 2,
-                    incognitoAmount: incognitoAmount + "",
-                    paymentAddress: outchainAddress,
-                    privacyTokenAddress: tokenID,
-                    walletAddress: paymentAddress,
-                    unifiedTokenID: "",
-                    currencyType
-                })
-                // console.log(body);
-                // console.log({ response });
-
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
             chai.expect(response.data).have.property('Error')
             chai.expect(response.data.Error).have.property('Code')
@@ -975,19 +960,16 @@ describe('[Class]Unshield', async() => {
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
             response = await webServiceApi.genUnshieldAddress({
-                    network: "centralized",
-                    requestedAmount: requestedAmount + "",
-                    addressType: 2,
-                    incognitoAmount: incognitoAmount + "",
-                    paymentAddress: outchainAddress,
-                    privacyTokenAddress: tokenID,
-                    walletAddress: paymentAddress,
-                    unifiedTokenID: "",
-                    currencyType
-                })
-                // console.log(body);
-                // console.log({ response });
-
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
             chai.expect(response.data).have.property('Error')
             chai.expect(response.data.Error).have.property('Code')
@@ -1014,19 +996,16 @@ describe('[Class]Unshield', async() => {
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
             response = await webServiceApi.genUnshieldAddress({
-                    network: "centralized",
-                    requestedAmount: requestedAmount + "",
-                    addressType: 2,
-                    incognitoAmount: incognitoAmount + "",
-                    paymentAddress: outchainAddress,
-                    privacyTokenAddress: tokenID,
-                    walletAddress: paymentAddress,
-                    unifiedTokenID: "",
-                    currencyType
-                })
-                // console.log(body);
-                // console.log({ response });
-
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
             chai.expect(response.data).have.property('Error')
             chai.expect(response.data.Error).have.property('Code')
@@ -1053,19 +1032,16 @@ describe('[Class]Unshield', async() => {
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
             response = await webServiceApi.genUnshieldAddress({
-                    network: "centralized",
-                    requestedAmount: requestedAmount + "",
-                    addressType: 2,
-                    incognitoAmount: incognitoAmount + "",
-                    paymentAddress: outchainAddress,
-                    privacyTokenAddress: tokenID,
-                    walletAddress: paymentAddress,
-                    unifiedTokenID: "",
-                    currencyType
-                })
-                // console.log(body);
-                // console.log({ response });
-
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
             chai.expect(response.data).have.property('Error')
             chai.expect(response.data.Error).have.property('Code')

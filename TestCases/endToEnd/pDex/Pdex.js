@@ -1,3 +1,4 @@
+const { TOKEN } = require('../../../lib/Incognito/Constants')
 const config = require("../../../constant/config");
 const listAccount = require("../../../constant/listAccount.json");
 const { IncNode } = require("../../../lib/Incognito/IncNode");
@@ -14,8 +15,6 @@ let sender = new IncAccount(listAccount[2], node)
 
 describe("[Class] Pdex", () => {
     describe.skip("TC001_TradePRVToToken", async() => {
-        const PRV = '0000000000000000000000000000000000000000000000000000000000000004'
-        const ZIL = '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc'
         let amountTrade = 0
         let estimateTradeObject
         let tx
@@ -23,16 +22,16 @@ describe("[Class] Pdex", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
             let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balancePRVBefore = balanceAll[PRV]
-            sender.balanceZILBefore = balanceAll[ZIL]
+            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
+            sender.balanceZILBefore = balanceAll[TOKEN.ZIL]
 
             amountTrade = await GenAction.randomNumber(100000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
             let estimateTrade = await coinServiceApi.estimateTrade({
-                tokenSell: PRV,
-                tokenBuy: ZIL,
+                tokenSell: TOKEN.PRV,
+                tokenBuy: TOKEN.ZIL,
                 sellAmount: amountTrade
             })
             estimateTradeObject = estimateTrade.data
@@ -40,12 +39,12 @@ describe("[Class] Pdex", () => {
 
         it("STEP_Trade", async() => {
             tx = await sender.useSdk.swap({
-                tokenSell: PRV,
-                tokenBuy: ZIL,
+                tokenSell: TOKEN.PRV,
+                tokenBuy: TOKEN.ZIL,
                 amount: amountTrade,
                 tradePath: estimateTradeObject.Result.FeePRV.Route,
                 tradingFee: estimateTradeObject.Result.FeePRV.Fee,
-                feeToken: PRV,
+                feeToken: TOKEN.PRV,
                 minAcceptableAmount: estimateTradeObject.Result.FeePRV.MaxGet,
             })
 
@@ -58,14 +57,14 @@ describe("[Class] Pdex", () => {
 
             chai.expect(response.data.Result.Status).to.equal(1)
             chai.expect(response.data.Result.BuyAmount).to.above(1)
-            chai.expect(response.data.Result.TokenToBuy).to.equal(ZIL)
+            chai.expect(response.data.Result.TokenToBuy).to.equal(TOKEN.ZIL)
 
         }).timeout(120000);
 
         it("STEP_VerifyBalance", async() => {
             let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balancePRVAfter = balanceAll[PRV]
-            sender.balanceZILAfter = balanceAll[ZIL]
+            sender.balancePRVAfter = balanceAll[TOKEN.PRV]
+            sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - amountTrade - 100 - estimateTradeObject.Result.FeePRV.Fee);
             chai.expect(sender.balanceZILAfter).to.be.least(sender.balanceZILBefore + estimateTradeObject.Result.FeePRV.MaxGet);
@@ -74,8 +73,6 @@ describe("[Class] Pdex", () => {
     });
 
     describe("TC002_TradeTokenToPRV", async() => {
-        const PRV = '0000000000000000000000000000000000000000000000000000000000000004'
-        const ZIL = '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc'
         let amountTrade = 0
         let estimateTradeObject
         let tx
@@ -83,16 +80,16 @@ describe("[Class] Pdex", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
             let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balancePRVBefore = balanceAll[PRV]
-            sender.balanceZILBefore = balanceAll[ZIL]
+            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
+            sender.balanceZILBefore = balanceAll[TOKEN.ZIL]
 
             amountTrade = await GenAction.randomNumber(100000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
             let estimateTrade = await coinServiceApi.estimateTrade({
-                tokenSell: ZIL,
-                tokenBuy: PRV,
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: TOKEN.PRV,
                 sellAmount: amountTrade
             })
             estimateTradeObject = estimateTrade.data
@@ -101,12 +98,12 @@ describe("[Class] Pdex", () => {
         it("STEP_Trade", async() => {
 
             tx = await sender.useSdk.swap({
-                tokenSell: ZIL,
-                tokenBuy: PRV,
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: TOKEN.PRV,
                 amount: amountTrade,
                 tradePath: estimateTradeObject.Result.FeeToken.Route,
                 tradingFee: estimateTradeObject.Result.FeeToken.Fee,
-                feeToken: ZIL,
+                feeToken: TOKEN.ZIL,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
 
@@ -125,8 +122,8 @@ describe("[Class] Pdex", () => {
 
         it("STEP_VerifyBalance", async() => {
             let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balancePRVAfter = balanceAll[PRV]
-            sender.balanceZILAfter = balanceAll[ZIL]
+            sender.balancePRVAfter = balanceAll[TOKEN.PRV]
+            sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
 
             chai.expect(sender.balancePRVAfter).to.least(sender.balancePRVBefore - 100 + estimateTradeObject.Result.FeePRV.MaxGet);
             chai.expect(sender.balanceZILAfter).to.be.equal(sender.balanceZILBefore - amountTrade - estimateTradeObject.Result.FeeToken.Fee);

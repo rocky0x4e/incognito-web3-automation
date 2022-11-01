@@ -1,3 +1,4 @@
+const { TOKEN } = require("../../../lib/Incognito/Constants");
 const config = require("../../../constant/config");
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
@@ -36,13 +37,11 @@ describe("[Class] Pdex", () => {
 
     describe("TC002_SwapEstimateTrade_PRV_USDT(UT)", async() => {
         it("CallAPI", async() => {
-            const PRV = "0000000000000000000000000000000000000000000000000000000000000004";
-            const USDT = "076a4423fa20922526bd50b0d7b0dc1c593ce16e15ba141ede5fb5a28aa3f229";
             let sellAmount = await GenAction.randomNumber(100000000);
 
             let response = await coinServiceApi.estimateTrade({
-                tokenSell: PRV,
-                tokenBuy: USDT,
+                tokenSell: TOKEN.PRV,
+                tokenBuy: TOKEN.USDT,
                 sellAmount: sellAmount
             });
 
@@ -52,13 +51,11 @@ describe("[Class] Pdex", () => {
 
     describe("TC003_SwapEstimateTrade_ETH_PRV", async() => {
         it("CallAPI", async() => {
-            const PRV = "0000000000000000000000000000000000000000000000000000000000000004";
-            const ETH = "ffd8d42dc40a8d166ea4848baf8b5f6e912ad79875f4373070b59392b1756c8f";
             let sellAmount = await GenAction.randomNumber(100000000);
 
             let response = await coinServiceApi.estimateTrade({
-                tokenSell: ETH,
-                tokenBuy: PRV,
+                tokenSell: TOKEN.ETH_ETH,
+                tokenBuy: TOKEN.PRV,
                 sellAmount: sellAmount
             });
 

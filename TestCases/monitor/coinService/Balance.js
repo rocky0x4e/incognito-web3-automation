@@ -1,4 +1,5 @@
 const config = require("../../../constant/config");
+const { TOKEN } = require('../../../lib/Incognito/Constants');
 const listAccount = require("../../../constant/listAccount.json");
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
@@ -101,7 +102,6 @@ describe("[Class] Balance", () => {
 
     describe.skip("TC007_CheckBalancePrvAfterSend", async() => {
         let amountTransfer = 0;
-        const PRV = "0000000000000000000000000000000000000000000000000000000000000004";
 
         it("STEP_InitData", async() => {
             amountTransfer = await GenAction.randomNumber(1000);
@@ -129,8 +129,6 @@ describe("[Class] Balance", () => {
 
         it("STEP_Send", async() => {
             let tx = await sender.useCli.send(receiver, amountTransfer);
-
-            console.log(`Send PRV : ${tx}`);
             await addingContent.addContent("tx", tx);
             await node.getTransactionByHashRpc(tx);
         }).timeout(50000);
@@ -152,11 +150,11 @@ describe("[Class] Balance", () => {
             receiver.balanceSdk = await receiver.useSdk.getBalanceAll();
             await addingContent.addContent("receiver.balanceSdk", receiver.balanceSdk);
 
-            chai.expect(sender.balanceCLI[PRV]).to.equal(sender.balanceSdk[PRV]);
-            chai.expect(receiver.balanceCLI[PRV]).to.equal(receiver.balanceSdk[PRV]);
+            chai.expect(sender.balanceCLI[TOKEN.PRV]).to.equal(sender.balanceSdk[TOKEN.PRV]);
+            chai.expect(receiver.balanceCLI[TOKEN.PRV]).to.equal(receiver.balanceSdk[TOKEN.PRV]);
 
-            chai.expect(sender.newBalance[PRV]).to.equal(sender.oldBalance[PRV] - amountTransfer - 100);
-            chai.expect(receiver.newBalance[PRV]).to.equal(receiver.oldBalance[PRV] + amountTransfer);
+            chai.expect(sender.newBalance[TOKEN.PRV]).to.equal(sender.oldBalance[TOKEN.PRV] - amountTransfer - 100);
+            chai.expect(receiver.newBalance[TOKEN.PRV]).to.equal(receiver.oldBalance[TOKEN.PRV] + amountTransfer);
         }).timeout(100000);
     });
 
@@ -190,8 +188,6 @@ describe("[Class] Balance", () => {
 
         it("STEP_Send", async() => {
             let tx = await sender.useCli.send(receiver, amountTransfer, USDT);
-
-            console.log(`Send Token : ${tx}`);
             await addingContent.addContent("tx", tx);
             await node.getTransactionByHashRpc(tx);
         }).timeout(1000000);
