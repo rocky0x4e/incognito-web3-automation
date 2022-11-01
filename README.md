@@ -33,3 +33,11 @@ Please strictly follow this [W3schools' JS coding convention](https://www.w3scho
 ├── package-lock.json
 └── README.md
 ```
+
+## logging:
+- Use lib/Utils/LoggingManager.js for logging, DO NOT push code which uses console.log()
+- To view log:
+  - install "web-log-viewer": `npm install --global web-log-viewer`
+  - `cat file.log |  web-log-viewer`
+  -  open `http://localhost:8000/` on your web browser to view the log
+
