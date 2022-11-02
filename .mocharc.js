@@ -5,11 +5,11 @@ module.exports = {
     recursive: true,
     timeout: 20000,
     spec: [
-        './TestCases/TestBase.js',
+        // './TestCases/TestBase.js',
 
-        './TestCases/monitor/backend',
-        './TestCases/monitor/coinService',
-        './TestCases/webBaseV1',
+        // './TestCases/monitor/backend',
+        // './TestCases/monitor/coinService',
+        // './TestCases/webBaseV1',
     ],
     reporter: 'node_modules/mochawesome',
     'reporter-option': [
