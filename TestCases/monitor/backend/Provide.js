@@ -1,5 +1,3 @@
-const config = require('../../../constant/config');
-const chainCommonFunction = require('../../../constant/chainCommonFunction');
 const commonFunction = require('../../../constant/commonFunction');
 const validateSchemaCommand = require('../../../schemas/validateSchemaCommand');
 const coinServiceApi_schemas = require('../../../schemas/coinServiceApi_schemas');
@@ -7,7 +5,7 @@ const addingContent = require('../../../lib/Utils/AddingContent');
 let chai = require('chai');
 const { IncAccount } = require('../../../lib/Incognito/Account/Account');
 const { IncNode } = require('../../../lib/Incognito/IncNode');
-const { CoinServiceApi } = require('../../../lib/Incognito/CoinService/CoinServiceApi');
+const { CoinServiceApi } = require('../../../lib/Incognito/CoinServiceApi');
 const { BackendApi } = require('../../../lib/Incognito/BackendApi');
 const { ENV } = require('../../../global');
 
@@ -53,7 +51,6 @@ describe('[Class] Provide', () => {
             let response = await coinServiceApi.submitOtaKey(account.otaKey);
         });
         it.skip('Call RPC Authorize Submit Key', async () => {
-            // let responseRPC = await
             await sender.useRpc.submitKeyEnhanced();
         });
     });
@@ -81,22 +78,17 @@ describe('[Class] Provide', () => {
 
         it('STEP_Send Provide', async () => {
             var proof = await sender.useRpc.makeRawTx(receiver, amountProvide);
-
-            // proof = JSON.stringify(proof)
+            //"SignPublicKeyEncode": "8a59a648a9cf47168e72e348b98d7bb296c67f7dd2d50cc9e043d2feb40b9cc8", zxv
             console.log(`Send PROOF: ${proof.Base58CheckData}`);
-            let tx = proof['TxID'];
+            console.log(`Send TxID: ${proof.TxID}`);
             let provideResponse = await backendApi.provideSubmitRawData({
                 PStakeAddress: sender.paymentK,
                 transactionID: proof.TxID,
                 base58Proof: proof.Base58CheckData,
                 amount: amountProvide
             });
-            console.log(`provide response: ${JSON.stringify(provideResponse)}`);
-
-            //"SignPublicKeyEncode": "8a59a648a9cf47168e72e348b98d7bb296c67f7dd2d50cc9e043d2feb40b9cc8", zxv
-
-            // await addingContent.addContent('tx', tx);
-            // await chainCommonFunction.waitForTxInBlock(tx);
+            chai.expect(provideResponse.status).to.equal(400)
+            chai.expect(JSON.stringify(provideResponse.data)).to.equal("{\"Result\":null,\"Error\":\"The data invalid!!!\"}")
         }).timeout(50000);
 
         it.skip('STEP_CompareBalance', async () => {
