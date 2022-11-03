@@ -101,7 +101,7 @@ describe("[Class] Pdex", () => {
         }).timeout(60000);
     });
 
-    describe.only("TC002_RemoveExistLiquidity", async() => {
+    describe("TC002_RemoveExistLiquidity", async() => {
         let shareRemove
         let actualAmount0Remove
         let actualAmount1Remove
