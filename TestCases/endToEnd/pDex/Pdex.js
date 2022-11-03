@@ -166,8 +166,6 @@ describe("[Class] Pdex", () => {
 
             amountBuy = await GenAction.randomNumber(100000)
             amountSell = await GenAction.randomNumber(100000)
-
-            console.log('hoanh STEP_InitData', sender.balancePRVBefore, amountSell, amountBuy);
         }).timeout(60000);
 
         it("STEP_AddOrder", async() => {
@@ -179,7 +177,6 @@ describe("[Class] Pdex", () => {
                 buyAmount: amountBuy,
             })
             logger.info({ tx })
-            console.log({ tx });
 
             await incNode.getTransactionByHashRpc(tx)
             await GenAction.sleep(60000)
@@ -195,7 +192,6 @@ describe("[Class] Pdex", () => {
         it("STEP_CheckPdexState", async() => {
             let response = await incRpc.pdexv3_getState()
             let orders = response.data.Result.PoolPairs[POOL.PRV_ZIL].Orderbook.orders
-            console.log('hoanh orders', JSON.stringify(orders));
             let isFind = false
             for (const order of orders) {
                 if (order.Id == tx) {
@@ -217,7 +213,6 @@ describe("[Class] Pdex", () => {
         it("STEP_VerifyBalanceAfterAdd", async() => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
-            console.log('hoanh STEP_VerifyBalance', sender.balancePRVAfter);
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - amountSell - 100);
 
@@ -232,7 +227,6 @@ describe("[Class] Pdex", () => {
                 nftID: nftID,
             })
             logger.info({ tx })
-            console.log({ tx });
 
             await incNode.getTransactionByHashRpc(tx)
             await GenAction.sleep(60000)
@@ -244,14 +238,13 @@ describe("[Class] Pdex", () => {
 
             chai.expect(response.data.Result.Status).to.equal(1);
             chai.expect(response.data.Result.TokenID).to.equal(TOKEN.PRV);
-            chai.expect(response.data.Result.Amount).to.equal(sellAmount);
+            chai.expect(response.data.Result.Amount).to.equal(amountSell);
 
         }).timeout(60000);
 
         it("STEP_VerifyBalanceAfterCancel", async() => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
-            console.log('hoanh STEP_VerifyBalance', sender.balancePRVAfter);
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - 100 - 100);
 
@@ -273,8 +266,6 @@ describe("[Class] Pdex", () => {
 
             amountBuy = await GenAction.randomNumber(100000)
             amountSell = await GenAction.randomNumber(100000)
-
-            console.log('hoanh STEP_InitData', sender.balancePRVBefore, amountSell, amountBuy);
         }).timeout(60000);
 
         it("STEP_AddOrder", async() => {
@@ -286,7 +277,6 @@ describe("[Class] Pdex", () => {
                 buyAmount: amountBuy,
             })
             logger.info({ tx })
-            console.log({ tx });
 
             await incNode.getTransactionByHashRpc(tx)
             await GenAction.sleep(60000)
@@ -302,7 +292,6 @@ describe("[Class] Pdex", () => {
         it("STEP_CheckPdexState", async() => {
             let response = await incRpc.pdexv3_getState()
             let orders = response.data.Result.PoolPairs[POOL.PRV_ZIL].Orderbook.orders
-            console.log('hoanh orders', JSON.stringify(orders));
             let isFind = false
             for (const order of orders) {
                 if (order.Id == tx) {
@@ -324,7 +313,6 @@ describe("[Class] Pdex", () => {
         it("STEP_VerifyBalanceAfterAdd", async() => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.ZIL]
-            console.log('hoanh STEP_VerifyBalance', sender.balancePRVAfter);
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - amountSell);
 
@@ -339,7 +327,6 @@ describe("[Class] Pdex", () => {
                 nftID: nftID,
             })
             logger.info({ tx })
-            console.log({ tx });
 
             await incNode.getTransactionByHashRpc(tx)
             await GenAction.sleep(60000)
@@ -358,7 +345,6 @@ describe("[Class] Pdex", () => {
         it("STEP_VerifyBalanceAfterCancel", async() => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.ZIL]
-            console.log('hoanh STEP_VerifyBalance', sender.balancePRVAfter);
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore);
 
