@@ -19,12 +19,12 @@ let slackNotify = require('slack-notify');
 const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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';
 
 
-describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
+describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {
     const extPrivateKey = '0xa5ae26c7154410df235bc8669ffd27c0fc9d3068c21e469a4cc68165c68cd5cb'
     const privateKey = `112t8rnX3VTd3MTWMpfbYP8HGY4ToAaLjrmUYzfjJBrAcb8iPLkNqvVDXWrLNiFV5yb2NBpR3FDZj3VW8GcLUwRdQ61hPMWP3YrREZAZ1UbH`
-    const tokenID = Constants.TOKEN.ETH
-    const tokenUnifiedID = Constants.TOKEN.UnifiedETH
-    const fullnodeEVM = ENV.EthereumFullnode[0].url
+    const tokenID = Constants.TOKEN.BNB
+    const tokenUnifiedID = Constants.TOKEN.UnifiedBNB
+    const fullnodeEVM = ENV.BSCFullnode[0].url
 
     let node = await new IncNode()
     let account = await new IncAccount(privateKey).attachTo(node)
@@ -48,7 +48,7 @@ describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
     }
 
     const shieldInfo = {
-        shieldAmt: 0.01, // ETH
+        shieldAmt: 0.01, // BNB
         shieldBackendId: null,
         shieldPrvFee: 0,
         shieldTokenFee: 0,
@@ -57,7 +57,7 @@ describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
         txDeposit: null
     }
 
-    describe('SHIELDING ETH', async () => {
+    describe('SHIELDING BNB', async () => {
         it('Init data', async () => {
             accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
             await console.log('accountInfoBefore: ', accountInfoBefore.incTokenBal)
@@ -66,7 +66,7 @@ describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
 
     describe(`STEP_1 get shielding address and estimate shield fee`, async () => {
         it('Call API backend..', async () => {
-            let res = await backendApi.ethGenerate(1, account.paymentK, tokenID, SignPublicKeyEncode)
+            let res = await backendApi.bscGenerate(1, account.paymentK, tokenID, SignPublicKeyEncode)
             await validateSchemaCommand.validateSchema(backendApischemas.generateShieldAddressSchemas, res.data)
             shieldInfo.tmpWalletAddress = res.data.Result.Address
             shieldInfo.shieldTokenFee = res.data.Result.EstimateFee
@@ -86,7 +86,7 @@ describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
             console.log('sender %s -- receiver %s ', extAccount.address, shieldInfo.tmpWalletAddress)
             let depositAmt = web3.utils.toWei((shieldInfo.shieldAmt + shieldInfo.shieldTokenFee).toString(), 'ether')
 
-            let resDeposit = await sendNativeToken(
+            let resDeposit = await sendNativeBSCToken(
                 extAccount.address,
                 shieldInfo.tmpWalletAddress,
                 extPrivateKey,
@@ -151,7 +151,7 @@ describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
                     await slack.send('Shield seem to be stuck in the backend -- shield Id = ' + shieldInfo.shieldBackendId + ' in status = ' + resDetail.data.Result.Status + ' --- ' + tmp.data.Result.StatusDetail)
                     break
                 }
-                // await slack.send('send slack for fun -- shield Id = ' + shieldInfo.shieldBackendId + ' in status = ' + resDetail.data.Result.Status + ' --- ' + tmp.data.Result.StatusDetail)
+                await slack.send('send slack for fun -- shield Id = ' + shieldInfo.shieldBackendId + ' in status = ' + resDetail.data.Result.Status + ' --- ' + tmp.data.Result.StatusDetail)
                 await wait(120)
                 await counter++
             }
@@ -169,15 +169,15 @@ describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
 
 
 
-
-describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, async () => {
+describe(`[======  BSC BRIDGE - UNSHIELD ======]`, async () => {
     const extPrivateKey = '0xa5ae26c7154410df235bc8669ffd27c0fc9d3068c21e469a4cc68165c68cd5cb'
     const privateKey = `112t8rnX3VTd3MTWMpfbYP8HGY4ToAaLjrmUYzfjJBrAcb8iPLkNqvVDXWrLNiFV5yb2NBpR3FDZj3VW8GcLUwRdQ61hPMWP3YrREZAZ1UbH`
-    const tokenID = Constants.TOKEN.ETH
-    const tokenUnifiedID = Constants.TOKEN.UnifiedETH
     let SignPublicKeyEncode = 'f78fcecf2b0e2b3267d5a1845c314b76f3787f86981c7abcc5b04abc49ae434a'
-    const fullnodeEVM = ENV.EthereumFullnode[0].url
 
+    const tokenID = Constants.TOKEN.BNB
+    const tokenUnifiedID = Constants.TOKEN.UnifiedBNB
+    const fullnodeEVM = ENV.BSCFullnode[0].url
+   
     let node = await new IncNode()
     let account = await new IncAccount(privateKey).attachTo(node)
     let backendApi = await new BackendApi(ENV.Backend)
@@ -210,7 +210,7 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, async () => {
 
 
 
-    describe('UNSHIELDING ETH', async () => {
+    describe('UNSHIELDING BNB', async () => {
         it('Init data', async () => {
             accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
             await console.log('accountInfoBefore: ', accountInfoBefore.incTokenBal)
@@ -221,7 +221,7 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, async () => {
 
     describe('STEP_1 Estimate Unshield Fee', async () => {
         it('Call API get estimate Fee and backendUnshielId', async () => {
-            resEst = await backendApi.ethUnshieldEstFee(
+            resEst = await backendApi.bscUnshieldEstFee(
                 unshieldInfo.unshieldAmt,
                 2,
                 extAccount.address,
@@ -261,8 +261,8 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, async () => {
 
         })
         it(`[2.2] Submit unshield tx to backend`, async () => {
-            let resSubmitTx = await backendApi.submutTxEthereumUnshield(
-                1, //currencyType ETH
+            let resSubmitTx = await backendApi.submutTxBSCUnshield(
+                7, // currencyType = BSC
                 2,
                 unshieldInfo.unshieldAmt,
                 9,
@@ -322,9 +322,9 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, async () => {
         })
     })
 
-    describe('STEP_5 Verify data on Ethereum', async () => {
+    describe('STEP_5 Verify data on BSC', async () => {
         it('Verify transaction', async () => {
-            await console.log('tx unshield on ethereum : ', unshieldInfo.unshieldExtTx)
+            await console.log('tx unshield on BSC : ', unshieldInfo.unshieldExtTx)
             let res = await web3.eth.getTransactionReceipt(unshieldInfo.unshieldExtTx)
             chai.assert.isTrue(res.status)
         })
@@ -368,18 +368,10 @@ async function pickNewRecordBackend(
     return id
 }
 
-async function sendNativeToken(fromAddress, toAddress, pk, amountToSend, networkNode) {
+async function sendNativeBSCToken(fromAddress, toAddress, pk, amountToSend, networkNode) {
     let web3 = await new Web3(new Web3.providers.HttpProvider(networkNode))
     let privateKey = await Buffer.from(pk.slice(2), 'hex')
     let count = await web3.eth.getTransactionCount(fromAddress)
-
-    const bscTestnet = Common.default.forCustomChain('testnet', {
-        name: 'BNB',
-        networkId: 97,
-        chainId: 97
-    },
-        'petersburg'
-    );
 
     let rawTransaction = {
         "gasPrice": web3.utils.toHex(web3.utils.toWei('90', 'gwei')),
@@ -389,7 +381,7 @@ async function sendNativeToken(fromAddress, toAddress, pk, amountToSend, network
         "nonce": web3.utils.toHex(count)
     }
 
-    let transaction = new Tx(rawTransaction, { common: bscTestnet })
+    let transaction = new Tx(rawTransaction, { chain: 'goerli' })
     transaction.sign(privateKey)
 
     let result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'))
