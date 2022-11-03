@@ -7,8 +7,8 @@ const validateSchemaCommand = require("../../schemas/validateSchemaCommand");
 const webServiceApi_schemas = require("../../schemas/webServiceApi_schemas");
 const coinServiceApi_schemas = require("../../schemas/coinServiceApi_schemas");
 
-const webServiceApi = new WebServiceApi(ENV.WebService);
-const coinServiceApi = new CoinServiceApi(ENV.CoinService);
+const webServiceApi = new WebServiceApi();
+const coinServiceApi = new CoinServiceApi();
 
 //Our parent block
 describe("[Class] EstimateTrade", async() => {

@@ -4,7 +4,7 @@ const { ENV } = require('../../../global');
 const { BackendApi } = require('../../../lib/Incognito/BackendApi');
 
 
-let backendApi = new BackendApi(ENV.Backend)
+let backendApi = new BackendApi()
 
 describe('[Class] Login', () => {
 

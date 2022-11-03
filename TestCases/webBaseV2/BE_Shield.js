@@ -8,10 +8,10 @@ const { ENV } = require('../../global');
 
 let paymentAddress = '12sfV7Vo27Rz3aT4c2kyiTpvziwXjviQMMrp5gsFfupAvoDveHhQLunAWvqTao46DSEYpnbMpGYxuc4a9KGU7BppPM9uZtfVCqPAQ18WtPEijsLmYxVL1MWWDggDZHfRmhtxmVijadCjXyr7iC9X'
 
-let webServiceApi = new WebServiceApi(ENV.WebService)
+let webServiceApi = new WebServiceApi()
 let coinServiceApi = new CoinServiceApi()
-let backendApi = new BackendApi(ENV.Backend)
-let incRpc = new IncRpc(ENV.FullNode.url)
+let backendApi = new BackendApi()
+let incRpc = new IncRpc()
 
 //Our parent block
 describe('[Class]BEShield', async() => {
@@ -40,7 +40,7 @@ describe('[Class]BEShield', async() => {
 
         it('STEP_genShieldAddressFromWebService', async() => {
 
-            let response = await webServiceApi.genShieldAddress({
+            let response = await webServiceApi.genShieldAddressV2({
                 network: 'centralized',
                 currencyType: currenctType,
                 paymentAddress: paymentAddress,
@@ -79,7 +79,7 @@ describe('[Class]BEShield', async() => {
 
         it('STEP_genShieldAddressFromWebService', async() => {
 
-            let response = await webServiceApi.genShieldAddress({
+            let response = await webServiceApi.genShieldAddressV2({
                 network: 'centralized',
                 currencyType: currenctType,
                 paymentAddress: paymentAddress,
@@ -118,7 +118,7 @@ describe('[Class]BEShield', async() => {
 
         it('STEP_genShieldAddressFromWebService', async() => {
 
-            let response = await webServiceApi.genShieldAddress({
+            let response = await webServiceApi.genShieldAddressV2({
                 network: 'centralized',
                 currencyType: currenctType,
                 paymentAddress: paymentAddress,
@@ -157,7 +157,7 @@ describe('[Class]BEShield', async() => {
 
         it('STEP_genShieldAddressFromWebService', async() => {
 
-            let response = await webServiceApi.genShieldAddress({
+            let response = await webServiceApi.genShieldAddressV2({
                 network: 'centralized',
                 currencyType: currenctType,
                 paymentAddress: paymentAddress,
@@ -196,7 +196,7 @@ describe('[Class]BEShield', async() => {
 
         it('STEP_genShieldAddressFromWebService', async() => {
 
-            let response = await webServiceApi.genShieldAddress({
+            let response = await webServiceApi.genShieldAddressV2({
                 network: 'centralized',
                 currencyType: currenctType,
                 paymentAddress: paymentAddress,
@@ -235,7 +235,7 @@ describe('[Class]BEShield', async() => {
 
         it('STEP_genShieldAddressFromWebService', async() => {
 
-            let response = await webServiceApi.genShieldAddress({
+            let response = await webServiceApi.genShieldAddressV2({
                 network: 'centralized',
                 currencyType: currenctType,
                 paymentAddress: paymentAddress,
@@ -269,7 +269,7 @@ describe('[Class]BEShield', async() => {
 
         it('STEP_genShieldAddressFromWebService', async() => {
 
-            let response = await webServiceApi.genShieldAddress({
+            let response = await webServiceApi.genShieldAddressV2({
                 network: 'btc',
                 currencyType: currenctType,
                 paymentAddress: paymentAddress,

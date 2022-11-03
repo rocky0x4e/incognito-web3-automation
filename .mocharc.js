@@ -9,6 +9,8 @@ module.exports = {
 
         './TestCases/monitor/backend',
         './TestCases/monitor/coinService',
+        './TestCases/monitor/checkAlive',
+        './TestCases/monitor/EVM',
         './TestCases/webBaseV1',
     ],
     reporter: 'node_modules/mochawesome',

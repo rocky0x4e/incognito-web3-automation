@@ -5,7 +5,7 @@ const webServiceApi_schemas = require("../../schemas/webServiceApi_schemas");
 const validateSchemaCommand = require("../../schemas/validateSchemaCommand");
 const _ = require('lodash');
 
-let webServiceApi = new WebServiceApi(ENV.WebService)
+let webServiceApi = new WebServiceApi()
 
 describe('[Class] SwapStatus', async() => {
 

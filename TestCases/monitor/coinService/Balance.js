@@ -1,7 +1,6 @@
 const config = require("../../../constant/config");
+const { TOKEN } = require('../../../lib/Incognito/Constants');
 const listAccount = require("../../../constant/listAccount.json");
-const chainCommonFunction = require("../../../constant/chainCommonFunction");
-const commonFunction = require("../../../constant/commonFunction");
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
 const addingContent = require("../../../lib/Utils/AddingContent");
@@ -9,9 +8,10 @@ let chai = require("chai");
 const { IncAccount } = require("../../../lib/Incognito/Account/Account");
 const { IncNode } = require("../../../lib/Incognito/IncNode");
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
+const GenAction = require("../../../lib/Utils/GenAction");
 
 //init
-let node = new IncNode(ENV.urlFullNode);
+let node = new IncNode();
 let sender = new IncAccount(listAccount["2"]).attachTo(node);
 let receiver = new IncAccount(listAccount["3"]).attachTo(node);
 let account = {
@@ -25,7 +25,7 @@ describe("[Class] Balance", () => {
         it("InitData", async() => {
             let privateKey = (await config.getAccount("main7")).privateKey;
 
-            let node = new IncNode(ENV.urlFullNode);
+            let node = new IncNode();
             let accountNode = new IncAccount(privateKey).attachTo(node);
 
             account.otaKey = accountNode.otaPrivateK;
@@ -102,10 +102,9 @@ describe("[Class] Balance", () => {
 
     describe.skip("TC007_CheckBalancePrvAfterSend", async() => {
         let amountTransfer = 0;
-        const PRV = "0000000000000000000000000000000000000000000000000000000000000004";
 
         it("STEP_InitData", async() => {
-            amountTransfer = await commonFunction.randomNumber(1000);
+            amountTransfer = await GenAction.randomNumber(1000);
             await sender.initSdkInstance();
             await receiver.initSdkInstance();
         });
@@ -130,10 +129,8 @@ describe("[Class] Balance", () => {
 
         it("STEP_Send", async() => {
             let tx = await sender.useCli.send(receiver, amountTransfer);
-
-            console.log(`Send PRV : ${tx}`);
             await addingContent.addContent("tx", tx);
-            await chainCommonFunction.waitForTxInBlock(tx);
+            await node.getTransactionByHashRpc(tx);
         }).timeout(50000);
 
         it("STEP_CompareBalance", async() => {
@@ -153,11 +150,11 @@ describe("[Class] Balance", () => {
             receiver.balanceSdk = await receiver.useSdk.getBalanceAll();
             await addingContent.addContent("receiver.balanceSdk", receiver.balanceSdk);
 
-            chai.expect(sender.balanceCLI[PRV]).to.equal(sender.balanceSdk[PRV]);
-            chai.expect(receiver.balanceCLI[PRV]).to.equal(receiver.balanceSdk[PRV]);
+            chai.expect(sender.balanceCLI[TOKEN.PRV]).to.equal(sender.balanceSdk[TOKEN.PRV]);
+            chai.expect(receiver.balanceCLI[TOKEN.PRV]).to.equal(receiver.balanceSdk[TOKEN.PRV]);
 
-            chai.expect(sender.newBalance[PRV]).to.equal(sender.oldBalance[PRV] - amountTransfer - 100);
-            chai.expect(receiver.newBalance[PRV]).to.equal(receiver.oldBalance[PRV] + amountTransfer);
+            chai.expect(sender.newBalance[TOKEN.PRV]).to.equal(sender.oldBalance[TOKEN.PRV] - amountTransfer - 100);
+            chai.expect(receiver.newBalance[TOKEN.PRV]).to.equal(receiver.oldBalance[TOKEN.PRV] + amountTransfer);
         }).timeout(100000);
     });
 
@@ -191,10 +188,8 @@ describe("[Class] Balance", () => {
 
         it("STEP_Send", async() => {
             let tx = await sender.useCli.send(receiver, amountTransfer, USDT);
-
-            console.log(`Send Token : ${tx}`);
             await addingContent.addContent("tx", tx);
-            await chainCommonFunction.waitForTxInBlock(tx);
+            await node.getTransactionByHashRpc(tx);
         }).timeout(1000000);
 
         it("STEP_CompareBalance", async() => {
