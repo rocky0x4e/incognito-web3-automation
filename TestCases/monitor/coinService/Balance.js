@@ -134,7 +134,7 @@ describe("[Class] Balance", () => {
         }).timeout(50000);
 
         it("STEP_CompareBalance", async() => {
-            await commonFunction.sleep(20000);
+            await GenAction.sleep(20000);
 
             sender.balanceCLI = await sender.useCli.getBalanceAll();
             await addingContent.addContent("sender.balanceCLI", sender.balanceCLI);
@@ -158,12 +158,12 @@ describe("[Class] Balance", () => {
         }).timeout(100000);
     });
 
-    describe.skip("TC008_CheckBalanceTokenAfterSend", async() => {
+    describe.only("TC008_CheckBalanceTokenAfterSend", async() => {
         let amountTransfer = 0;
         let USDT = "076a4423fa20922526bd50b0d7b0dc1c593ce16e15ba141ede5fb5a28aa3f229";
 
         it("STEP_InitData", async() => {
-            amountTransfer = await commonFunction.randomNumber(1000);
+            amountTransfer = await GenAction.randomNumber(1000);
             await sender.initSdkInstance();
             await receiver.initSdkInstance();
         });
@@ -193,7 +193,7 @@ describe("[Class] Balance", () => {
         }).timeout(1000000);
 
         it("STEP_CompareBalance", async() => {
-            await commonFunction.sleep(20000);
+            await GenAction.sleep(20000);
 
             sender.balanceCLI = sender.useCli.getBalanceAll();
             await addingContent.addContent("sender.balanceCLI ", sender.balanceCLI);
