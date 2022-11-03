@@ -7,6 +7,8 @@ const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
 const { IncRpc } = require("../../../lib/Incognito/RPC/Rpc");
 const GenAction = require("../../../lib/Utils/GenAction");
 let chai = require("chai");
+const { getLogger } = require("../../../lib/Utils/LoggingManager");
+const logger = getLogger("Pdex")
 
 let coinServiceApi = new CoinServiceApi();
 let rpc = new IncRpc();
@@ -14,7 +16,7 @@ let node = new IncNode()
 let sender = new IncAccount(listAccount[2], node)
 
 describe("[Class] Pdex", () => {
-    describe.skip("TC001_TradePRVToToken", async() => {
+    describe("TC001_TradePRVToToken", async() => {
         let amountTrade = 0
         let estimateTradeObject
         let tx
@@ -24,6 +26,9 @@ describe("[Class] Pdex", () => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVBefore = balanceAll[TOKEN.PRV]
             sender.balanceZILBefore = balanceAll[TOKEN.ZIL]
+
+            logger.info({ balancePRVBefore: sender.balancePRVBefore })
+            logger.info({ balanceZILBefore: sender.balanceZILBefore })
 
             amountTrade = await GenAction.randomNumber(100000)
         }).timeout(60000);
@@ -35,7 +40,9 @@ describe("[Class] Pdex", () => {
                 sellAmount: amountTrade
             })
             estimateTradeObject = estimateTrade.data
+            logger.info({ estimateTradeObject })
         });
+
 
         it("STEP_Trade", async() => {
             tx = await sender.useSdk.swap({
@@ -47,6 +54,7 @@ describe("[Class] Pdex", () => {
                 feeToken: TOKEN.PRV,
                 minAcceptableAmount: estimateTradeObject.Result.FeePRV.MaxGet,
             })
+            logger.info({ tx })
 
             await node.getTransactionByHashRpc(tx)
             await GenAction.sleep(60000)
@@ -54,6 +62,7 @@ describe("[Class] Pdex", () => {
 
         it("STEP_CheckTradeSuccess", async() => {
             let response = await rpc.pdexv3_getTradeStatus(tx)
+            logger.info({ response })
 
             chai.expect(response.data.Result.Status).to.equal(1)
             chai.expect(response.data.Result.BuyAmount).to.above(1)
@@ -65,6 +74,8 @@ describe("[Class] Pdex", () => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
             sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
+            logger.info({ balancePRVAfter: sender.balancePRVAfter })
+            logger.info({ balanceZILAfter: sender.balanceZILAfter })
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - amountTrade - 100 - estimateTradeObject.Result.FeePRV.Fee);
             chai.expect(sender.balanceZILAfter).to.be.least(sender.balanceZILBefore + estimateTradeObject.Result.FeePRV.MaxGet);
@@ -80,8 +91,12 @@ describe("[Class] Pdex", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
             let balanceAll = await sender.useCli.getBalanceAll()
+
             sender.balancePRVBefore = balanceAll[TOKEN.PRV]
             sender.balanceZILBefore = balanceAll[TOKEN.ZIL]
+
+            logger.info({ balancePRVBefore: sender.balancePRVBefore })
+            logger.info({ balanceZILBefore: sender.balanceZILBefore })
 
             amountTrade = await GenAction.randomNumber(100000)
         }).timeout(60000);
@@ -93,6 +108,7 @@ describe("[Class] Pdex", () => {
                 sellAmount: amountTrade
             })
             estimateTradeObject = estimateTrade.data
+            logger.info({ estimateTradeObject })
         });
 
         it("STEP_Trade", async() => {
@@ -106,6 +122,7 @@ describe("[Class] Pdex", () => {
                 feeToken: TOKEN.ZIL,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
+            logger.info({ tx })
 
             await node.getTransactionByHashRpc(tx)
             await GenAction.sleep(60000)
@@ -113,10 +130,11 @@ describe("[Class] Pdex", () => {
 
         it("STEP_CheckTradeSuccess", async() => {
             let response = await rpc.pdexv3_getTradeStatus(tx)
+            logger.info({ response })
 
             chai.expect(response.data.Result.Status).to.equal(1)
             chai.expect(response.data.Result.BuyAmount).to.above(1)
-            chai.expect(response.data.Result.TokenToBuy).to.equal(PRV)
+            chai.expect(response.data.Result.TokenToBuy).to.equal(TOKEN.PRV)
 
         }).timeout(120000);
 
@@ -124,6 +142,8 @@ describe("[Class] Pdex", () => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
             sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
+            logger.info({ balancePRVAfter: sender.balancePRVAfter })
+            logger.info({ balanceZILAfter: sender.balanceZILAfter })
 
             chai.expect(sender.balancePRVAfter).to.least(sender.balancePRVBefore - 100 + estimateTradeObject.Result.FeePRV.MaxGet);
             chai.expect(sender.balanceZILAfter).to.be.equal(sender.balanceZILBefore - amountTrade - estimateTradeObject.Result.FeeToken.Fee);
