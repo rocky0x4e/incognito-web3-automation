@@ -101,8 +101,84 @@ describe("[Class] Pdex", () => {
         }).timeout(60000);
     });
 
+    describe.only("TC002_RemoveExistLiquidity", async() => {
+        let shareRemove
+        let actualAmount0Remove
+        let actualAmount1Remove
+        let tx
+        let nftID
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+
+            //getBalance
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
+            sender.balanceZILBefore = balanceAll[TOKEN.ZIL]
+
+            logger.info({ balancePRVBefore: sender.balancePRVBefore })
+            logger.info({ balanceZILBefore: sender.balanceZILBefore })
+
+            //selectNFT
+            let nftData = await sender.useSdk.getNftData()
+            for (const nft of nftData) {
+                if (nft.realAmount == 1) {
+                    nftID = nft.nftToken
+                }
+                break
+            }
+            console.log('hoanh nftSelect', nftID);
+        }).timeout(60000);
+
+        it("STEP_CreateTxRemoveLiquidity", async() => {
+            //get AMP
+            let listPoolShare = await sender.useSdk.getListShare()
+            for (const pool of listPoolShare) {
+                if (pool.poolId == POOL.PRV_ZIL) {
+                    let share = pool.share
+                    shareRemove = await GenAction.randomNumber(Math.round(share / 10))
+                    console.log("hoanh shareRemove", shareRemove);
+                }
+            }
+
+            //create tx
+            tx = await sender.useSdk.removeLiquidity({
+                poolTokenIDs: [TOKEN.PRV, TOKEN.ZIL],
+                poolPairID: POOL.PRV_ZIL,
+                shareAmount: shareRemove,
+                nftID,
+                amount1: 1,
+                amount2: 1,
+            })
+            console.log("hoanh tx", tx);
+
+            await incNode.getTransactionByHashRpc(tx)
+            await GenAction.sleep(60000)
+        }).timeout(120000);
 
 
+        it("STEP_CheckTxStatus", async() => {
+            let response = await incRpc.pdexv3_getWithdrawLiquidityStatus(tx)
+
+            actualAmount0Remove = response.data.Result.Token0Amount
+            actualAmount1Remove = response.data.Result.Token1Amount
+
+            chai.expect(response.data.Result.Status).to.equal(1)
+            chai.expect(response.data.Result.Token0ID).to.equal(TOKEN.PRV)
+            chai.expect(response.data.Result.Token1ID).to.equal(TOKEN.ZIL)
+        }).timeout(60000);
 
 
+        it("STEP_VerifyBalance", async() => {
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balancePRVAfter = balanceAll[TOKEN.PRV]
+            sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
+            logger.info({ balancePRVAfter: sender.balancePRVAfter })
+            logger.info({ balanceZILAfter: sender.balanceZILAfter })
+
+            chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore + actualAmount0Remove - 100);
+            chai.expect(sender.balanceZILAfter).to.be.least(sender.balanceZILBefore + actualAmount1Remove);
+
+        }).timeout(60000);
+    });
 });
