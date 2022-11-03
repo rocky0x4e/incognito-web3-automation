@@ -14,7 +14,7 @@ let incNode = new IncNode()
 let sender = new IncAccount(listAccount[2], incNode)
 
 describe("[Class] Pdex", () => {
-    describe("TC001_AddExistLiquidity", async() => {
+    describe("TC001_AddExistLiquidity", async () => {
         let amount1 = 0
         let amount2 = 0
         let actualAmount0Add
@@ -22,7 +22,7 @@ describe("[Class] Pdex", () => {
         let listTx = []
         let nftID
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
 
             //getBalance
@@ -41,14 +41,13 @@ describe("[Class] Pdex", () => {
                 }
                 break
             }
-            console.log('hoanh nftSelect', nftID);
 
             //randomNumber
             amount1 = await GenAction.randomNumber(10000)
             amount2 = await GenAction.randomNumber(10000)
         }).timeout(60000);
 
-        it("STEP_CreateTxContributeLiquidity", async() => {
+        it("STEP_CreateTxContributeLiquidity", async () => {
             //get AMP
             let poolInfo = await sender.useSdk.getListPoolsDetail(POOL.PRV_ZIL)
             let amp = poolInfo[0].amp
@@ -63,17 +62,15 @@ describe("[Class] Pdex", () => {
                 amp,
                 nftID
             })
-            console.log("hoanh listTx", listTx);
 
             for (const tx of listTx) {
-                console.log("hoanh tx", tx);
                 await incNode.getTransactionByHashRpc(tx)
             }
             await GenAction.sleep(60000)
         }).timeout(120000);
 
 
-        it("STEP_CheckTxStatus", async() => {
+        it("STEP_CheckTxStatus", async () => {
             for (const tx of listTx) {
                 let response = await incRpc.pdexv3_getContributionStatus(tx)
 
@@ -88,7 +85,7 @@ describe("[Class] Pdex", () => {
         }).timeout(60000);
 
 
-        it("STEP_VerifyBalance", async() => {
+        it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
             sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
@@ -101,14 +98,14 @@ describe("[Class] Pdex", () => {
         }).timeout(60000);
     });
 
-    describe("TC002_RemoveExistLiquidity", async() => {
+    describe("TC002_RemoveExistLiquidity", async () => {
         let shareRemove
         let actualAmount0Remove
         let actualAmount1Remove
         let tx
         let nftID
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
 
             //getBalance
@@ -127,17 +124,15 @@ describe("[Class] Pdex", () => {
                 }
                 break
             }
-            console.log('hoanh nftSelect', nftID);
         }).timeout(60000);
 
-        it("STEP_CreateTxRemoveLiquidity", async() => {
+        it("STEP_CreateTxRemoveLiquidity", async () => {
             //get AMP
             let listPoolShare = await sender.useSdk.getListShare()
             for (const pool of listPoolShare) {
                 if (pool.poolId == POOL.PRV_ZIL) {
                     let share = pool.share
                     shareRemove = await GenAction.randomNumber(Math.round(share / 10))
-                    console.log("hoanh shareRemove", shareRemove);
                 }
             }
 
@@ -150,14 +145,13 @@ describe("[Class] Pdex", () => {
                 amount1: 1,
                 amount2: 1,
             })
-            console.log("hoanh tx", tx);
 
             await incNode.getTransactionByHashRpc(tx)
             await GenAction.sleep(60000)
         }).timeout(120000);
 
 
-        it("STEP_CheckTxStatus", async() => {
+        it("STEP_CheckTxStatus", async () => {
             let response = await incRpc.pdexv3_getWithdrawLiquidityStatus(tx)
 
             actualAmount0Remove = response.data.Result.Token0Amount
@@ -169,7 +163,7 @@ describe("[Class] Pdex", () => {
         }).timeout(60000);
 
 
-        it("STEP_VerifyBalance", async() => {
+        it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
             sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
