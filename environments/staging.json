@@ -27,16 +27,14 @@
     "WebService": {
         "url": "https://api-webapp-staging.incognito.org"
     },
-    "EthereumFullnode": [
-        {
+    "EthereumFullnode": [{
             "url": "https://eth-goerli.g.alchemy.com/v2/qOolRKBtov0fk1r657-8qWmLrcfZCw87"
         },
         {
             "url": "https://eth-goerli.g.alchemy.com/v2/qOolRKBtov0fk1r657-8qWmLrcfZCw87"
         }
     ],
-    "BSCFullnode": [
-        {
+    "BSCFullnode": [{
             "url": "https://data-seed-prebsc-1-s1.binance.org:8545"
         },
         {
@@ -49,8 +47,7 @@
             "url": "https://data-seed-prebsc-2-s3.binance.org:8545"
         }
     ],
-    "PLGFullnode": [
-        {
+    "PLGFullnode": [{
             "url": "https://polygon-mumbai.g.alchemy.com/v2/V8SP0S8Q-sT35ca4VKH3Iwyvh8K8wTRn"
         },
         {
@@ -60,25 +57,22 @@
             "url": "https://matic-mumbai.chainstacklabs.com"
         }
     ],
-    "FTMFullnode": [
-        {
-            "url": "https://rpc.testnet.fantom.network"
-        }
-    ],
-    "AuroraFullnode": [
-        {
-            "url": "https://testnet.aurora.dev"
-        }
-    ],
-    "AvaxFullnode": [
-        {
-            "url": "https://api.avax-test.network/ext/C/rpc"
-        }
-    ],
+    "FTMFullnode": [{
+        "url": "https://rpc.testnet.fantom.network"
+    }],
+    "AuroraFullnode": [{
+        "url": "https://testnet.aurora.dev"
+    }],
+    "AvaxFullnode": [{
+        "url": "https://api.avax-test.network/ext/C/rpc"
+    }],
     "IncTokens": {
         "PRV": "0000000000000000000000000000000000000000000000000000000000000004",
-        "ETH": "ffd8d42dc40a8d166ea4848baf8b5f6e9fe0e9c30d60062eb7d44a8df9e00854",
-        "UnifiedETH": "b366fa400c36e6bbcf24ac3e99c90406ddc64346ab0b7ba21e159b83d938812d",
-        "ABC": "abcaasdacascascascacacascascadcadasfbasdb"
+        "DAI_UT": "50092f46f3f9dcebd3176de97c936950977bcc52a22eebb2863b8e4d24261434",
+        "ZIL": "880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc"
+    },
+    "IncPools": {
+        "PRV_USDT": "0000000000000000000000000000000000000000000000000000000000000004-076a4423fa20922526bd50b0d7b0dc1c593ce16e15ba141ede5fb5a28aa3f229-33a8ceae6db677d9860a6731de1a01de7e1ca7930404d7ec9ef5028f226f1633",
+        "PRV_ZIL": "0000000000000000000000000000000000000000000000000000000000000004-880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc-14a749e883312bc56ec80509abd895d737e14fbb160a4dfd238452ba8dca6a42"
     }
 }
