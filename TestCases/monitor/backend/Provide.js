@@ -8,6 +8,8 @@ const { IncNode } = require('../../../lib/Incognito/IncNode');
 const { CoinServiceApi } = require('../../../lib/Incognito/CoinServiceApi');
 const { BackendApi } = require('../../../lib/Incognito/BackendApi');
 const { ENV } = require('../../../global');
+const { getLogger } = require('../../../lib/Utils/LoggingManager');
+const logger = getLogger("Provide")
 
 //init
 let listAccount = {
@@ -79,8 +81,8 @@ describe('[Class] Provide', () => {
         it('STEP_Send Provide', async () => {
             var proof = await sender.useRpc.makeRawTx(receiver, amountProvide);
             //"SignPublicKeyEncode": "8a59a648a9cf47168e72e348b98d7bb296c67f7dd2d50cc9e043d2feb40b9cc8", zxv
-            console.log(`Send PROOF: ${proof.Base58CheckData}`);
-            console.log(`Send TxID: ${proof.TxID}`);
+            logger.debug(`Send PROOF: ${proof.Base58CheckData}`);
+            logger.debug(`Send TxID: ${proof.TxID}`);
             let provideResponse = await backendApi.provideSubmitRawData({
                 PStakeAddress: sender.paymentK,
                 transactionID: proof.TxID,
@@ -89,30 +91,12 @@ describe('[Class] Provide', () => {
             });
             chai.expect(provideResponse.status).to.equal(400)
             chai.expect(JSON.stringify(provideResponse.data)).to.equal("{\"Result\":null,\"Error\":\"The data invalid!!!\"}")
+            // chai.assert.equal(provideResponse.status, 400, "Response Status Code is 400")
+            // chai.assert.equal(JSON.stringify(provideResponse.data),"{\"Result\":null,\"Error\":\"The data invalid!!!\"}","Error g-captcha not valid")
+            logger.info("STEP_Send Provide\nResponse Status Code is 400\nReject invalid g-captcha\n --- PASSED --- ")
+
         }).timeout(50000);
 
-        it.skip('STEP_CompareBalance', async () => {
-            await commonFunction.sleep(20000);
 
-            sender.balanceCLI = await sender.useCli.getBalanceAll();
-            await addingContent.addContent('sender.balanceCLI', sender.balanceCLI);
-            sender.newBalance = sender.balanceCLI;
-
-            receiver.balanceCLI = await receiver.useCli.getBalanceAll();
-            await addingContent.addContent('receiver.balanceCLI', receiver.balanceCLI);
-            receiver.newBalance = receiver.balanceCLI;
-
-            sender.balanceSdk = await sender.useSdk.getBalanceAll();
-            await addingContent.addContent('sender.balanceSdk', sender.balanceSdk);
-
-            receiver.balanceSdk = await receiver.useSdk.getBalanceAll();
-            await addingContent.addContent('receiver.balanceSdk', receiver.balanceSdk);
-
-            chai.expect(sender.balanceCLI[PRV]).to.equal(sender.balanceSdk[PRV]);
-            chai.expect(receiver.balanceCLI[PRV]).to.equal(receiver.balanceSdk[PRV]);
-
-            chai.expect(sender.newBalance[PRV]).to.equal(sender.oldBalance[PRV] - amountTransfer - 100);
-            chai.expect(receiver.newBalance[PRV]).to.equal(receiver.oldBalance[PRV] + amountTransfer);
-        }).timeout(100000);
     });
 });
