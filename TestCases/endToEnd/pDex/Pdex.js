@@ -1,4 +1,4 @@
-const { TOKEN } = require('../../../lib/Incognito/Constants')
+const { TOKEN, POOL, TOKEN_TESTNET } = require('../../../lib/Incognito/Constants')
 const config = require("../../../constant/config");
 const listAccount = require("../../../constant/listAccount.json");
 const { IncNode } = require("../../../lib/Incognito/IncNode");
@@ -11,9 +11,9 @@ const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const logger = getLogger("Pdex")
 
 let coinServiceApi = new CoinServiceApi();
-let rpc = new IncRpc();
-let node = new IncNode()
-let sender = new IncAccount(listAccount[2], node)
+let incRpc = new IncRpc();
+let incNode = new IncNode()
+let sender = new IncAccount(listAccount[2], incNode)
 
 describe("[Class] Pdex", () => {
     describe("TC001_TradePRVToToken", async() => {
@@ -147,6 +147,112 @@ describe("[Class] Pdex", () => {
 
             chai.expect(sender.balancePRVAfter).to.least(sender.balancePRVBefore - 100 + estimateTradeObject.Result.FeePRV.MaxGet);
             chai.expect(sender.balanceZILAfter).to.be.equal(sender.balanceZILBefore - amountTrade - estimateTradeObject.Result.FeeToken.Fee);
+
+        }).timeout(60000);
+    });
+
+    describe.only("TC001_AddOrderSellPRV", async() => {
+        let amountBuy = 0
+        let amountSell = 0
+        let tx
+        let nftID
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
+
+            logger.info({ balancePRVBefore: sender.balancePRVBefore })
+
+            amountBuy = await GenAction.randomNumber(100000)
+            amountSell = await GenAction.randomNumber(100000)
+
+            console.log('hoanh STEP_InitData', sender.balancePRVBefore, amountSell, amountBuy);
+        }).timeout(60000);
+
+        it("STEP_AddOrder", async() => {
+            tx = await sender.useSdk.addOrder({
+                poolPairID: POOL.PRV_ZIL,
+                tokenIDToSell: TOKEN_TESTNET.PRV,
+                tokenIDToBuy: TOKEN_TESTNET.ZIL,
+                sellAmount: amountSell,
+                buyAmount: amountBuy,
+            })
+            logger.info({ tx })
+            console.log({ tx });
+
+            await node.getTransactionByHashRpc(tx)
+            await GenAction.sleep(60000)
+        }).timeout(120000);
+
+        it("STEP_CheckOrderStatus", async() => {
+            let response = await incRpc.pdexv3_getAddOrderStatus(tx)
+
+            chai.expect(response.data.Result.Status).to.equal(1);
+            chai.expect(response.data.Result.OrderID).to.equal(tx);
+        }).timeout(120000);
+
+        it("STEP_CheckPdexState", async() => {
+            let response = await incRpc.pdexv3_getState()
+            let orders = response.data.Result.PoolPairs[POOL.PRV_ZIL].Orderbook.orders
+            console.log('hoanh orders', JSON.stringify(orders));
+            let isFind = false
+            for (const order of orders) {
+                if (order.Id == tx) {
+                    isFind = true;
+                    nftID = order.NftID
+                    chai.expect(order.Id).to.equal(tx);
+                    chai.expect(order.Token0Rate).to.equal(amountSell);
+                    chai.expect(order.Token1Rate).to.equal(amountBuy);
+                    chai.expect(order.Token0Balance).to.equal(amountSell);
+                    chai.expect(order.Token1Balance).to.equal(0);
+                }
+            }
+            if (!isFind) {
+                chai.expect.fail('Cannot find order book');
+            }
+
+        }).timeout(120000);
+
+        it("STEP_VerifyBalanceAfterAdd", async() => {
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balancePRVAfter = balanceAll[TOKEN.PRV]
+            console.log('hoanh STEP_VerifyBalance', sender.balancePRVAfter);
+
+            chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - amountSell - 100);
+
+        }).timeout(60000);
+
+        it("STEP_CancelOrder", async() => {
+            tx = await sender.useSdk.cancelOrder({
+                token1ID: TOKEN_TESTNET.PRV,
+                token2ID: TOKEN_TESTNET.ZIL,
+                poolPairID: POOL.PRV_ZIL,
+                orderID: tx,
+                nftID: nftID,
+            })
+            logger.info({ tx })
+            console.log({ tx });
+
+            await node.getTransactionByHashRpc(tx)
+            await GenAction.sleep(60000)
+
+        }).timeout(60000);
+
+        it("STEP_CheckCancelOrderStatus", async() => {
+            let response = await incRpc.pdexv3_getWithdrawOrderStatus(tx)
+
+            chai.expect(response.data.Result.Status).to.equal(1);
+            chai.expect(response.data.Result.OrderID).to.equal(tx);
+
+        }).timeout(60000);
+
+        it("STEP_VerifyBalanceAfterCancel", async() => {
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balancePRVAfter = balanceAll[TOKEN.PRV]
+            console.log('hoanh STEP_VerifyBalance', sender.balancePRVAfter);
+
+            chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - 100 - 100);
 
         }).timeout(60000);
     });
