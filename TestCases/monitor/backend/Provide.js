@@ -12,38 +12,15 @@ const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const logger = getLogger("Provide");
 
 let node = new IncNode(ENV.urlFullNode);
-let sender = new IncAccount("112t8rnXVMJJZzfF1naXvfE9nkTKwUwFWFeh8cfEyViG1vpA8A9khJk3mhyB1hDuJ4RbreDTsZpgJK4YcSxdEpXJKMEd8Vmp5UqKWwBcYzxv").attachTo(
-    node
-);
+let sender = new IncAccount("112t8rnXVMJJZzfF1naXvfE9nkTKwUwFWFeh8cfEyViG1vpA8A9khJk3mhyB1hDuJ4RbreDTsZpgJK4YcSxdEpXJKMEd8Vmp5UqKWwBcYzxv").attachTo(node);
 let receiver = new IncAccount({PaymentAddress:"12suG5oV5KQspoUPseBAnLCmm8vBPQs3je7kbiLuBSyvhAG2dHbo3RP5zRsNoB9Y2m9fA342MyfbpoUJYNcS5zhB5pU89kUiU3YPGDCjh8Eg7Y5HdgAU33XrNQ3q77J5BwThnmcXZvyNekF6EnSr"}).attachTo(node);
-let account = {
-    privateKey: null,
-    otaKey: null,
-};
 let coinServiceApi = new CoinServiceApi();
-var backendApi = new BackendApi(ENV.Backend);
+let backendApi = new BackendApi(ENV.Backend);
 
 describe("[Class] Provide", () => {
-    describe("Before_InitData", async () => {
-        it("InitData", async () => {
-            account.otaKey = sender.otaPrivateK;
-            account.privateKey = sender.privateK;
-        });
-    });
-
-    describe("TC001_GetKeyInfo", async () => {
-        it("CallAPI", async () => {
-            let response = await coinServiceApi.getKeyInfo({
-                otaKey: account.otaKey,
-            });
-
-            await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getGetKeyInfoSchemas, response.data);
-        });
-    });
-
     describe("TC006_SubmitOtaKey", async () => {
         it("CallAPI", async () => {
-            let response = await coinServiceApi.submitOtaKey(account.otaKey);
+            let response = await coinServiceApi.submitOtaKey(sender.otaPrivateK);
         });
         it.skip("Call RPC Authorize Submit Key", async () => {
             await sender.useRpc.submitKeyEnhanced();
