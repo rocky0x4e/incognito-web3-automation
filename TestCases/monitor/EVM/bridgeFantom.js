@@ -19,18 +19,18 @@ let slackNotify = require('slack-notify');
 const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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';
 
 const networkInfo = {
-    networkName : 'BSC Testnet',
-    chainId : 97,
-    currencyType : 7,
-    decentralized : 3
+    networkName : 'fantom testnet',
+    chainId : 4002,
+    currencyType : 21,
+    decentralized : 5
 }
 
-describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {
+describe(`[ ======  FANTOM BRIDGE - SHIELD ======  ]`, async () => {
     const extPrivateKey = '0x03a731311839ea8c9d0d7eae6dc761ec67c14dc8497336c194d102d21a3de5f1'
     const privateKey = `112t8rnX3VTd3MTWMpfbYP8HGY4ToAaLjrmUYzfjJBrAcb8iPLkNqvVDXWrLNiFV5yb2NBpR3FDZj3VW8GcLUwRdQ61hPMWP3YrREZAZ1UbH`
-    const tokenID = Constants.TOKEN.BNB
-    const tokenUnifiedID = Constants.TOKEN.UnifiedBNB
-    const fullnodeEVM = ENV.BSCFullnode[0].url
+    const tokenID = Constants.TOKEN.MATIC
+    const tokenUnifiedID = Constants.TOKEN.UnifiedMATIC
+    const fullnodeEVM = ENV.FTMFullnode[0].url
 
     let node = await new IncNode()
     let account = await new IncAccount(privateKey).attachTo(node)
@@ -54,7 +54,7 @@ describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {
     }
 
     const shieldInfo = {
-        shieldAmt: 0.01, // BNB
+        shieldAmt: 0.01, // fantom
         shieldBackendId: null,
         shieldPrvFee: 0,
         shieldTokenFee: 0,
@@ -64,7 +64,7 @@ describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {
     }
 
 
-    describe('SHIELDING BNB', async () => {
+    describe('SHIELDING FANTOM', async () => {
         it('Init data', async () => {
             accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
             await console.log('accountInfoBefore: ', accountInfoBefore.incTokenBal)
@@ -73,7 +73,7 @@ describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {
 
     describe(`STEP_1 get shielding address and estimate shield fee`, async () => {
         it('Call API backend..', async () => {
-            let res = await backendApi.bscGenerate(1, account.paymentK, tokenID, SignPublicKeyEncode)
+            let res = await backendApi.ftmGenerate(1, account.paymentK, tokenID, SignPublicKeyEncode)
             await validateSchemaCommand.validateSchema(backendApischemas.generateShieldAddressSchemas, res.data)
             shieldInfo.tmpWalletAddress = res.data.Result.Address
             shieldInfo.shieldTokenFee = res.data.Result.EstimateFee
@@ -93,7 +93,7 @@ describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {
             console.log('sender %s -- receiver %s ', extAccount.address, shieldInfo.tmpWalletAddress)
             let depositAmt = web3.utils.toWei((shieldInfo.shieldAmt + shieldInfo.shieldTokenFee).toString(), 'ether')
 
-            let resDeposit = await sendNativeBSCToken(
+            let resDeposit = await sendNativeFTMToken(
                 extAccount.address,
                 shieldInfo.tmpWalletAddress,
                 extPrivateKey,
@@ -176,14 +176,14 @@ describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {
 
 
 
-describe(`[======  BSC BRIDGE - UNSHIELD ======]`, async () => {
+describe(`[======  FANTOM BRIDGE - UNSHIELD ======]`, async () => {
     const extPrivateKey = '0xa5ae26c7154410df235bc8669ffd27c0fc9d3068c21e469a4cc68165c68cd5cb'
     const privateKey = `112t8rnX3VTd3MTWMpfbYP8HGY4ToAaLjrmUYzfjJBrAcb8iPLkNqvVDXWrLNiFV5yb2NBpR3FDZj3VW8GcLUwRdQ61hPMWP3YrREZAZ1UbH`
     let SignPublicKeyEncode = 'f78fcecf2b0e2b3267d5a1845c314b76f3787f86981c7abcc5b04abc49ae434a'
 
-    const tokenID = Constants.TOKEN.BNB
-    const tokenUnifiedID = Constants.TOKEN.UnifiedBNB
-    const fullnodeEVM = ENV.BSCFullnode[0].url
+    const tokenID = Constants.TOKEN.MATIC
+    const tokenUnifiedID = Constants.TOKEN.UnifiedMATIC
+    const fullnodeEVM = ENV.FTMFullnode[0].url
    
     let node = await new IncNode()
     let account = await new IncAccount(privateKey).attachTo(node)
@@ -215,9 +215,7 @@ describe(`[======  BSC BRIDGE - UNSHIELD ======]`, async () => {
         countWating: 5
     }
 
-
-
-    describe('UNSHIELDING BNB', async () => {
+    describe('UNSHIELDING FANTOM', async () => {
         it('Init data', async () => {
             accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
             await console.log('accountInfoBefore: ', accountInfoBefore.incTokenBal)
@@ -228,7 +226,7 @@ describe(`[======  BSC BRIDGE - UNSHIELD ======]`, async () => {
 
     describe('STEP_1 Estimate Unshield Fee', async () => {
         it('Call API get estimate Fee and backendUnshielId', async () => {
-            resEst = await backendApi.bscUnshieldEstFee(
+            resEst = await backendApi.ftmUnshieldEstFee(
                 unshieldInfo.unshieldAmt,
                 2,
                 extAccount.address,
@@ -268,8 +266,8 @@ describe(`[======  BSC BRIDGE - UNSHIELD ======]`, async () => {
 
         })
         it(`[2.2] Submit unshield tx to backend`, async () => {
-            let resSubmitTx = await backendApi.submutTxBSCUnshield(
-                networkInfo.currencyType, // currencyType = BSC
+            let resSubmitTx = await backendApi.submutTxFTMUnshield(
+                networkInfo.currencyType, // currencyType = MATIC
                 2,
                 unshieldInfo.unshieldAmt,
                 9,
@@ -328,9 +326,9 @@ describe(`[======  BSC BRIDGE - UNSHIELD ======]`, async () => {
         })
     })
 
-    describe('STEP_5 Verify data on BSC', async () => {
+    describe('STEP_5 Verify data on FANTOM', async () => {
         it('Verify transaction', async () => {
-            await console.log('tx unshield on BSC : ', unshieldInfo.unshieldExtTx)
+            await console.log('tx unshield on FANTOM : ', unshieldInfo.unshieldExtTx)
             let res = await web3.eth.getTransactionReceipt(unshieldInfo.unshieldExtTx)
             chai.assert.isTrue(res.status)
         })
@@ -341,8 +339,6 @@ describe(`[======  BSC BRIDGE - UNSHIELD ======]`, async () => {
         })
     })
 })
-
-
 
 
 async function pickNewRecordBackend(
@@ -374,20 +370,19 @@ async function pickNewRecordBackend(
     return id
 }
 
-async function sendNativeBSCToken(fromAddress, toAddress, pk, amountToSend, networkNode) {
+async function sendNativeFTMToken(fromAddress, toAddress, pk, amountToSend, networkNode) {
     let web3 = await new Web3(new Web3.providers.HttpProvider(networkNode))
     let privateKey = await Buffer.from(pk.slice(2), 'hex')
     let count = await web3.eth.getTransactionCount(fromAddress)
 
-    let chainBSCTestnet = await Common.forCustomChain(
-        'ropsten',
+    let chainFantomTestnet = await Common.forCustomChain(
+        'goerli',
         {
-            'name' : 'Binance Smart Chain Testnet',
-            'networkId' : 97,
-            'chainId' : 97,
-            url: 'https://data-seed-prebsc-1-s1.binance.org:8545'
+            'name' : 'fatom testnet',
+            'networkId' : 4002,
+            'chainId' : 4002
         },
-        'istanbul'
+        'petersburg'
         )
 
     let rawTransaction = {
@@ -398,7 +393,7 @@ async function sendNativeBSCToken(fromAddress, toAddress, pk, amountToSend, netw
         "nonce": web3.utils.toHex(count)
     }
 
-    let transaction = new Tx(rawTransaction, { common: chainBSCTestnet })
+    let transaction = new Tx(rawTransaction, { common: chainFantomTestnet })
     transaction.sign(privateKey)
 
     let result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'))
