@@ -12,8 +12,13 @@ const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const logger = getLogger("Provide");
 
 let node = new IncNode(ENV.urlFullNode);
-let sender = new IncAccount("112t8rnXVMJJZzfF1naXvfE9nkTKwUwFWFeh8cfEyViG1vpA8A9khJk3mhyB1hDuJ4RbreDTsZpgJK4YcSxdEpXJKMEd8Vmp5UqKWwBcYzxv").attachTo(node);
-let receiver = new IncAccount({PaymentAddress:"12suG5oV5KQspoUPseBAnLCmm8vBPQs3je7kbiLuBSyvhAG2dHbo3RP5zRsNoB9Y2m9fA342MyfbpoUJYNcS5zhB5pU89kUiU3YPGDCjh8Eg7Y5HdgAU33XrNQ3q77J5BwThnmcXZvyNekF6EnSr"}).attachTo(node);
+let sender = new IncAccount("112t8rnXVMJJZzfF1naXvfE9nkTKwUwFWFeh8cfEyViG1vpA8A9khJk3mhyB1hDuJ4RbreDTsZpgJK4YcSxdEpXJKMEd8Vmp5UqKWwBcYzxv").attachTo(
+    node
+);
+let receiver = new IncAccount({
+    PaymentAddress:
+        "12suG5oV5KQspoUPseBAnLCmm8vBPQs3je7kbiLuBSyvhAG2dHbo3RP5zRsNoB9Y2m9fA342MyfbpoUJYNcS5zhB5pU89kUiU3YPGDCjh8Eg7Y5HdgAU33XrNQ3q77J5BwThnmcXZvyNekF6EnSr",
+}).attachTo(node);
 let coinServiceApi = new CoinServiceApi();
 let backendApi = new BackendApi(ENV.Backend);
 
@@ -51,7 +56,7 @@ describe("[Class] Provide", () => {
             //"SignPublicKeyEncode": "8a59a648a9cf47168e72e348b98d7bb296c67f7dd2d50cc9e043d2feb40b9cc8", zxv
             logger.debug(`Send PROOF: ${proof.Base58CheckData}`);
             logger.info(`Send TxID: ${proof.TxID}`);
-            logger.info(`Amount Provide: ${amountProvide}`)
+            logger.info(`Amount Provide: ${amountProvide}`);
 
             try {
                 let provideResponse = await backendApi.provideSubmitRawData({
