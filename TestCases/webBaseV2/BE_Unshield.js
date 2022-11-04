@@ -1,16 +1,13 @@
 let chai = require('chai');
-let config = require('../../constant/config');
 const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
 const { BackendApi } = require('../../lib/Incognito/BackendApi');
 const { CoinServiceApi } = require('../../lib/Incognito/CoinServiceApi');
 const { IncRpc } = require('../../lib/Incognito/RPC/Rpc');
 const GenAction = require('../../lib/Utils/GenAction')
-const { ENV } = require('../../global');
 
 let webServiceApi = new WebServiceApi()
 let coinServiceApi = new CoinServiceApi()
 let backendApi = new BackendApi()
-let incRpc = new IncRpc()
 let paymentAddress = '12sveuNGdToMM98xz5Q8EKbkAtNoi6qsFdA4yei2wBe73X3Fwt5qDY6PHGvwxLVqDT8MMmGy7yuU4GzeJ6mCc7MJNYepC54jaWKxLW2kyWPhzQUuFm4FnK4QDr9fuj4cpvXqkm5PB9XXwXUyUniy'
 
 //Our parent block

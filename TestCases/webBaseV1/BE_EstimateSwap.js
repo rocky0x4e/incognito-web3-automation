@@ -6,7 +6,6 @@ let chai = require('chai');
 const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
 const { CoinServiceApi } = require('../../lib/Incognito/CoinServiceApi');
 const GenAction = require('../../lib/Utils/GenAction');
-const { ENV } = require("../../global");
 
 
 const webServiceApi = new WebServiceApi()
