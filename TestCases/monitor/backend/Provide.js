@@ -91,20 +91,26 @@ describe("[Class] Provide", () => {
             });
             chai.expect(provideResponse.status).to.equal(400);
             chai.expect(JSON.stringify(provideResponse.data)).to.equal('{"Result":null,"Error":"The data invalid!!!"}');
-            // chai.assert.equal(provideResponse.status, 400, "Response Status Code is 400")
-            // chai.assert.equal(JSON.stringify(provideResponse.data),"{\"Result\":null,\"Error\":\"The data invalid!!!\"}","Error g-captcha not valid")
-            logger.info("STEP_Send Provide\nResponse Status Code is 400\nReject invalid g-captcha\n --- PASSED --- ");
+            logger.info(`STEP_Send Provide\nResponse Status Code is ${provideResponse.status}\nReject invalid g-captcha: ${JSON.stringify(provideResponse.data)}\n --- PASSED --- `);
         }).timeout(50000);
 
-        it("STEP Withdraw Provide Reward", async () => {
+        it.skip("STEP Withdraw Provide Reward", async () => {
             let withdrawRewardResponse = await backendApi.provideRequestWithdrawReward({
                 PStakeAddress: sender.paymentK,
             });
-            // chai.expect(withdrawRewardResponse.status).to.equal(500)
-            // chai.expect(JSON.stringify(withdrawRewardResponse.data)).to.equal("{\"Result\":null,\"Error\":{\"Code\":-80015,\"Message\":\"The data invalid!!!\"}}")
             chai.assert.equal(withdrawRewardResponse.status, 500, "Response Status Code is not 500")
             chai.assert.equal(JSON.stringify(withdrawRewardResponse.data),"{\"Result\":null,\"Error\":{\"Code\":-80015,\"Message\":\"The data invalid!!!\"}}","Error g-captcha not valid")
-            logger.info("STEP Withdraw Provide Reward\nResponse Status Code is 500\nReject invalid g-captcha\n --- PASSED --- ")
+            logger.info(`STEP Withdraw Provide Reward\nResponse Status Code is ${withdrawRewardResponse.status}\nReject invalid g-captcha: ${JSON.stringify(withdrawRewardResponse.data)}\n --- PASSED --- `)
+        });
+
+        it("STEP Withdraw Provide Provision", async () => {
+            let withdrawProvisionResponse = await backendApi.provideRequestWithdrawProvision({
+                PStakeAddress: sender.paymentK,
+                amount: 1000234000
+            });
+            chai.assert.equal(withdrawProvisionResponse.status, 400, "Response Status Code is not 400")
+            chai.assert.equal(JSON.stringify(withdrawProvisionResponse.data),"{\"Result\":null,\"Error\":\"The data invalid!!!\"}","Error g-captcha not valid")
+            logger.info(`STEP Withdraw Provide Provision\nResponse Status Code is ${withdrawProvisionResponse.status}\nReject invalid g-captcha: ${JSON.stringify(withdrawProvisionResponse.data)}\n --- PASSED --- `)
         });
     });
 });
