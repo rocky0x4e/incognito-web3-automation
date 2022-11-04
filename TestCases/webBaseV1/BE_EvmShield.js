@@ -1,16 +1,12 @@
-//During the test the env variable is set to test
-process.env.NODE_ENV = 'test';
-
-//Require the dev-dependencies
 let chai = require('chai');
-const csCommonFunction = require('../../constant/csCommonFunction');
 const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
-const { ENV } = require("../../global");
+const { CoinServiceApi } = require('../../lib/Incognito/CoinServiceApi');
 const webServiceApi_schemas = require("../../schemas/webServiceApi_schemas");
 const validateSchemaCommand = require("../../schemas/validateSchemaCommand");
 
 
-let webServiceApi = new WebServiceApi(ENV.WebService)
+let webServiceApi = new WebServiceApi()
+let coinServiceApi = new CoinServiceApi()
     //Our parent block
 describe('[Class] EvmShield', async() => {
 
@@ -337,7 +333,7 @@ const selectToken = async(symbol, network = null) => {
     if (symbol == 'prv') {
         return '0000000000000000000000000000000000000000000000000000000000000004'
     } else {
-        let listToken = await csCommonFunction.getListToken()
+        let listToken = await coinServiceApi.getListToken()
         for (const token of listToken) {
             if (token.Symbol.toLowerCase() == symbol && token.CurrencyType == currencyType) {
                 return token.TokenID

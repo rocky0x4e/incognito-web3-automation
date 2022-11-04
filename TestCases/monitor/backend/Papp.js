@@ -8,7 +8,7 @@ const listAccount = require('../../../constant/listAccount.json');
 
 // let privateKey = (await config.getAccount('main7')).privateKey
 let privateKey = listAccount.main7
-var backendApi = new BackendApi(ENV.Backend)
+var backendApi = new BackendApi()
 var account = new IncAccount(privateKey)
 
 describe('[CLASS] Papp', async() => {

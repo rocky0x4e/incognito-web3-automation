@@ -188,8 +188,6 @@ const getTokenContract = async(tokenID, network = null) => {
     }
 }
 
-
-
 const submitOtaKey = async(otaKey) => {
 
     let url = global.urlCoinService + `/submitotakey`

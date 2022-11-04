@@ -7,9 +7,11 @@ module.exports = {
     spec: [
         // './TestCases/TestBase.js',
 
-        // './TestCases/monitor/backend',
-        // './TestCases/monitor/coinService',
-        // './TestCases/webBaseV1',
+        './TestCases/monitor/backend',
+        './TestCases/monitor/coinService',
+        './TestCases/monitor/checkAlive',
+        './TestCases/monitor/EVM',
+        './TestCases/webBaseV1',
     ],
     reporter: 'node_modules/mochawesome',
     'reporter-option': [

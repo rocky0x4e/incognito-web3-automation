@@ -14,10 +14,10 @@ describe.skip(`[EVM] Fullnode`, () => {
             await wait(20)
             const blockNumList2 = await getBlockNumList(host)
             chai.assert.notEqual(blockNumList1, blockNumList2, `seem fullnode die`)
-            
+
         }).timedOut(200000)
     })
-    describe(`TC002_BSC_Fullnode`, async () => {    
+    describe(`TC002_BSC_Fullnode`, async () => {
         it(`Call Fullnode`, async () => {
             const host = ENV.BSCFullnode
             console.log(host)
@@ -27,7 +27,7 @@ describe.skip(`[EVM] Fullnode`, () => {
             chai.assert.notEqual(blockNum1, blockNum2, `seem fullnode die`)
         }).timedOut(200000)
     })
-    describe(`TC003_Polygon_Fullnode`, async () => {    
+    describe(`TC003_Polygon_Fullnode`, async () => {
         it(`Call Fullnode`, async () => {
             const host = ENV.PLGFullnode
             console.log(host)
@@ -37,7 +37,7 @@ describe.skip(`[EVM] Fullnode`, () => {
             chai.assert.notEqual(blockNum1, blockNum2, `seem fullnode die`)
         }).timedOut(200000)
     })
-    describe(`TC004_Fantom_Fullnode`, async () => {    
+    describe(`TC004_Fantom_Fullnode`, async () => {
         it(`Call Fullnode`, async () => {
             const host = ENV.FTMFullnode
             console.log(host)
@@ -47,7 +47,7 @@ describe.skip(`[EVM] Fullnode`, () => {
             chai.assert.notEqual(blockNum1, blockNum2, `seem fullnode die`)
         }).timedOut(200000)
     })
-    describe(`TC005_Aurora_Fullnode`, async () => {    
+    describe(`TC005_Aurora_Fullnode`, async () => {
         it(`Call Fullnode`, async () => {
             const host = ENV.AuroraFullnode
             console.log(host)
@@ -57,7 +57,7 @@ describe.skip(`[EVM] Fullnode`, () => {
             chai.assert.notEqual(blockNum1, blockNum2, `seem fullnode die`)
         }).timedOut(200000)
     })
-    describe(`TC006_Avax_Fullnode`, async () => {    
+    describe(`TC006_Avax_Fullnode`, async () => {
         it(`Call Fullnode`, async () => {
             const host = ENV.AvaxFullnode
             console.log(host)
@@ -72,16 +72,16 @@ describe.skip(`[EVM] Fullnode`, () => {
 
 
 async function getBlockNumList(hostlist) {
-    const blockNumList =[]
-    for (let i of hostlist){
+    const blockNumList = []
+    for (let i of hostlist) {
         let web3 = await new Web3(new Web3.providers.HttpProvider(i.url));
         await web3.eth.getBlockNumber().then((blockNum) => {
             // console.log('block Num: %s %d', i ,blockNum)
             blockNumList.push(blockNum)
-        }).catch(err =>{
+        }).catch(err => {
             blockNumList.push(0)
             console.log('err :', err)
         })
     }
-    return blockNumList 
+    return blockNumList
 }

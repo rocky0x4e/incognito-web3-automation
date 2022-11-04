@@ -1,126 +1,69 @@
-//During the test the env variable is set to test
-process.env.NODE_ENV = 'test';
-
-//Require the dev-dependencies
-const addContext = require('mochawesome/addContext');
 let chai = require('chai');
-let server = require('../../../server');
-let config = require('../../../constant/config.js');
-const cliCommonFunction = require('../../../constant/cliCommonFunction');
-const chainCommonFunction = require('../../../constant/chainCommonFunction');
-const csCommonFunction = require('../../../constant/csCommonFunction');
-const beCommonFunction = require('../../../constant/beCommonFunction');
-const common = require('../../../constant/commonFunction');
-const api = require('../../../constant/api');
-const _ = require('lodash');
+const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
+const { BackendApi } = require('../../lib/Incognito/BackendApi');
+const { CoinServiceApi } = require('../../lib/Incognito/CoinServiceApi');
+const { IncRpc } = require('../../lib/Incognito/RPC/Rpc');
+const GenAction = require('../../lib/Utils/GenAction')
 
-
-let beTokenAuthen
-let paymentAddress = '12sfV7Vo27Rz3aT4c2kyiTpvziwXjviQMMrp5gsFfupAvoDveHhQLunAWvqTao46DSEYpnbMpGYxuc4a9KGU7BppPM9uZtfVCqPAQ18WtPEijsLmYxVL1MWWDggDZHfRmhtxmVijadCjXyr7iC9X'
+let webServiceApi = new WebServiceApi()
+let coinServiceApi = new CoinServiceApi()
+let backendApi = new BackendApi()
+let paymentAddress = '12sveuNGdToMM98xz5Q8EKbkAtNoi6qsFdA4yei2wBe73X3Fwt5qDY6PHGvwxLVqDT8MMmGy7yuU4GzeJ6mCc7MJNYepC54jaWKxLW2kyWPhzQUuFm4FnK4QDr9fuj4cpvXqkm5PB9XXwXUyUniy'
 
 //Our parent block
 describe('[Class]Unshield', async() => {
 
-    //Before
-    before(async() => {
-        console.log("[Before]InitData");
-        beTokenAuthen = await beCommonFunction.newToken()
-        console.log({ beTokenAuthen });
-    });
-
-
     describe('[TC001]EstimateUnshieldFee_ZIL', async() => {
-        let url, body, response
-        let tokenID, currenctType, beShieldAddress, webShieldAddress, outchainAddress,
-            appFeeAddress, appLevel1, webFeeAddress, webLevel1,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, beShieldAddress, webShieldAddress, outchainAddress,
+            appFeeAddress, appLevel1, webFeeAddress, webLevel1, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'ZIL'
             tokenID = await getTokenID(tokenName)
             outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
-        });
-
-        //step 1 : gen ZIL shield address from BE
-        it('EstimateFeeOnApp', async() => {
-            url = global.urlBackend + '/ota/generate'
-            body = `{
-                "CurrencyType": ${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}",
-                "SignPublicKeyEncode": "355600a447f0438b40905c8f91984948ecac53e3551f08a930903f2d1f36ef64"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
-
-            beShieldAddress = response.Result.Address
-
-            appFeeAddress = response.Result.FeeAddress
-            appLevel1 = response.Result.TokenFees.Level1
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
 
         });
 
-        //step 2 : gen ZIL shield address from lam service
-        it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+        it('STEP_EstimateFeeOnApp', async() => {
+            let response = await backendApi.otaGenerateUnShield({
+                currencyType,
+                requestedAmount: requestedAmount + "", //"0,025"
+                incognitoAmount: incognitoAmount + "", //25000000
+                paymentAddress: outchainAddress, //"zil1u2umu2kjpmlp48mu5akq2y82x98qcaz4my2yr5"
+                walletAddress: paymentAddress, //"12sveuNGdToMM98xz5Q8EKbkAtNoi6qsFdA4yei2wBe73X3Fwt5qDY6PHGvwxLVqDT8MMmGy7yuU4GzeJ6mCc7MJNYepC54jaWKxLW2kyWPhzQUuFm4FnK4QDr9fuj4cpvXqkm5PB9XXwXUyUniy"
+                privacyTokenAddress: tokenID,
+            })
 
-            webShieldAddress = response.Result.Address
-            webFeeAddress = response.Result.FeeAddress
-            webLevel1 = response.Result.TokenFees.Level1
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.expect(response.Result).have.property('FeeAddress')
-            chai.expect(response.Result).have.property('ID')
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.expect(response.Result).have.property('TokenFees')
-            chai.expect(response.Result.TokenFees).have.property('Level1')
+            beShieldAddress = response.data.Result.Address
+            appFeeAddress = response.data.Result.FeeAddress
+            appLevel1 = response.data.Result.TokenFees.Level1
         });
 
-        //step 3 : compare 2 body
-        it('Compare', async() => {
+        it('STEP_EstimateFeeOnWeb', async() => {
+
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
+
+            webShieldAddress = response.data.Result.Address
+            webFeeAddress = response.data.Result.FeeAddress
+            webLevel1 = response.data.Result.TokenFees.Level1
+        });
+
+        it('STEP_Compare', async() => {
             chai.assert.equal(appFeeAddress, webFeeAddress)
             chai.assert.equal(appLevel1, webLevel1)
                 // chai.assert.equal(beShieldAddress, webShieldAddress)
@@ -128,98 +71,56 @@ describe('[Class]Unshield', async() => {
     });
 
     describe('[TC002]EstimateUnshieldFee_ZEC', async() => {
-        let url, body, response
-        let tokenID, currenctType, beShieldAddress, webShieldAddress, outchainAddress,
-            appFeeAddress, appLevel1, webFeeAddress, webLevel1,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, beShieldAddress, webShieldAddress, outchainAddress,
+            appFeeAddress, appLevel1, webFeeAddress, webLevel1, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'ZEC'
             tokenID = await getTokenID(tokenName)
             outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
-        });
-
-        //step 1 : gen ZIL shield address from BE
-        it('EstimateFeeOnApp', async() => {
-            url = global.urlBackend + '/ota/generate'
-            body = `{
-                "CurrencyType": ${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}",
-                "SignPublicKeyEncode": "355600a447f0438b40905c8f91984948ecac53e3551f08a930903f2d1f36ef64"
-            }`
-                // console.log({ url });
-                // console.log(body);
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-
-            // console.log({ response });
-
-            beShieldAddress = response.Result.Address
-            appFeeAddress = response.Result.FeeAddress
-            appLevel1 = response.Result.TokenFees.Level1
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
 
         });
 
-        //step 2 : gen ZIL shield address from lam service
-        it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-                // console.log({ url });
-                // console.log(body);
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
+        it('STEP_EstimateFeeOnApp', async() => {
+            let response = await backendApi.otaGenerateUnShield({
+                currencyType,
+                requestedAmount: requestedAmount + "", //"0,025"
+                incognitoAmount: incognitoAmount + "", //25000000
+                paymentAddress: outchainAddress, //"zil1u2umu2kjpmlp48mu5akq2y82x98qcaz4my2yr5"
+                walletAddress: paymentAddress, //"12sveuNGdToMM98xz5Q8EKbkAtNoi6qsFdA4yei2wBe73X3Fwt5qDY6PHGvwxLVqDT8MMmGy7yuU4GzeJ6mCc7MJNYepC54jaWKxLW2kyWPhzQUuFm4FnK4QDr9fuj4cpvXqkm5PB9XXwXUyUniy"
+                privacyTokenAddress: tokenID,
+            })
 
-            // console.log({ response });
-
-            webShieldAddress = response.Result.Address
-            webFeeAddress = response.Result.FeeAddress
-            webLevel1 = response.Result.TokenFees.Level1
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.expect(response.Result).have.property('FeeAddress')
-            chai.expect(response.Result).have.property('ID')
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.expect(response.Result).have.property('TokenFees')
-            chai.expect(response.Result.TokenFees).have.property('Level1')
+            beShieldAddress = response.data.Result.Address
+            appFeeAddress = response.data.Result.FeeAddress
+            appLevel1 = response.data.Result.TokenFees.Level1
         });
 
-        //step 3 : compare 2 body
-        it('Compare', async() => {
+        it('STEP_EstimateFeeOnWeb', async() => {
+
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
+
+            webShieldAddress = response.data.Result.Address
+            webFeeAddress = response.data.Result.FeeAddress
+            webLevel1 = response.data.Result.TokenFees.Level1
+        });
+
+        it('STEP_Compare', async() => {
             chai.assert.equal(appFeeAddress, webFeeAddress)
             chai.assert.equal(appLevel1, webLevel1)
                 // chai.assert.equal(beShieldAddress, webShieldAddress)
@@ -227,97 +128,56 @@ describe('[Class]Unshield', async() => {
     });
 
     describe('[TC003]EstimateUnshieldFee_DASH', async() => {
-        let url, body, response
-        let tokenID, currenctType, beShieldAddress, webShieldAddress, outchainAddress,
-            appFeeAddress, appLevel1, webFeeAddress, webLevel1,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, beShieldAddress, webShieldAddress, outchainAddress,
+            appFeeAddress, appLevel1, webFeeAddress, webLevel1, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'DASH'
             tokenID = await getTokenID(tokenName)
             outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
-        });
-
-        //step 1 : gen ZIL shield address from BE
-        it('EstimateFeeOnApp', async() => {
-            url = global.urlBackend + '/ota/generate'
-            body = `{
-                "CurrencyType": ${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}",
-                "SignPublicKeyEncode": "355600a447f0438b40905c8f91984948ecac53e3551f08a930903f2d1f36ef64"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
-
-            beShieldAddress = response.Result.Address
-
-            appFeeAddress = response.Result.FeeAddress
-            appLevel1 = response.Result.TokenFees.Level1
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
 
         });
 
-        //step 2 : gen ZIL shield address from lam service
-        it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+        it('STEP_EstimateFeeOnApp', async() => {
+            let response = await backendApi.otaGenerateUnShield({
+                currencyType,
+                requestedAmount: requestedAmount + "", //"0,025"
+                incognitoAmount: incognitoAmount + "", //25000000
+                paymentAddress: outchainAddress, //"zil1u2umu2kjpmlp48mu5akq2y82x98qcaz4my2yr5"
+                walletAddress: paymentAddress, //"12sveuNGdToMM98xz5Q8EKbkAtNoi6qsFdA4yei2wBe73X3Fwt5qDY6PHGvwxLVqDT8MMmGy7yuU4GzeJ6mCc7MJNYepC54jaWKxLW2kyWPhzQUuFm4FnK4QDr9fuj4cpvXqkm5PB9XXwXUyUniy"
+                privacyTokenAddress: tokenID,
+            })
 
-            webShieldAddress = response.Result.Address
-            webFeeAddress = response.Result.FeeAddress
-            webLevel1 = response.Result.TokenFees.Level1
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.expect(response.Result).have.property('FeeAddress')
-            chai.expect(response.Result).have.property('ID')
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.expect(response.Result).have.property('TokenFees')
-            chai.expect(response.Result.TokenFees).have.property('Level1')
+            beShieldAddress = response.data.Result.Address
+            appFeeAddress = response.data.Result.FeeAddress
+            appLevel1 = response.data.Result.TokenFees.Level1
         });
 
-        //step 3 : compare 2 body
-        it('Compare', async() => {
+        it('STEP_EstimateFeeOnWeb', async() => {
+
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
+
+            webShieldAddress = response.data.Result.Address
+            webFeeAddress = response.data.Result.FeeAddress
+            webLevel1 = response.data.Result.TokenFees.Level1
+        });
+
+        it('STEP_Compare', async() => {
             chai.assert.equal(appFeeAddress, webFeeAddress)
             chai.assert.equal(appLevel1, webLevel1)
                 // chai.assert.equal(beShieldAddress, webShieldAddress)
@@ -325,193 +185,108 @@ describe('[Class]Unshield', async() => {
     });
 
     describe('[TC004]EstimateUnshieldFee_NEO', async() => {
-        let url, body, response
-        let tokenID, currenctType, beShieldAddress, webShieldAddress, outchainAddress,
-            appFeeAddress, appTokenFee, webFeeAddress, webTokenFee,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, beShieldAddress, webShieldAddress, outchainAddress,
+            appFeeAddress, appLevel1, webFeeAddress, webLevel1, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'NEO'
             tokenID = await getTokenID(tokenName)
             outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
-        });
-
-        //step 1 : gen ZIL shield address from BE
-        it('EstimateFeeOnApp', async() => {
-            url = global.urlBackend + '/ota/generate'
-            body = `{
-                "CurrencyType": ${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}",
-                "SignPublicKeyEncode": "355600a447f0438b40905c8f91984948ecac53e3551f08a930903f2d1f36ef64"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
-
-
-            beShieldAddress = response.Result.Address
-            appFeeAddress = response.Result.FeeAddress
-            appTokenFee = response.Result.TokenFee
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
 
         });
 
-        //step 2 : gen ZIL shield address from lam service
-        it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+        it('STEP_EstimateFeeOnApp', async() => {
+            let response = await backendApi.otaGenerateUnShield({
+                currencyType,
+                requestedAmount: requestedAmount + "", //"0,025"
+                incognitoAmount: incognitoAmount + "", //25000000
+                paymentAddress: outchainAddress, //"zil1u2umu2kjpmlp48mu5akq2y82x98qcaz4my2yr5"
+                walletAddress: paymentAddress, //"12sveuNGdToMM98xz5Q8EKbkAtNoi6qsFdA4yei2wBe73X3Fwt5qDY6PHGvwxLVqDT8MMmGy7yuU4GzeJ6mCc7MJNYepC54jaWKxLW2kyWPhzQUuFm4FnK4QDr9fuj4cpvXqkm5PB9XXwXUyUniy"
+                privacyTokenAddress: tokenID,
+            })
 
-            webShieldAddress = response.Result.Address
-            webFeeAddress = response.Result.FeeAddress
-            webTokenFee = response.Result.TokenFee
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.expect(response.Result).have.property('FeeAddress')
-            chai.expect(response.Result).have.property('ID')
-            chai.expect(response.Result).have.property('TokenFee')
+            appFeeAddress = response.data.Result.FeeAddress
         });
 
-        //step 3 : compare 2 body
-        it('Compare', async() => {
+        it('STEP_EstimateFeeOnWeb', async() => {
+
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
+
+            webShieldAddress = response.data.Result.Address
+            webFeeAddress = response.data.Result.FeeAddress
+        });
+
+        it('STEP_Compare', async() => {
             chai.assert.equal(appFeeAddress, webFeeAddress)
-            chai.assert.equal(appTokenFee, webTokenFee)
-                // chai.assert.equal(beShieldAddress, webShieldAddress)
         });
     });
 
     describe('[TC005]EstimateUnshieldFee_LTC', async() => {
-        let url, body, response
-        let tokenID, currenctType, beShieldAddress, webShieldAddress, outchainAddress,
-            appFeeAddress, appLevel1, webFeeAddress, webLevel1,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, beShieldAddress, webShieldAddress, outchainAddress,
+            appFeeAddress, appLevel1, webFeeAddress, webLevel1, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'LTC'
             tokenID = await getTokenID(tokenName)
             outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
-        });
-
-        //step 1 : gen ZIL shield address from BE
-        it('EstimateFeeOnApp', async() => {
-            url = global.urlBackend + '/ota/generate'
-            body = `{
-                "CurrencyType": ${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}",
-                "SignPublicKeyEncode": "355600a447f0438b40905c8f91984948ecac53e3551f08a930903f2d1f36ef64"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
-
-            beShieldAddress = response.Result.Address
-
-            appFeeAddress = response.Result.FeeAddress
-            appLevel1 = response.Result.TokenFees.Level1
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
 
         });
 
-        //step 2 : gen ZIL shield address from lam service
-        it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+        it('STEP_EstimateFeeOnApp', async() => {
+            let response = await backendApi.otaGenerateUnShield({
+                currencyType,
+                requestedAmount: requestedAmount + "", //"0,025"
+                incognitoAmount: incognitoAmount + "", //25000000
+                paymentAddress: outchainAddress, //"zil1u2umu2kjpmlp48mu5akq2y82x98qcaz4my2yr5"
+                walletAddress: paymentAddress, //"12sveuNGdToMM98xz5Q8EKbkAtNoi6qsFdA4yei2wBe73X3Fwt5qDY6PHGvwxLVqDT8MMmGy7yuU4GzeJ6mCc7MJNYepC54jaWKxLW2kyWPhzQUuFm4FnK4QDr9fuj4cpvXqkm5PB9XXwXUyUniy"
+                privacyTokenAddress: tokenID,
+            })
 
-            webShieldAddress = response.Result.Address
-            webFeeAddress = response.Result.FeeAddress
-            webLevel1 = response.Result.TokenFees.Level1
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.expect(response.Result).have.property('FeeAddress')
-            chai.expect(response.Result).have.property('ID')
-            chai.expect(response.Result).have.property('TokenFee')
-            chai.expect(response.Result).have.property('TokenFees')
-            chai.expect(response.Result.TokenFees).have.property('Level1')
+            beShieldAddress = response.data.Result.Address
+            appFeeAddress = response.data.Result.FeeAddress
+            appLevel1 = response.data.Result.TokenFees.Level1
         });
 
-        //step 3 : compare 2 body
-        it('Compare', async() => {
+        it('STEP_EstimateFeeOnWeb', async() => {
+
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
+
+            webShieldAddress = response.data.Result.Address
+            webFeeAddress = response.data.Result.FeeAddress
+            webLevel1 = response.data.Result.TokenFees.Level1
+        });
+
+        it('STEP_Compare', async() => {
             chai.assert.equal(appFeeAddress, webFeeAddress)
             chai.assert.equal(appLevel1, webLevel1)
                 // chai.assert.equal(beShieldAddress, webShieldAddress)
@@ -519,124 +294,71 @@ describe('[Class]Unshield', async() => {
     });
 
     describe('[TC006]EstimateUnshieldFee_DOT', async() => {
-        let url, body, response
-        let tokenID, currenctType, beShieldAddress, webShieldAddress, outchainAddress,
-            appFeeAddress, appTokenFee, webFeeAddress, webTokenFee,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, beShieldAddress, webShieldAddress, outchainAddress,
+            appFeeAddress, appLevel1, webFeeAddress, webLevel1, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'DOT'
             tokenID = await getTokenID(tokenName)
             outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
-        });
-
-        //step 1 : gen ZIL shield address from BE
-        it('EstimateFeeOnApp', async() => {
-            url = global.urlBackend + '/ota/generate'
-            body = `{
-                "CurrencyType": ${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}",
-                "SignPublicKeyEncode": "355600a447f0438b40905c8f91984948ecac53e3551f08a930903f2d1f36ef64"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
-
-            beShieldAddress = response.Result.Address
-
-            appFeeAddress = response.Result.FeeAddress
-            appTokenFee = response.Result.TokenFee
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).to.have.property('EstimateFee')
-            chai.expect(response.Result).to.have.property('ExpiredAt')
-            chai.expect(response.Result).to.have.property('Decentralized')
-            chai.expect(response.Result).to.have.property('TokenFee')
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
 
         });
 
-        //step 2 : gen ZIL shield address from lam service
-        it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+        it('STEP_EstimateFeeOnApp', async() => {
+            let response = await backendApi.otaGenerateUnShield({
+                currencyType,
+                requestedAmount: requestedAmount + "", //"0,025"
+                incognitoAmount: incognitoAmount + "", //25000000
+                paymentAddress: outchainAddress, //"zil1u2umu2kjpmlp48mu5akq2y82x98qcaz4my2yr5"
+                walletAddress: paymentAddress, //"12sveuNGdToMM98xz5Q8EKbkAtNoi6qsFdA4yei2wBe73X3Fwt5qDY6PHGvwxLVqDT8MMmGy7yuU4GzeJ6mCc7MJNYepC54jaWKxLW2kyWPhzQUuFm4FnK4QDr9fuj4cpvXqkm5PB9XXwXUyUniy"
+                privacyTokenAddress: tokenID,
+            })
 
-            webShieldAddress = response.Result.Address
-            webFeeAddress = response.Result.FeeAddress
-            webTokenFee = response.Result.TokenFee
-
-            chai.expect(response.Result).have.property('Address')
-            chai.expect(response.Result).have.property('Decentralized')
-            chai.expect(response.Result).have.property('EstimateFee')
-            chai.expect(response.Result).have.property('ExpiredAt')
-            chai.expect(response.Result).have.property('FeeAddress')
-            chai.expect(response.Result).have.property('ID')
-            chai.expect(response.Result).have.property('TokenFee')
+            beShieldAddress = response.data.Result.Address
+            appFeeAddress = response.data.Result.FeeAddress
         });
 
-        //step 3 : compare 2 body
-        it('Compare', async() => {
+        it('STEP_EstimateFeeOnWeb', async() => {
+
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
+
+            webShieldAddress = response.data.Result.Address
+            webFeeAddress = response.data.Result.FeeAddress
+        });
+
+        it('STEP_Compare', async() => {
             chai.assert.equal(appFeeAddress, webFeeAddress)
-            chai.assert.equal(appTokenFee, webTokenFee)
-                // chai.assert.equal(beShieldAddress, webShieldAddress)
         });
     });
 
     describe('[TC007]EstimateUnshieldFee_BTC', async() => {
         let url, body, response
-        let tokenID, currenctType, outchainAddress,
+        let tokenID, currencyType, outchainAddress,
             appUnshieldFee, webUnshieldFee
 
         before(async() => {
             let tokenName = 'BTC'
             tokenID = await getTokenID(tokenName)
             outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
-        });
+
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
@@ -645,9 +367,6 @@ describe('[Class]Unshield', async() => {
                 "Network": "btc"
             }
             response = await api.post(url, body)
-                // console.log({ url });
-                // console.log({ body });
-                // console.log({ response });
 
             webUnshieldFee = response.Result
 
@@ -661,9 +380,6 @@ describe('[Class]Unshield', async() => {
             url = 'http://51.161.119.66:8020/getestimatedunshieldingfee'
 
             response = await api.get(url)
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
 
             appUnshieldFee = response.Result
 
@@ -680,956 +396,657 @@ describe('[Class]Unshield', async() => {
     });
 
     describe('[TC008]EstimateUnshieldFeeWithInvalidOutchainAddress_ZIL', async() => {
-        let url, body, response
-        let tokenID, currenctType, beShieldAddress, webShieldAddress, outchainAddress,
-            appFeeAddress, appLevel1, webFeeAddress, webLevel1,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, outchainAddress, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'ZIL'
             tokenID = await getTokenID(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
         });
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
 
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-2014')
-            chai.assert.equal(response.Error.Message, 'Payment address invalid!')
+            chai.assert.equal(response.data.Error.Code, '-2014')
+            chai.assert.equal(response.data.Error.Message, 'Payment address invalid!')
         });
-
-
     });
 
     describe('[TC009]EstimateUnshieldFeeWithInvalidOutchainAddress_ZEC', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, outchainAddress, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'ZEC'
             tokenID = await getTokenID(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
         });
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
 
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-2014')
-            chai.assert.equal(response.Error.Message, 'Payment address invalid!')
+            chai.assert.equal(response.data.Error.Code, '-2014')
+            chai.assert.equal(response.data.Error.Message, 'Payment address invalid!')
         });
-
-
     });
 
     describe('[TC010]EstimateUnshieldFeeWithInvalidOutchainAddress_DASH', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress
-        requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, outchainAddress, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'DASH'
             tokenID = await getTokenID(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
         });
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
 
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-2014')
-            chai.assert.equal(response.Error.Message, 'Payment address invalid!')
+            chai.assert.equal(response.data.Error.Code, '-2014')
+            chai.assert.equal(response.data.Error.Message, 'Payment address invalid!')
         });
-
-
     });
 
     describe('[TC011]EstimateUnshieldFeeWithInvalidOutchainAddress_NEO', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, outchainAddress, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'NEO'
             tokenID = await getTokenID(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
         });
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
 
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-2014')
-            chai.assert.equal(response.Error.Message, 'Payment address invalid!')
+            chai.assert.equal(response.data.Error.Code, '-2014')
+            chai.assert.equal(response.data.Error.Message, 'Payment address invalid!')
         });
-
-
     });
 
     describe('[TC012]EstimateUnshieldFeeWithInvalidOutchainAddress_LTC', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, outchainAddress, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'LTC'
             tokenID = await getTokenID(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
         });
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
 
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-2014')
-            chai.assert.equal(response.Error.Message, 'Payment address invalid!')
+            chai.assert.equal(response.data.Error.Code, '-2014')
+            chai.assert.equal(response.data.Error.Message, 'Payment address invalid!')
         });
-
-
     });
 
     describe('[TC013]EstimateUnshieldFeeWithInvalidOutchainAddress_DOT', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, outchainAddress, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'DOT'
             tokenID = await getTokenID(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
         });
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
 
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-2014')
-            chai.assert.equal(response.Error.Message, 'Payment address invalid!')
+            chai.assert.equal(response.data.Error.Code, '-2014')
+            chai.assert.equal(response.data.Error.Message, 'Payment address invalid!')
         });
-
-
     });
 
     describe('[TC014]EstimateUnshieldFeeWithInvalidInchainAddress_ZIL', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, outchainAddress, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'ZIL'
             tokenID = await getTokenID(tokenName)
-            outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            outchainAddress = "1" + await getOutchainAddress(tokenName)
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
         });
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${1+paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: 1 + paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
-
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-9001')
-            chai.assert.equal(response.Error.Message, 'internal server error')
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
+            chai.assert.equal(response.data.Error.Code, '-9001')
+            chai.assert.equal(response.data.Error.Message, 'internal server error')
         });
     });
 
     describe('[TC015]EstimateUnshieldFeeWithInvalidInchainAddress_ZEC', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, outchainAddress, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'ZEC'
             tokenID = await getTokenID(tokenName)
-            outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            outchainAddress = "1" + await getOutchainAddress(tokenName)
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
         });
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${1+paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: 1 + paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
-
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-9001')
-            chai.assert.equal(response.Error.Message, 'internal server error')
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
+            chai.assert.equal(response.data.Error.Code, '-9001')
+            chai.assert.equal(response.data.Error.Message, 'internal server error')
         });
     });
 
     describe('[TC016]EstimateUnshieldFeeWithInvalidInchainAddress_DASH', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, outchainAddress, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'DASH'
             tokenID = await getTokenID(tokenName)
-            outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            outchainAddress = "1" + await getOutchainAddress(tokenName)
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
         });
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${1+paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: 1 + paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
-
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-9001')
-            chai.assert.equal(response.Error.Message, 'internal server error')
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
+            chai.assert.equal(response.data.Error.Code, '-9001')
+            chai.assert.equal(response.data.Error.Message, 'internal server error')
         });
     });
 
     describe('[TC017]EstimateUnshieldFeeWithInvalidInchainAddress_NEO', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, outchainAddress, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'NEO'
             tokenID = await getTokenID(tokenName)
-            outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            outchainAddress = "1" + await getOutchainAddress(tokenName)
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
         });
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${1+paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: 1 + paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
-
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-9001')
-            chai.assert.equal(response.Error.Message, 'internal server error')
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
+            chai.assert.equal(response.data.Error.Code, '-9001')
+            chai.assert.equal(response.data.Error.Message, 'internal server error')
         });
     });
 
     describe('[TC018]EstimateUnshieldFeeWithInvalidInchainAddress_LTC', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, outchainAddress, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'LTC'
             tokenID = await getTokenID(tokenName)
-            outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
-        });
+            outchainAddress = "1" + await getOutchainAddress(tokenName)
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
         });
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${1+paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: 1 + paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
-
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-9001')
-            chai.assert.equal(response.Error.Message, 'internal server error')
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
+            chai.assert.equal(response.data.Error.Code, '-9001')
+            chai.assert.equal(response.data.Error.Message, 'internal server error')
         });
     });
 
     describe('[TC019]EstimateUnshieldFeeWithInvalidInchainAddress_DOT', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
-            requestedAmount = 1,
-            incognitoAmount = 10 ** 9
+        let tokenID, currencyType, outchainAddress, requestedAmount, incognitoAmount
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'DOT'
             tokenID = await getTokenID(tokenName)
-            outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
+            outchainAddress = "1" + await getOutchainAddress(tokenName)
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
+
+            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
+            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
+            requestedAmount = incognitoAmount / tokenDeciamlPow
         });
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
-        });
-
-        //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${1+paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: 1 + paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
-
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-9001')
-            chai.assert.equal(response.Error.Message, 'internal server error')
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
+            chai.assert.equal(response.data.Error.Code, '-9001')
+            chai.assert.equal(response.data.Error.Message, 'internal server error')
         });
     });
 
     describe('[TC020]EstimateUnshieldFeeWithInvalidAmount_ZIL', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
+        let tokenID, currencyType, outchainAddress,
             requestedAmount = 'abc',
             incognitoAmount = 'abc'
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'ZIL'
             tokenID = await getTokenID(tokenName)
-            outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
+            outchainAddress = "1" + await getOutchainAddress(tokenName)
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
-        });
+
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
-
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-9001')
-            chai.assert.equal(response.Error.Message, 'internal server error')
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
+            chai.assert.equal(response.data.Error.Code, '-9001')
+            chai.assert.equal(response.data.Error.Message, 'internal server error')
         });
     });
 
     describe('[TC021]EstimateUnshieldFeeWithInvalidAmount_ZEC', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
+        let tokenID, currencyType, outchainAddress,
             requestedAmount = 'abc',
             incognitoAmount = 'abc'
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'ZEC'
             tokenID = await getTokenID(tokenName)
-            outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
+            outchainAddress = "1" + await getOutchainAddress(tokenName)
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
-        });
+
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
-
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-9001')
-            chai.assert.equal(response.Error.Message, 'internal server error')
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
+            chai.assert.equal(response.data.Error.Code, '-9001')
+            chai.assert.equal(response.data.Error.Message, 'internal server error')
         });
     });
 
     describe('[TC022]EstimateUnshieldFeeWithInvalidAmount_DASH', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
+        let tokenID, currencyType, outchainAddress,
             requestedAmount = 'abc',
             incognitoAmount = 'abc'
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'DASH'
             tokenID = await getTokenID(tokenName)
-            outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
+            outchainAddress = "1" + await getOutchainAddress(tokenName)
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
-        });
+
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
-
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-9001')
-            chai.assert.equal(response.Error.Message, 'internal server error')
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
+            chai.assert.equal(response.data.Error.Code, '-9001')
+            chai.assert.equal(response.data.Error.Message, 'internal server error')
         });
     });
 
     describe('[TC023]EstimateUnshieldFeeWithInvalidAmount_NEO', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
+        let tokenID, currencyType, outchainAddress,
             requestedAmount = 'abc',
             incognitoAmount = 'abc'
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'NEO'
             tokenID = await getTokenID(tokenName)
-            outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
+            outchainAddress = "1" + await getOutchainAddress(tokenName)
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
-        });
+
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
-
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-9001')
-            chai.assert.equal(response.Error.Message, 'internal server error')
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
+            chai.assert.equal(response.data.Error.Code, '-9001')
+            chai.assert.equal(response.data.Error.Message, 'internal server error')
         });
     });
 
     describe('[TC024]EstimateUnshieldFeeWithInvalidAmount_LTC', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
+        let tokenID, currencyType, outchainAddress,
             requestedAmount = 'abc',
             incognitoAmount = 'abc'
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'LTC'
             tokenID = await getTokenID(tokenName)
-            outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
+            outchainAddress = "1" + await getOutchainAddress(tokenName)
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
-        });
+
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
-
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-9001')
-            chai.assert.equal(response.Error.Message, 'internal server error')
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
+            chai.assert.equal(response.data.Error.Code, '-9001')
+            chai.assert.equal(response.data.Error.Message, 'internal server error')
         });
     });
 
     describe('[TC025]EstimateUnshieldFeeWithInvalidAmount_DOT', async() => {
-        let url, body, response
-        let tokenID, currenctType, outchainAddress,
+        let tokenID, currencyType, outchainAddress,
             requestedAmount = 'abc',
             incognitoAmount = 'abc'
 
-        before(async() => {
+        it('STEP_InitData', async() => {
             let tokenName = 'DOT'
             tokenID = await getTokenID(tokenName)
-            outchainAddress = await getOutchainAddress(tokenName)
-            currenctType = await csCommonFunction.getTokenCurrencyType(tokenID)
+            outchainAddress = "1" + await getOutchainAddress(tokenName)
+            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-        afterEach(function() {
-            addContext(this, {
-                title: 'API ',
-                value: {
-                    url,
-                    beTokenAuthen,
-                    body: typeof body == "object" ? body : JSON.parse(body),
-                    response,
-                }
-            });
-        });
+
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/genunshieldaddress'
-            body = `{
-                "Network": "centralized",
-                "CurrencyType":${currenctType},
-                "AddressType": 2,
-                "RequestedAmount": "${requestedAmount}",
-                "IncognitoAmount": "${incognitoAmount}",
-                "PaymentAddress": "${outchainAddress}",
-                "WalletAddress": "${paymentAddress}",
-                "PrivacyTokenAddress": "${tokenID}"
-            }`
-            response = await api.postWithToken(url, beTokenAuthen, JSON.parse(body))
-                // console.log({ url });
-                // console.log(body);
-                // console.log({ response });
+            response = await webServiceApi.genUnshieldAddress({
+                network: "centralized",
+                requestedAmount: requestedAmount + "",
+                addressType: 2,
+                incognitoAmount: incognitoAmount + "",
+                paymentAddress: outchainAddress,
+                privacyTokenAddress: tokenID,
+                walletAddress: paymentAddress,
+                unifiedTokenID: "",
+                currencyType
+            })
 
-
-            chai.expect(response).have.property('Error')
-            chai.expect(response.Error).have.property('Code')
-            chai.expect(response.Error).have.property('Message')
-            chai.assert.equal(response.Error.Code, '-9001')
-            chai.assert.equal(response.Error.Message, 'internal server error')
+            chai.expect(response.data).have.property('Error')
+            chai.expect(response.data.Error).have.property('Code')
+            chai.expect(response.data.Error).have.property('Message')
+            chai.assert.equal(response.data.Error.Code, '-9001')
+            chai.assert.equal(response.data.Error.Message, 'internal server error')
         });
     });
-
-
-
 });
 
 const getTokenID = async(tokenName) => {

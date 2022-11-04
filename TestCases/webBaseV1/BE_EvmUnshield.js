@@ -1,16 +1,12 @@
-//During the test the env variable is set to test
-process.env.NODE_ENV = 'test';
-
-//Require the dev-dependencies
 let chai = require('chai');
-const csCommonFunction = require('../../constant/csCommonFunction');
 const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
-const { ENV } = require("../../global");
+const { CoinServiceApi } = require('../../lib/Incognito/CoinServiceApi');
 const webServiceApi_schemas = require("../../schemas/webServiceApi_schemas");
 const validateSchemaCommand = require("../../schemas/validateSchemaCommand");
 const _ = require('lodash');
 
-let webServiceApi = new WebServiceApi(ENV.WebService)
+let webServiceApi = new WebServiceApi()
+let coinServiceApi = new CoinServiceApi()
 
 describe('[Class] EvmUnshield', async() => {
 
@@ -26,7 +22,7 @@ describe('[Class] EvmUnshield', async() => {
             let unifiedTokenID = ""
             let privacyTokenAddress = await selectToken('eth', 'ut')
 
-            let pDecimal = await csCommonFunction.getTokenDecimal(privacyTokenAddress)
+            let pDecimal = await coinServiceApi.getTokenDecimal(privacyTokenAddress)
             let requestedAmount = incognitoAmount / (10 ** pDecimal) + ""
 
             let childTokenAddress = await findTokenChildByNetwork(privacyTokenAddress, network)
@@ -64,7 +60,7 @@ describe('[Class] EvmUnshield', async() => {
             let unifiedTokenID = ""
             let privacyTokenAddress = await selectToken('eth', 'eth')
 
-            let pDecimal = await csCommonFunction.getTokenDecimal(privacyTokenAddress)
+            let pDecimal = await coinServiceApi.getTokenDecimal(privacyTokenAddress)
             let requestedAmount = incognitoAmount / (10 ** pDecimal) + ""
 
             let childTokenAddress = await findTokenChildByNetwork(privacyTokenAddress, network)
@@ -102,7 +98,7 @@ describe('[Class] EvmUnshield', async() => {
             let unifiedTokenID = ""
             let privacyTokenAddress = await selectToken('usdt', 'ut')
 
-            let pDecimal = await csCommonFunction.getTokenDecimal(privacyTokenAddress)
+            let pDecimal = await coinServiceApi.getTokenDecimal(privacyTokenAddress)
             let requestedAmount = incognitoAmount / (10 ** pDecimal) + ""
 
             let childTokenAddress = await findTokenChildByNetwork(privacyTokenAddress, network)
@@ -140,7 +136,7 @@ describe('[Class] EvmUnshield', async() => {
             let unifiedTokenID = ""
             let privacyTokenAddress = await selectToken('usdt', 'eth')
 
-            let pDecimal = await csCommonFunction.getTokenDecimal(privacyTokenAddress)
+            let pDecimal = await coinServiceApi.getTokenDecimal(privacyTokenAddress)
             let requestedAmount = incognitoAmount / (10 ** pDecimal) + ""
 
             let childTokenAddress = await findTokenChildByNetwork(privacyTokenAddress, network)
@@ -178,7 +174,7 @@ describe('[Class] EvmUnshield', async() => {
             let unifiedTokenID = ""
             let privacyTokenAddress = await selectToken('aave', 'eth')
 
-            let pDecimal = await csCommonFunction.getTokenDecimal(privacyTokenAddress)
+            let pDecimal = await coinServiceApi.getTokenDecimal(privacyTokenAddress)
             let requestedAmount = incognitoAmount / (10 ** pDecimal) + ""
 
             let childTokenAddress = await findTokenChildByNetwork(privacyTokenAddress, network)
@@ -216,7 +212,7 @@ describe('[Class] EvmUnshield', async() => {
             let unifiedTokenID = ""
             let privacyTokenAddress = await selectToken('bnb', 'bsc')
 
-            let pDecimal = await csCommonFunction.getTokenDecimal(privacyTokenAddress)
+            let pDecimal = await coinServiceApi.getTokenDecimal(privacyTokenAddress)
             let requestedAmount = incognitoAmount / (10 ** pDecimal) + ""
 
             let childTokenAddress = await findTokenChildByNetwork(privacyTokenAddress, network)
@@ -254,7 +250,7 @@ describe('[Class] EvmUnshield', async() => {
             let unifiedTokenID = ""
             let privacyTokenAddress = await selectToken('usdc', 'ut')
 
-            let pDecimal = await csCommonFunction.getTokenDecimal(privacyTokenAddress)
+            let pDecimal = await coinServiceApi.getTokenDecimal(privacyTokenAddress)
             let requestedAmount = incognitoAmount / (10 ** pDecimal) + ""
 
             let childTokenAddress = await findTokenChildByNetwork(privacyTokenAddress, network)
@@ -292,7 +288,7 @@ describe('[Class] EvmUnshield', async() => {
             let unifiedTokenID = ""
             let privacyTokenAddress = await selectToken('usdc', 'bsc')
 
-            let pDecimal = await csCommonFunction.getTokenDecimal(privacyTokenAddress)
+            let pDecimal = await coinServiceApi.getTokenDecimal(privacyTokenAddress)
             let requestedAmount = incognitoAmount / (10 ** pDecimal) + ""
 
             let childTokenAddress = await findTokenChildByNetwork(privacyTokenAddress, network)
@@ -330,7 +326,7 @@ describe('[Class] EvmUnshield', async() => {
             let unifiedTokenID = ""
             let privacyTokenAddress = await selectToken('BUSD', 'bsc')
 
-            let pDecimal = await csCommonFunction.getTokenDecimal(privacyTokenAddress)
+            let pDecimal = await coinServiceApi.getTokenDecimal(privacyTokenAddress)
             let requestedAmount = incognitoAmount / (10 ** pDecimal) + ""
 
             let childTokenAddress = await findTokenChildByNetwork(privacyTokenAddress, network)
@@ -415,7 +411,7 @@ const selectToken = async(symbol, network = null) => {
     if (symbol == 'prv') {
         return '0000000000000000000000000000000000000000000000000000000000000004'
     } else {
-        let listToken = await csCommonFunction.getListToken()
+        let listToken = await coinServiceApi.getListToken()
         for (const token of listToken) {
             if (token.Symbol.toLowerCase() == symbol && token.CurrencyType == currencyType) {
                 return token.TokenID
@@ -427,7 +423,7 @@ const selectToken = async(symbol, network = null) => {
 }
 
 const findTokenChildByNetwork = async(tokenParentID, network = 'eth') => {
-    let tokenInfo = await csCommonFunction.getTokenInfo([tokenParentID])
+    let tokenInfo = await coinServiceApi.getTokenInfo([tokenParentID])
     let listUnifiedToken = tokenInfo[0].ListUnifiedToken
     if (listUnifiedToken && Object.keys(listUnifiedToken).length > 0) {
         let childToken
