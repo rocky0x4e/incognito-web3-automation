@@ -1,5 +1,4 @@
 const { TOKEN, TOKEN_TESTNET } = require('../../../lib/Incognito/Constants')
-const config = require("../../../constant/config");
 const listAccount = require("../../../constant/listAccount.json");
 const { IncNode } = require("../../../lib/Incognito/IncNode");
 const { IncAccount } = require("../../../lib/Incognito/Account/Account");

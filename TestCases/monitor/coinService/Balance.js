@@ -158,7 +158,7 @@ describe("[Class] Balance", () => {
         }).timeout(100000);
     });
 
-    describe.only("TC008_CheckBalanceTokenAfterSend", async() => {
+    describe.skip("TC008_CheckBalanceTokenAfterSend", async() => {
         let amountTransfer = 0;
         let USDT = "076a4423fa20922526bd50b0d7b0dc1c593ce16e15ba141ede5fb5a28aa3f229";
 

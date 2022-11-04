@@ -1,7 +1,6 @@
 let chai = require('chai');
 const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
 const { CoinServiceApi } = require('../../lib/Incognito/CoinServiceApi');
-const { ENV } = require("../../global");
 const webServiceApi_schemas = require("../../schemas/webServiceApi_schemas");
 const validateSchemaCommand = require("../../schemas/validateSchemaCommand");
 

@@ -3,7 +3,6 @@ const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
 let chai = require("chai");
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
-const { ENV } = require("../../../global");
 
 describe("[Class] Market", () => {
     let coinServiceApi = new CoinServiceApi();
