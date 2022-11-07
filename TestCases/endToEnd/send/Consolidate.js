@@ -44,7 +44,6 @@ describe("[Class]Consolidate", () => {
 
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balanceToken = balanceAll[TOKEN.ZIL]
-            console.info({ balanceToken: sender.balanceToken })
 
             let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: TOKEN.ZIL })
         }).timeout(60000);
