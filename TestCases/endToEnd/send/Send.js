@@ -1,4 +1,4 @@
-const { TOKEN, TOKEN_TESTNET } = require('../../../lib/Incognito/Constants')
+const { TOKEN } = require('../../../lib/Incognito/Constants')
 const listAccount = require("../../../constant/listAccount.json");
 const { IncNode } = require("../../../lib/Incognito/IncNode");
 const { IncAccount } = require("../../../lib/Incognito/Account/Account");
@@ -10,7 +10,7 @@ const logger = getLogger("Send")
 
 let rpc = new IncRpc();
 let node = new IncNode()
-let sender = new IncAccount(listAccount[2], node)
+let sender = new IncAccount(listAccount[3], node)
 let receiver = new IncAccount(listAccount[3], node)
 
 describe("[Class] Pdex", () => {
@@ -68,11 +68,11 @@ describe("[Class] Pdex", () => {
             await receiver.initSdkInstance();
 
             let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balanceTokenBefore = balanceAll[TOKEN_TESTNET.DAI_UT]
+            sender.balanceTokenBefore = balanceAll[TOKEN.DAI_UT]
             logger.info({ balanceTokenBefore: sender.balanceTokenBefore })
 
             balanceAll = await receiver.useCli.getBalanceAll()
-            receiver.balanceTokenBefore = balanceAll[TOKEN_TESTNET.DAI_UT]
+            receiver.balanceTokenBefore = balanceAll[TOKEN.DAI_UT]
             logger.info({ balanceTokenBefore: receiver.balanceTokenBefore })
 
             amountSend = await GenAction.randomNumber(100000)
@@ -80,7 +80,7 @@ describe("[Class] Pdex", () => {
 
         it("STEP_Send", async() => {
             tx = await sender.useSdk.sendToken(
-                TOKEN_TESTNET.DAI_UT,
+                TOKEN.DAI_UT,
                 receiver,
                 amountSend
             )
@@ -92,11 +92,11 @@ describe("[Class] Pdex", () => {
 
         it("STEP_VerifyBalance", async() => {
             let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balanceTokenAfter = balanceAll[TOKEN_TESTNET.DAI_UT]
+            sender.balanceTokenAfter = balanceAll[TOKEN.DAI_UT]
             logger.info({ balancePRVAfter: sender.balancePRVAfter })
 
             balanceAll = await receiver.useCli.getBalanceAll()
-            receiver.balanceTokenAfter = balanceAll[TOKEN_TESTNET.DAI_UT]
+            receiver.balanceTokenAfter = balanceAll[TOKEN.DAI_UT]
             logger.info({ balancePRVAfter: receiver.balancePRVAfter })
 
             chai.expect(sender.balanceTokenAfter).to.equal(sender.balanceTokenBefore - amountSend);

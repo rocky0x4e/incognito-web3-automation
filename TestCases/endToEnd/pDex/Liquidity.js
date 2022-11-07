@@ -12,7 +12,7 @@ const logger = getLogger("Pdex")
 let incRpc = new IncRpc();
 let incNode = new IncNode()
 let coinServiceApi = new CoinServiceApi()
-let sender = new IncAccount(listAccount[2], incNode)
+let sender = new IncAccount(listAccount[3], incNode)
 
 describe("[Class] Pdex", () => {
     describe("TC001_AddExistLiquidity", async() => {
@@ -28,6 +28,8 @@ describe("[Class] Pdex", () => {
 
             //getBalance
             let balanceAll = await sender.useCli.getBalanceAll()
+
+
             sender.balancePRVBefore = balanceAll[TOKEN.PRV]
             sender.balanceZILBefore = balanceAll[TOKEN.ZIL]
 
@@ -93,7 +95,7 @@ describe("[Class] Pdex", () => {
             logger.info({ balancePRVAfter: sender.balancePRVAfter })
             logger.info({ balanceZILAfter: sender.balanceZILAfter })
 
-            chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - actualAmount0Add - 200); //2 tx => fee = 200
+            chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - actualAmount0Add - 200);
             chai.expect(sender.balanceZILAfter).to.be.least(sender.balanceZILBefore - actualAmount1Add);
 
         }).timeout(60000);

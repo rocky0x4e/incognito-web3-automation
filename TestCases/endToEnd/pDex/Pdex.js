@@ -12,7 +12,7 @@ const logger = getLogger("Pdex")
 let coinServiceApi = new CoinServiceApi();
 let incRpc = new IncRpc();
 let incNode = new IncNode()
-let sender = new IncAccount(listAccount[2], incNode)
+let sender = new IncAccount(listAccount[3], incNode)
 
 describe("[Class] Pdex", () => {
     describe("TC001_TradePRVToToken", async() => {
