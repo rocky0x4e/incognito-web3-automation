@@ -6,10 +6,12 @@ const { IncRpc } = require("../../../lib/Incognito/RPC/Rpc");
 const GenAction = require("../../../lib/Utils/GenAction");
 let chai = require("chai");
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
+const { CoinServiceApi } = require('../../../lib/Incognito/CoinServiceApi');
 const logger = getLogger("Pdex")
 
 let incRpc = new IncRpc();
 let incNode = new IncNode()
+let coinServiceApi = new CoinServiceApi()
 let sender = new IncAccount(listAccount[2], incNode)
 
 describe("[Class] Pdex", () => {
@@ -171,6 +173,93 @@ describe("[Class] Pdex", () => {
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore + actualAmount0Remove - 100);
             chai.expect(sender.balanceZILAfter).to.be.least(sender.balanceZILBefore + actualAmount1Remove);
+
+        }).timeout(60000);
+    });
+
+    describe("TC003_WithdrawRewardLiquidity", async() => {
+        let tx
+        let nftID
+        let poolHaveReward
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+
+            //getBalance
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
+
+            //selectNFT
+            let nftData = await sender.useSdk.getNftData()
+            for (const nft of nftData) {
+                if (nft.realAmount == 1) {
+                    nftID = nft.nftToken
+                }
+                break
+            }
+        }).timeout(60000);
+
+        it("STEP_FindLiqudityHaveReward", async() => {
+            let poolShare = await coinServiceApi.poolShare(nftID)
+            for (const pool of poolShare.data.Result) {
+                if (pool.Rewards[TOKEN.PRV] > 0) {
+                    poolHaveReward = pool
+                    break
+                }
+            }
+        }).timeout(120000);
+
+
+        it("STEP_CreateTxRemoveLiquidity", async() => {
+
+            if (!poolHaveReward) return null
+            let withdrawTokenIDs = []
+            for (const tokenId of Object.keys(poolHaveReward.Rewards)) {
+                withdrawTokenIDs.push(tokenId)
+            }
+
+            //create tx
+            tx = await sender.useSdk.withdrawFeeLiquidity({
+                withdrawTokenIDs,
+                poolPairID: poolHaveReward.PoolID,
+                nftID: nftID,
+            })
+
+            await incNode.getTransactionByHashRpc(tx)
+            await GenAction.sleep(60000)
+        }).timeout(120000);
+
+
+        it("STEP_CheckTxStatus", async() => {
+            if (!poolHaveReward) return null
+            let response = await incRpc.pdexv3_getWithdrawalLPFeeStatus(tx)
+
+            let receivers = response.data.Result.Receivers
+
+            for (const item of Object.keys(receivers)) {
+                for (const tokenID of Object.keys(poolHaveReward.Rewards)) {
+                    if (tokenID == item) {
+                        let totalReward = 0
+                        totalReward += poolHaveReward.Rewards[tokenID] ? poolHaveReward.Rewards[tokenID] : 0
+                        totalReward += poolHaveReward.OrderRewards[tokenID] ? poolHaveReward.OrderRewards[tokenID] : 0
+
+                        chai.expect(receivers[item].Amount).to.equal(totalReward)
+                    }
+                }
+            }
+        }).timeout(60000);
+
+
+        it("STEP_VerifyBalance", async() => {
+            if (!poolHaveReward) return null
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balancePRVAfter = balanceAll[TOKEN.PRV]
+
+            let totalReward = 0
+            totalReward += poolHaveReward.Rewards[TOKEN.PRV] ? poolHaveReward.Rewards[TOKEN.PRV] : 0
+            totalReward += poolHaveReward.OrderRewards[TOKEN.PRV] ? poolHaveReward.OrderRewards[TOKEN.PRV] : 0
+
+            chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore + totalReward - 100);
 
         }).timeout(60000);
     });
