@@ -14,7 +14,7 @@ let incNode = new IncNode()
 let coinServiceApi = new CoinServiceApi()
 let sender = new IncAccount(listAccount[3], incNode)
 
-describe("[Class] Pdex", () => {
+describe("[Class] Liquidity", () => {
     describe("TC001_AddExistLiquidity", async() => {
         let amount1 = 0
         let amount2 = 0
