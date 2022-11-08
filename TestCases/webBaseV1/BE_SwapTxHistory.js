@@ -10,7 +10,7 @@ describe('[Class] SwapStatus', async() => {
     describe('TC001_Plg_Success', async() => {
         it('STEP_Call_Api_Swap_Status', async() => {
 
-            listTx = ['1108ebb9b138264346fd31c02ed5b08e0819190eab7c45c46b49d46409558972']
+            listTx = ['5de0722c649106b3a5ef5aa90cf179e8ba7258ba11a8449e3965dc1b3fa536ae']
 
             let response = await webServiceApi.swapStatus({ listTx })
 
@@ -22,9 +22,9 @@ describe('[Class] SwapStatus', async() => {
                 chai.assert.equal(response.data.Result[tx].network_result[0].is_redeposit, true)
                 chai.assert.equal(response.data.Result[tx].network_result[0].network, 'plg')
                 chai.assert.equal(response.data.Result[tx].network_result[0].swap_outcome, 'success')
-                chai.assert.equal(response.data.Result[tx].network_result[0].swap_tx, '0x3a65aa41ac1a9dfad407dd409e8b37379d6b020649487800ac5c62512cf4d38a')
-                chai.assert.equal(response.data.Result[tx].network_result[0].redeposit_inctx, '602afd070b41140f40d417f63af7efd9bedd48e1ded1b4abdbda953a010af635')
-                chai.assert.equal(response.data.Result[tx].network_result[0].swap_tx_status, 'accepted')
+                chai.assert.equal(response.data.Result[tx].network_result[0].swap_tx, '0x59bbae8db075c5b8f39e88b1882a0f69c3a8b2f0317d2698e5afb4123cbd1656')
+                chai.assert.equal(response.data.Result[tx].network_result[0].redeposit_inctx, '78b6af2e4b98da958cf8358c3747b3a9978248f20657e9cb8b29d897b1a9bd80')
+                chai.assert.equal(response.data.Result[tx].network_result[0].swap_tx_status, 'success')
             }
         });
     });
@@ -32,7 +32,7 @@ describe('[Class] SwapStatus', async() => {
     describe('TC002_Bsc_Success', async() => {
         it('STEP_Call_Api_Swap_Status', async() => {
 
-            listTx = ['298ba347f3669b0d67c73455a37e36d2f93cee3e7245f751d156904e3625c8bb']
+            listTx = ['44b7c66ad7020404801f324d4fb90b8f76d5e80de753e290433a2c9a1e548e2b']
 
             let response = await webServiceApi.swapStatus({ listTx })
 
@@ -43,10 +43,10 @@ describe('[Class] SwapStatus', async() => {
                 chai.assert.equal(response.data.Result[tx].network_result[0].is_redeposit, true)
                 chai.assert.equal(response.data.Result[tx].network_result[0].network, 'bsc')
                 chai.assert.equal(response.data.Result[tx].network_result[0].swap_outcome, 'success')
-                chai.assert.equal(response.data.Result[tx].network_result[0].swap_tx, '0x74add1a81f27f4513686af5369e48ff9a8e2d1c52b3d804862f6c32739acb811')
-                chai.assert.equal(response.data.Result[tx].network_result[0].swap_tx_status, 'accepted')
-                chai.assert.equal(response.data.Result[tx].network_result[0].redeposit_inctx, '347f6ae3fe5c291d74bb9ee3ce52ad1459e277fb724447ee79cd0f75562c77ac')
-                chai.assert.equal(response.data.Result[tx].network_result[0].redeposit_status, 'accepted')
+                chai.assert.equal(response.data.Result[tx].network_result[0].swap_tx, '0x28a61dbff6f56ab9444e6c1e47476c51a0a8d6df742b84b110d8a4cd3ee0b399')
+                chai.assert.equal(response.data.Result[tx].network_result[0].swap_tx_status, 'success')
+                chai.assert.equal(response.data.Result[tx].network_result[0].redeposit_inctx, 'd17be0778a5663b8c5dbc7d09d7176a923504515344d7f12ce29cdf724b69ae3')
+                chai.assert.equal(response.data.Result[tx].network_result[0].redeposit_status, 'success')
             }
         });
     });
@@ -54,7 +54,7 @@ describe('[Class] SwapStatus', async() => {
     describe('TC003_Swap_Revert', async() => {
         it('STEP_Call_Api_Swap_Status', async() => {
 
-            listTx = ['e0234830e0294d779174a30e377cbf2e598d3b8685a6a6d1c3564b2c70b99dbb']
+            listTx = ['d22282e2e92099716805984b7a83935ed8c6fd8f1d36d79da4f1525bda29729f']
 
             let response = await webServiceApi.swapStatus({ listTx })
 
@@ -64,9 +64,9 @@ describe('[Class] SwapStatus', async() => {
                 chai.assert.equal(response.data.Result[tx].inc_request_tx_status, 'accepted')
                 chai.assert.equal(response.data.Result[tx].network_result[0].is_redeposit, true)
                 chai.assert.equal(response.data.Result[tx].network_result[0].swap_outcome, 'reverted')
-                chai.assert.equal(response.data.Result[tx].network_result[0].swap_tx_status, 'accepted')
-                chai.assert.equal(response.data.Result[tx].network_result[0].redeposit_inctx, 'b54a046ac14f3dd4f2a55fbffa2f48a2196e92e88e0835dfb25c84fd08f4cd3c')
-                chai.assert.equal(response.data.Result[tx].network_result[0].redeposit_status, 'accepted')
+                chai.assert.equal(response.data.Result[tx].network_result[0].swap_tx_status, 'success')
+                chai.assert.equal(response.data.Result[tx].network_result[0].redeposit_inctx, '996bf59639e7110e095cdd93579d9a92edb6c5ad70f3ed8eeb7fa0cdd702ba38')
+                chai.assert.equal(response.data.Result[tx].network_result[0].redeposit_status, 'success')
             }
         });
     });
@@ -89,8 +89,9 @@ describe('[Class] SwapStatus', async() => {
     describe('TC005_Multi_Tx', async() => {
         it('STEP_Call_Api_Swap_Status', async() => {
 
-            listTx = ['0fe3a27694cf9703212194a0a13312356ed1b9807d8a9a89c053c040642a332b',
-                '298ba347f3669b0d67c73455a37e36d2f93cee3e7245f751d156904e3625c8bb'
+            listTx = ['5de0722c649106b3a5ef5aa90cf179e8ba7258ba11a8449e3965dc1b3fa536ae',
+                '44b7c66ad7020404801f324d4fb90b8f76d5e80de753e290433a2c9a1e548e2b',
+                '54954ed0a4d939e25019590219f28cb5468ee07bb5e4d7e58f27aeff681b3b0c'
             ]
             let response = await webServiceApi.swapStatus({ listTx })
 

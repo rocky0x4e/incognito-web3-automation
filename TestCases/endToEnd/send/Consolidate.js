@@ -8,7 +8,7 @@ let chai = require("chai");
 let node = new IncNode()
 let sender = new IncAccount(listAccount[3], node)
 
-describe("[Class]Consolidate", () => {
+describe("[Class] Consolidate", () => {
     describe("TC001_ConsolidatePRV", async() => {
 
         it("STEP_InitData", async() => {

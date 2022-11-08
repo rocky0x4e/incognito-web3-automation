@@ -13,7 +13,7 @@ let node = new IncNode()
 let sender = new IncAccount(listAccount[3], node)
 let receiver = new IncAccount(listAccount[3], node)
 
-describe("[Class] Pdex", () => {
+describe("[Class] Send", () => {
     describe("TC001_SendPRV", async() => {
         let amountSend = 0
         let tx
