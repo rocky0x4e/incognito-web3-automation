@@ -1,7 +1,16 @@
 const addContext = require('mochawesome/addContext');
+const { ENV } = require('../global');
+const { IncAccountGroup } = require('../lib/Incognito/Account/Account');
 const addingContent = require("../lib/Utils/AddingContent");
 const { getLogger } = require('../lib/Utils/LoggingManager');
 const logger = getLogger("TestBase")
+
+
+const ACCOUNTS = {
+    Incognito: (new IncAccountGroup).importFromKeyList(ENV.Testdata.Keys.Incognito),
+    Evm: []
+}
+
 beforeEach(function () {
     addingContent.resetContent()
 })
@@ -25,3 +34,5 @@ afterEach(function () {
 
     }
 })
+
+module.exports = { ACCOUNTS }

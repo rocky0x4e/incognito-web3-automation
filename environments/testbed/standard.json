@@ -1,0 +1,30 @@
+{
+    "FullNode": {
+        "url": "https://testnet.incognito.org/fullnode",
+        "authPath": "",
+        "accessToken": "0ec910a54ffbf2a0bdfc0c8b05e8b5445e51a2ae54f659a35ac7ad9980e4fd2c"
+    },
+    "CoinService": {
+        "url": "https://api-coinservice-staging.incognito.org",
+        "authPath": ""
+    },
+    "PubsubService": {
+        "url": "http://51.161.117.193:9096",
+        "authPath": ""
+    },
+    "Backend": {
+        "url": "https://staging-api-service.incognito.org",
+        "authPath": "auth/new-token"
+    },
+    "BackendTool": {
+        "url": "http://34.123.53.141",
+        "authPath": ""
+    },
+    "Web3": {
+        "url": "https://kovan.infura.io/v3/",
+        "authPath": ""
+    },
+    "WebService": {
+        "url": "https://api-webapp-staging.incognito.org"
+    }
+}
