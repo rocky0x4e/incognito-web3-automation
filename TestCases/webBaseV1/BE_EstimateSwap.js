@@ -1307,8 +1307,8 @@ const selectToken = async(symbol, network = null) => {
         if (symbol == 'prv') {
             return '0000000000000000000000000000000000000000000000000000000000000004'
         } else {
+            let currencyType = await convertNetworkToCurrencyType(symbol, network)
             for (const token of listToken) {
-                let currencyType = await convertNetworkToCurrencyType(symbol, network)
                 if (token.Symbol.toLowerCase() == symbol &&
                     token.CurrencyType == currencyType &&
                     token.Verified == true) {
@@ -1379,17 +1379,14 @@ const getContactAppByAppName = async(appName, network) => {
     switch (appName) {
         case 'pancake':
             return '0x95Cd8898917c7216Da0517aAB6A115d7A7b6CA90'
-            break;
         case 'uniswap':
             if (network == 'plg') {
                 return '0xCC8c88e9Dae72fa07aC077933a2E73d146FECdf0'
             } else {
                 return '0xe38e54B2d6B1FCdfaAe8B674bF36ca62429fdBDe'
             }
-            break;
         case 'curve':
             return '0x55B08b7c1eCdc1931660b18Fe2d46Ce7B20613E2'
-            break;
         default:
             return null;
     }
