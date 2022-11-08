@@ -19,7 +19,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'ZIL'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
@@ -46,7 +46,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_EstimateFeeOnWeb', async() => {
 
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -72,18 +72,17 @@ describe('[Class]Unshield', async() => {
 
     describe('[TC002]EstimateUnshieldFee_ZEC', async() => {
         let tokenID, currencyType, beShieldAddress, webShieldAddress, outchainAddress,
-            appFeeAddress, appLevel1, webFeeAddress, webLevel1, requestedAmount, incognitoAmount
+            appFeeAddress, appTokenFee, webFeeAddress, webTokenFee, requestedAmount, incognitoAmount
 
         it('STEP_InitData', async() => {
             let tokenName = 'ZEC'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
             let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
             incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
             requestedAmount = incognitoAmount / tokenDeciamlPow
-
         });
 
         it('STEP_EstimateFeeOnApp', async() => {
@@ -98,12 +97,12 @@ describe('[Class]Unshield', async() => {
 
             beShieldAddress = response.data.Result.Address
             appFeeAddress = response.data.Result.FeeAddress
-            appLevel1 = response.data.Result.TokenFees.Level1
+            appTokenFee = response.data.Result.TokenFees
         });
 
         it('STEP_EstimateFeeOnWeb', async() => {
 
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -117,12 +116,12 @@ describe('[Class]Unshield', async() => {
 
             webShieldAddress = response.data.Result.Address
             webFeeAddress = response.data.Result.FeeAddress
-            webLevel1 = response.data.Result.TokenFees.Level1
+            webTokenFee = response.data.Result.TokenFees
         });
 
         it('STEP_Compare', async() => {
             chai.assert.equal(appFeeAddress, webFeeAddress)
-            chai.assert.equal(appLevel1, webLevel1)
+            chai.assert.equal(appTokenFee, webTokenFee)
                 // chai.assert.equal(beShieldAddress, webShieldAddress)
         });
     });
@@ -133,7 +132,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'DASH'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
@@ -160,7 +159,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_EstimateFeeOnWeb', async() => {
 
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -190,7 +189,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'NEO'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
@@ -215,7 +214,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_EstimateFeeOnWeb', async() => {
 
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -242,7 +241,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'LTC'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
@@ -269,7 +268,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_EstimateFeeOnWeb', async() => {
 
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -293,59 +292,6 @@ describe('[Class]Unshield', async() => {
         });
     });
 
-    describe('[TC006]EstimateUnshieldFee_DOT', async() => {
-        let tokenID, currencyType, beShieldAddress, webShieldAddress, outchainAddress,
-            appFeeAddress, appLevel1, webFeeAddress, webLevel1, requestedAmount, incognitoAmount
-
-        it('STEP_InitData', async() => {
-            let tokenName = 'DOT'
-            tokenID = await getTokenID(tokenName)
-            outchainAddress = await getOutchainAddress(tokenName)
-            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
-
-            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
-            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
-            requestedAmount = incognitoAmount / tokenDeciamlPow
-
-        });
-
-        it('STEP_EstimateFeeOnApp', async() => {
-            let response = await backendApi.otaGenerateUnShield({
-                currencyType,
-                requestedAmount: requestedAmount + "", //"0,025"
-                incognitoAmount: incognitoAmount + "", //25000000
-                paymentAddress: outchainAddress, //"zil1u2umu2kjpmlp48mu5akq2y82x98qcaz4my2yr5"
-                walletAddress: paymentAddress, //"12sveuNGdToMM98xz5Q8EKbkAtNoi6qsFdA4yei2wBe73X3Fwt5qDY6PHGvwxLVqDT8MMmGy7yuU4GzeJ6mCc7MJNYepC54jaWKxLW2kyWPhzQUuFm4FnK4QDr9fuj4cpvXqkm5PB9XXwXUyUniy"
-                privacyTokenAddress: tokenID,
-            })
-
-            beShieldAddress = response.data.Result.Address
-            appFeeAddress = response.data.Result.FeeAddress
-        });
-
-        it('STEP_EstimateFeeOnWeb', async() => {
-
-            response = await webServiceApi.genUnshieldAddress({
-                network: "centralized",
-                requestedAmount: requestedAmount + "",
-                addressType: 2,
-                incognitoAmount: incognitoAmount + "",
-                paymentAddress: outchainAddress,
-                privacyTokenAddress: tokenID,
-                walletAddress: paymentAddress,
-                unifiedTokenID: "",
-                currencyType
-            })
-
-            webShieldAddress = response.data.Result.Address
-            webFeeAddress = response.data.Result.FeeAddress
-        });
-
-        it('STEP_Compare', async() => {
-            chai.assert.equal(appFeeAddress, webFeeAddress)
-        });
-    });
-
     describe('[TC007]EstimateUnshieldFee_BTC', async() => {
         let url, body, response
         let tokenID, currencyType, outchainAddress,
@@ -353,20 +299,18 @@ describe('[Class]Unshield', async() => {
 
         before(async() => {
             let tokenName = 'BTC'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-
-
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp-staging.incognito.org/estimateunshieldfee'
+            url = 'https://api-webapp.incognito.org/estimateunshieldfee'
             body = {
                 "Network": "btc"
             }
-            response = await api.post(url, body)
+            let response = await api.post(url, body)
 
             webUnshieldFee = response.Result
 
@@ -379,7 +323,7 @@ describe('[Class]Unshield', async() => {
         it('EstimateFeeOnApp', async() => {
             url = 'http://51.161.119.66:8020/getestimatedunshieldingfee'
 
-            response = await api.get(url)
+            let response = await api.get(url)
 
             appUnshieldFee = response.Result
 
@@ -400,7 +344,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'ZIL'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
@@ -411,24 +355,28 @@ describe('[Class]Unshield', async() => {
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
-                network: "centralized",
-                requestedAmount: requestedAmount + "",
-                addressType: 2,
-                incognitoAmount: incognitoAmount + "",
-                paymentAddress: outchainAddress,
-                privacyTokenAddress: tokenID,
-                walletAddress: paymentAddress,
-                unifiedTokenID: "",
-                currencyType
-            })
+            let response
+            try {
+                response = await webServiceApi.genUnshieldAddress({
+                    network: "centralized",
+                    requestedAmount: requestedAmount + "",
+                    addressType: 2,
+                    incognitoAmount: incognitoAmount + "",
+                    paymentAddress: outchainAddress,
+                    privacyTokenAddress: tokenID,
+                    walletAddress: paymentAddress,
+                    unifiedTokenID: "",
+                    currencyType
+                })
+            } catch (error) {
+                console.log('hoanh response', response);
+                chai.expect(response.data).have.property('Error')
+                chai.expect(response.data.Error).have.property('Code')
+                chai.expect(response.data.Error).have.property('Message')
 
-            chai.expect(response.data).have.property('Error')
-            chai.expect(response.data.Error).have.property('Code')
-            chai.expect(response.data.Error).have.property('Message')
-
-            chai.assert.equal(response.data.Error.Code, '-2014')
-            chai.assert.equal(response.data.Error.Message, 'Payment address invalid!')
+                chai.assert.equal(response.data.Error.Code, '-2014')
+                chai.assert.equal(response.data.Error.Message, 'Payment address invalid!')
+            }
         });
     });
 
@@ -437,7 +385,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'ZEC'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
@@ -448,7 +396,7 @@ describe('[Class]Unshield', async() => {
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -474,7 +422,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'DASH'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
@@ -485,7 +433,7 @@ describe('[Class]Unshield', async() => {
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -511,7 +459,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'NEO'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
@@ -522,7 +470,7 @@ describe('[Class]Unshield', async() => {
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -548,7 +496,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'LTC'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
@@ -559,44 +507,7 @@ describe('[Class]Unshield', async() => {
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
-                network: "centralized",
-                requestedAmount: requestedAmount + "",
-                addressType: 2,
-                incognitoAmount: incognitoAmount + "",
-                paymentAddress: outchainAddress,
-                privacyTokenAddress: tokenID,
-                walletAddress: paymentAddress,
-                unifiedTokenID: "",
-                currencyType
-            })
-
-            chai.expect(response.data).have.property('Error')
-            chai.expect(response.data.Error).have.property('Code')
-            chai.expect(response.data.Error).have.property('Message')
-
-            chai.assert.equal(response.data.Error.Code, '-2014')
-            chai.assert.equal(response.data.Error.Message, 'Payment address invalid!')
-        });
-    });
-
-    describe('[TC013]EstimateUnshieldFeeWithInvalidOutchainAddress_DOT', async() => {
-        let tokenID, currencyType, outchainAddress, requestedAmount, incognitoAmount
-
-        it('STEP_InitData', async() => {
-            let tokenName = 'DOT'
-            tokenID = await getTokenID(tokenName)
-            outchainAddress = "1" + await getOutchainAddress(tokenName)
-            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
-
-            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
-            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
-            requestedAmount = incognitoAmount / tokenDeciamlPow
-        });
-
-        //step 2 : gen ZIL shield address from lam service
-        it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -622,7 +533,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'ZIL'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
@@ -633,7 +544,7 @@ describe('[Class]Unshield', async() => {
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -658,7 +569,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'ZEC'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
@@ -669,7 +580,7 @@ describe('[Class]Unshield', async() => {
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -694,7 +605,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'DASH'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
@@ -705,7 +616,7 @@ describe('[Class]Unshield', async() => {
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -730,7 +641,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'NEO'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
@@ -741,7 +652,7 @@ describe('[Class]Unshield', async() => {
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -766,7 +677,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'LTC'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
 
@@ -777,42 +688,7 @@ describe('[Class]Unshield', async() => {
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
-                network: "centralized",
-                requestedAmount: requestedAmount + "",
-                addressType: 2,
-                incognitoAmount: incognitoAmount + "",
-                paymentAddress: outchainAddress,
-                privacyTokenAddress: tokenID,
-                walletAddress: 1 + paymentAddress,
-                unifiedTokenID: "",
-                currencyType
-            })
-
-            chai.expect(response.data).have.property('Error')
-            chai.expect(response.data.Error).have.property('Code')
-            chai.expect(response.data.Error).have.property('Message')
-            chai.assert.equal(response.data.Error.Code, '-9001')
-            chai.assert.equal(response.data.Error.Message, 'internal server error')
-        });
-    });
-
-    describe('[TC019]EstimateUnshieldFeeWithInvalidInchainAddress_DOT', async() => {
-        let tokenID, currencyType, outchainAddress, requestedAmount, incognitoAmount
-
-        it('STEP_InitData', async() => {
-            let tokenName = 'DOT'
-            tokenID = await getTokenID(tokenName)
-            outchainAddress = "1" + await getOutchainAddress(tokenName)
-            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
-
-            let tokenDeciamlPow = await coinServiceApi.getTokenDecimalPow(tokenID)
-            incognitoAmount = await GenAction.randomNumber(1e8, 1e9)
-            requestedAmount = incognitoAmount / tokenDeciamlPow
-        });
-
-        it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -839,7 +715,7 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'ZIL'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
@@ -848,7 +724,7 @@ describe('[Class]Unshield', async() => {
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -863,8 +739,8 @@ describe('[Class]Unshield', async() => {
             chai.expect(response.data).have.property('Error')
             chai.expect(response.data.Error).have.property('Code')
             chai.expect(response.data.Error).have.property('Message')
-            chai.assert.equal(response.data.Error.Code, '-9001')
-            chai.assert.equal(response.data.Error.Message, 'internal server error')
+            chai.assert.equal(response.data.Error.Code, '-2014')
+            chai.assert.equal(response.data.Error.Message, 'Payment address invalid!')
         });
     });
 
@@ -875,16 +751,14 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'ZEC'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-
-
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -899,8 +773,8 @@ describe('[Class]Unshield', async() => {
             chai.expect(response.data).have.property('Error')
             chai.expect(response.data.Error).have.property('Code')
             chai.expect(response.data.Error).have.property('Message')
-            chai.assert.equal(response.data.Error.Code, '-9001')
-            chai.assert.equal(response.data.Error.Message, 'internal server error')
+            chai.assert.equal(response.data.Error.Code, '-2014')
+            chai.assert.equal(response.data.Error.Message, 'Payment address invalid!')
         });
     });
 
@@ -911,16 +785,14 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'DASH'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-
-
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -935,8 +807,8 @@ describe('[Class]Unshield', async() => {
             chai.expect(response.data).have.property('Error')
             chai.expect(response.data.Error).have.property('Code')
             chai.expect(response.data.Error).have.property('Message')
-            chai.assert.equal(response.data.Error.Code, '-9001')
-            chai.assert.equal(response.data.Error.Message, 'internal server error')
+            chai.assert.equal(response.data.Error.Code, '-2014')
+            chai.assert.equal(response.data.Error.Message, 'Payment address invalid!')
         });
     });
 
@@ -947,16 +819,14 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'NEO'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-
-
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -971,8 +841,8 @@ describe('[Class]Unshield', async() => {
             chai.expect(response.data).have.property('Error')
             chai.expect(response.data.Error).have.property('Code')
             chai.expect(response.data.Error).have.property('Message')
-            chai.assert.equal(response.data.Error.Code, '-9001')
-            chai.assert.equal(response.data.Error.Message, 'internal server error')
+            chai.assert.equal(response.data.Error.Code, '-2014')
+            chai.assert.equal(response.data.Error.Message, 'Payment address invalid!')
         });
     });
 
@@ -983,16 +853,14 @@ describe('[Class]Unshield', async() => {
 
         it('STEP_InitData', async() => {
             let tokenName = 'LTC'
-            tokenID = await getTokenID(tokenName)
+            tokenID = await coinServiceApi.getTokenIdFromSymbol(tokenName)
             outchainAddress = "1" + await getOutchainAddress(tokenName)
             currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
         });
 
-
-
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
+            let response = await webServiceApi.genUnshieldAddress({
                 network: "centralized",
                 requestedAmount: requestedAmount + "",
                 addressType: 2,
@@ -1007,73 +875,12 @@ describe('[Class]Unshield', async() => {
             chai.expect(response.data).have.property('Error')
             chai.expect(response.data.Error).have.property('Code')
             chai.expect(response.data.Error).have.property('Message')
-            chai.assert.equal(response.data.Error.Code, '-9001')
-            chai.assert.equal(response.data.Error.Message, 'internal server error')
+            chai.assert.equal(response.data.Error.Code, '-2014')
+            chai.assert.equal(response.data.Error.Message, 'Payment address invalid!')
         });
     });
 
-    describe('[TC025]EstimateUnshieldFeeWithInvalidAmount_DOT', async() => {
-        let tokenID, currencyType, outchainAddress,
-            requestedAmount = 'abc',
-            incognitoAmount = 'abc'
-
-        it('STEP_InitData', async() => {
-            let tokenName = 'DOT'
-            tokenID = await getTokenID(tokenName)
-            outchainAddress = "1" + await getOutchainAddress(tokenName)
-            currencyType = await coinServiceApi.getTokenCurrencyType(tokenID)
-        });
-
-
-
-        //step 2 : gen ZIL shield address from lam service
-        it('EstimateFeeOnWeb', async() => {
-            response = await webServiceApi.genUnshieldAddress({
-                network: "centralized",
-                requestedAmount: requestedAmount + "",
-                addressType: 2,
-                incognitoAmount: incognitoAmount + "",
-                paymentAddress: outchainAddress,
-                privacyTokenAddress: tokenID,
-                walletAddress: paymentAddress,
-                unifiedTokenID: "",
-                currencyType
-            })
-
-            chai.expect(response.data).have.property('Error')
-            chai.expect(response.data.Error).have.property('Code')
-            chai.expect(response.data.Error).have.property('Message')
-            chai.assert.equal(response.data.Error.Code, '-9001')
-            chai.assert.equal(response.data.Error.Message, 'internal server error')
-        });
-    });
 });
-
-const getTokenID = async(tokenName) => {
-    if (global.ENV == 'testnet2') {
-        switch (tokenName) {
-            case 'ZIL':
-                return '880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc'
-            case 'ZEC':
-                return 'a609150120c0247407e6d7725f2a9701dcbb7bab5337a70b9cef801f34bc2b5c'
-            case 'DASH':
-                return '447b088f1c2a8e08bff622ef43a477e98af22b64ea34f99278f4b550d285fbff'
-            case 'NEO':
-                return '86c45a9fdddc5546e3b4f09dba211b836aefc5d08ed22e7d33cff7f9b8b39c10'
-            case 'LTC':
-                return '7450ad98cb8c967afb76503944ab30b4ce3560ed8f3acc3155f687641ae34135'
-            case 'DOT':
-                return '9442d607e3a18d553222f6e8fe7fcc93fc5a4961bf7ccd7f840196bc5383469a'
-            case 'BTC':
-                return '4584d5e9b2fc0337dfb17f4b5bb025e5b82c38cfa4f54e8a3d4fcdd03954ff82'
-            default:
-                break;
-        }
-    } else {
-        //TODO for mainnet
-    }
-    return null
-}
 
 const getOutchainAddress = async(tokenName) => {
     if (global.ENV == 'testnet2') {
@@ -1096,7 +903,22 @@ const getOutchainAddress = async(tokenName) => {
                 break;
         }
     } else {
-        //TODO for mainnet
+        switch (tokenName) {
+            case 'ZIL':
+                return 'zil1g66m72q4xvwytpn5znqf0glxpv2z5l7qeqq7fy'
+            case 'ZEC':
+                return 'zs15anl73yd0f45sudsgfns46a2srzdcsmun929ea09tnvpktqsmm58msru79wwwwps08q2gm34kn6'
+            case 'DASH':
+                return 'XsyTY4rqFAU8zKxY8zgQ4j3WrRb47xs6QC'
+            case 'NEO':
+                return 'ARbpPWQLaLVyuzUesw3JpeLL8xPq1DLD1L'
+            case 'LTC':
+                return 'LSeCsLeqhCHMq3Mj1m8E4sJ2n4DhU917tp'
+            case 'BTC':
+                return 'bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh'
+            default:
+                break;
+        }
     }
     return null
 }
