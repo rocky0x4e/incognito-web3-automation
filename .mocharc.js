@@ -10,7 +10,7 @@ module.exports = {
         './TestCases/monitor/backend',
         './TestCases/monitor/coinService',
         './TestCases/monitor/checkAlive',
-        './TestCases/monitor/EVM',
+        // './TestCases/monitor/EVM',
         './TestCases/webBaseV1',
         './TestCases/webBaseV2',
     ],

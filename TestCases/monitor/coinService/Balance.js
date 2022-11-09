@@ -12,31 +12,17 @@ const GenAction = require("../../../lib/Utils/GenAction");
 
 //init
 let node = new IncNode();
-let sender = new IncAccount(listAccount["2"]).attachTo(node);
-let receiver = new IncAccount(listAccount["3"]).attachTo(node);
-let account = {
-    privateKey: null,
-    otaKey: null
-};
+let account = new IncAccount(listAccount.main7);
+let sender = new IncAccount(listAccount["2"])
+let receiver = new IncAccount(listAccount["3"])
+
 let coinServiceApi = new CoinServiceApi();
 
 describe("[Class] Balance", () => {
-    describe("Before_InitData", async() => {
-        it("InitData", async() => {
-            let privateKey = (await config.getAccount("main7")).privateKey;
-
-            let node = new IncNode();
-            let accountNode = new IncAccount(privateKey).attachTo(node);
-
-            account.otaKey = accountNode.otaPrivateK;
-            account.privateKey = accountNode.privateK;
-        });
-    });
-
     describe("TC001_GetKeyInfo", async() => {
         it("CallAPI", async() => {
             let response = await coinServiceApi.getKeyInfo({
-                otaKey: account.otaKey
+                otaKey: account.otaPrivateK
             });
 
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getGetKeyInfoSchemas, response.data);

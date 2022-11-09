@@ -6,28 +6,18 @@ let chai = require("chai");
 const { IncNode } = require("../../../lib/Incognito/IncNode");
 const { IncAccount } = require("../../../lib/Incognito/Account/Account");
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
+const listAccount = require("../../../constant/listAccount.json");
 const GenAction = require("../../../lib/Utils/GenAction");
 
+let account = new IncAccount(listAccount.main7);
+let coinServiceApi = new CoinServiceApi();
+
 describe("[Class] Pdex", () => {
-    let account = {
-        privateKey: null,
-        otaKey: null
-    };
-    let coinServiceApi = new CoinServiceApi();
 
-    describe("Before_Initdata", async() => {
-        let privateKey = (await config.getAccount("main7")).privateKey;
-
-        let node = new IncNode(global.urlFullNode);
-        let accountNode = new IncAccount(privateKey).attachTo(node);
-
-        account.otaKey = accountNode.otaPrivateK;
-        account.privateKey = accountNode.privateK;
-    });
 
     describe("TC001_SwapTradeHistory", async() => {
         it("CallAPI", async() => {
-            let response = await coinServiceApi.tradeHistory({ otaKey: account.otaKey });
+            let response = await coinServiceApi.tradeHistory({ otaKey: account.otaPrivateK });
 
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getTradeHistorySchemas, response.data);
 
@@ -41,7 +31,7 @@ describe("[Class] Pdex", () => {
 
             let response = await coinServiceApi.estimateTrade({
                 tokenSell: TOKEN.PRV,
-                tokenBuy: TOKEN.USDT,
+                tokenBuy: TOKEN.USDT_UT,
                 sellAmount: sellAmount
             });
 

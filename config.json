@@ -1,4 +1,4 @@
 {
-    "testbed": "staging",
+    "testbed": "production",
     "testdata": "keytest"
 }
