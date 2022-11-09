@@ -12,6 +12,7 @@ module.exports = {
         './TestCases/monitor/checkAlive',
         './TestCases/monitor/EVM',
         './TestCases/webBaseV1',
+        './TestCases/webBaseV2',
     ],
     reporter: 'node_modules/mochawesome',
     'reporter-option': [
