@@ -1238,7 +1238,6 @@ describe('[Class] EstimateTrade', async() => {
                 chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase())
                 chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase())
             }
-
         });
     });
 

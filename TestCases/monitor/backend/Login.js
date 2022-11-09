@@ -1,6 +1,5 @@
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const backendApi_schemas = require("../../../schemas/backendApi_schemas");
-const { ENV } = require('../../../global');
 const { BackendApi } = require('../../../lib/Incognito/BackendApi');
 
 

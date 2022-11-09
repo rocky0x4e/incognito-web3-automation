@@ -2,7 +2,6 @@ const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const backendApi_schemas = require("../../../schemas/backendApi_schemas");
 const { BackendApi } = require('../../../lib/Incognito/BackendApi');
 const { IncAccount } = require("../../../lib/Incognito/Account/Account");
-const { ENV } = require('../../../global');
 const listAccount = require('../../../constant/listAccount.json');
 
 

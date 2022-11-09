@@ -3,7 +3,6 @@ const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
 const { BackendApi } = require('../../lib/Incognito/BackendApi');
 const { CoinServiceApi } = require('../../lib/Incognito/CoinServiceApi');
 const { PortalServiceApi } = require('../../lib/Incognito/PortalServiceApi');
-const { IncRpc } = require('../../lib/Incognito/RPC/Rpc');
 const GenAction = require('../../lib/Utils/GenAction')
 
 let webServiceApi = new WebServiceApi()
@@ -364,7 +363,6 @@ describe('[Class]Unshield', async() => {
                     currencyType
                 })
             } catch (error) {
-                console.log('hoanh response', response);
                 chai.expect(response.data).have.property('Error')
                 chai.expect(response.data.Error).have.property('Code')
                 chai.expect(response.data.Error).have.property('Message')
