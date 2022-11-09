@@ -26,7 +26,7 @@
         },
         "Tokens": {
             "PRV": "0000000000000000000000000000000000000000000000000000000000000004",
-            "DAI_UT": "50092f46f3f9dcebd3176de97c936950977bcc52a22eebb2863b8e4d24261434",
+            "DAI_UT": "0d953a47a7a488cee562e64c80c25d3dbe29d3b477ccd2b54408c0553a93f126",
             "ZIL": "880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc"
         },
         "Pools": {
@@ -38,16 +38,14 @@
         "url": "https://kovan.infura.io/v3/",
         "authPath": ""
     },
-    "EthereumFullnode": [
-        {
+    "EthereumFullnode": [{
             "url": "https://eth-goerli.g.alchemy.com/v2/qOolRKBtov0fk1r657-8qWmLrcfZCw87"
         },
         {
             "url": "https://eth-goerli.g.alchemy.com/v2/qOolRKBtov0fk1r657-8qWmLrcfZCw87"
         }
     ],
-    "BSCFullnode": [
-        {
+    "BSCFullnode": [{
             "url": "https://data-seed-prebsc-1-s1.binance.org:8545"
         },
         {
@@ -60,8 +58,7 @@
             "url": "https://data-seed-prebsc-2-s3.binance.org:8545"
         }
     ],
-    "PLGFullnode": [
-        {
+    "PLGFullnode": [{
             "url": "https://polygon-mumbai.g.alchemy.com/v2/V8SP0S8Q-sT35ca4VKH3Iwyvh8K8wTRn"
         },
         {
@@ -71,19 +68,13 @@
             "url": "https://matic-mumbai.chainstacklabs.com"
         }
     ],
-    "FTMFullnode": [
-        {
-            "url": "https://rpc.testnet.fantom.network"
-        }
-    ],
-    "AuroraFullnode": [
-        {
-            "url": "https://testnet.aurora.dev"
-        }
-    ],
-    "AvaxFullnode": [
-        {
-            "url": "https://api.avax-test.network/ext/C/rpc"
-        }
-    ]
+    "FTMFullnode": [{
+        "url": "https://rpc.testnet.fantom.network"
+    }],
+    "AuroraFullnode": [{
+        "url": "https://testnet.aurora.dev"
+    }],
+    "AvaxFullnode": [{
+        "url": "https://api.avax-test.network/ext/C/rpc"
+    }]
 }
