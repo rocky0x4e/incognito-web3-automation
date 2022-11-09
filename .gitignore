@@ -16,4 +16,4 @@ bin
 package-lock.json
 environments
 config.json
-constant/listAccount.json
+listAccount.json
