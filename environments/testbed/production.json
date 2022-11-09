@@ -26,6 +26,9 @@
     "WebService": {
         "url": "https://api-webapp.incognito.org"
     },
+    "PortalService": {
+        "url": "https://api-portalv4.incognito.org"
+    },
     "Tokens": {
         "PRV": "0000000000000000000000000000000000000000000000000000000000000004",
         "DAI_UT": "0d953a47a7a488cee562e64c80c25d3dbe29d3b477ccd2b54408c0553a93f126",

@@ -235,7 +235,7 @@ describe('[Class]BEShield', async() => {
                 privacyTokenAddress: tokenID,
             })
 
-            beWebShieldAddress = response.data.Result.Address
+            beWebShieldAddress = response.data.Result
         });
 
         //step 3 : compare 2 body

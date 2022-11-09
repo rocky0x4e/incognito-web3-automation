@@ -2,10 +2,12 @@ let chai = require('chai');
 const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
 const { BackendApi } = require('../../lib/Incognito/BackendApi');
 const { CoinServiceApi } = require('../../lib/Incognito/CoinServiceApi');
+const { PortalServiceApi } = require('../../lib/Incognito/PortalServiceApi');
 const { IncRpc } = require('../../lib/Incognito/RPC/Rpc');
 const GenAction = require('../../lib/Utils/GenAction')
 
 let webServiceApi = new WebServiceApi()
+let portalServiceApi = new PortalServiceApi()
 let coinServiceApi = new CoinServiceApi()
 let backendApi = new BackendApi()
 let paymentAddress = '12sveuNGdToMM98xz5Q8EKbkAtNoi6qsFdA4yei2wBe73X3Fwt5qDY6PHGvwxLVqDT8MMmGy7yuU4GzeJ6mCc7MJNYepC54jaWKxLW2kyWPhzQUuFm4FnK4QDr9fuj4cpvXqkm5PB9XXwXUyUniy'
@@ -293,9 +295,8 @@ describe('[Class]Unshield', async() => {
     });
 
     describe('[TC007]EstimateUnshieldFee_BTC', async() => {
-        let url, body, response
-        let tokenID, currencyType, outchainAddress,
-            appUnshieldFee, webUnshieldFee
+        let tokenID, outchainAddress
+        let appUnshieldFee, webUnshieldFee
 
         before(async() => {
             let tokenName = 'BTC'
@@ -306,31 +307,25 @@ describe('[Class]Unshield', async() => {
 
         //step 2 : gen ZIL shield address from lam service
         it('EstimateFeeOnWeb', async() => {
-            url = 'https://api-webapp.incognito.org/estimateunshieldfee'
-            body = {
-                "Network": "btc"
-            }
-            let response = await api.post(url, body)
+            let response = await webServiceApi.estimateUnshieldFeeBTC()
 
-            webUnshieldFee = response.Result
+            webUnshieldFee = response.data.Result.Fee
 
-            chai.expect(response).be.a('object');
-            chai.expect(response).have.property('Result')
-            chai.expect(response).have.property('Error')
+            chai.expect(response.data).be.a('object');
+            chai.expect(response.data).have.property('Result')
+            chai.expect(response.data.Result).have.property('Fee')
+            chai.expect(response.data.Result).have.property('MinUnshield')
         });
 
         //step 1 : gen ZIL shield address from BE
         it('EstimateFeeOnApp', async() => {
-            url = 'http://51.161.119.66:8020/getestimatedunshieldingfee'
+            let response = await portalServiceApi.getestimatedunshieldingfee()
 
-            let response = await api.get(url)
+            appUnshieldFee = response.data.Result
 
-            appUnshieldFee = response.Result
-
-            chai.expect(response).be.a('object');
-            chai.expect(response).have.property('Result')
-            chai.expect(response).have.property('Error')
-
+            chai.expect(response.data).be.a('object');
+            chai.expect(response.data).have.property('Result')
+            chai.expect(response.data).have.property('Error')
         });
 
         //step 3 : compare 2 body
