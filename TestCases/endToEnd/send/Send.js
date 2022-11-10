@@ -6,6 +6,7 @@ const { IncRpc } = require("../../../lib/Incognito/RPC/Rpc");
 const GenAction = require("../../../lib/Utils/GenAction");
 let chai = require("chai");
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
+const { SdkAction } = require('../../../lib/Incognito/Account/Actions');
 const logger = getLogger("Send")
 
 let rpc = new IncRpc();
@@ -14,7 +15,7 @@ let sender = new IncAccount(listAccount[3], node)
 let receiver = new IncAccount(listAccount[3], node)
 
 describe("[Class] Send", () => {
-    describe("TC001_SendPRV", async() => {
+    describe.only("TC001_SendPRV", async() => {
         let amountSend = 0
         let tx
 
@@ -34,14 +35,17 @@ describe("[Class] Send", () => {
         }).timeout(60000);
 
         it("STEP_Send", async() => {
-            tx = await sender.useSdk.sendPRV(
+            tx = await sender.useSdk.sendPRV({
                 receiver,
-                amountSend
-            )
+                amount: amountSend,
+            })
 
             logger.info({ tx })
             await node.getTransactionByHashRpc(tx)
-            await GenAction.sleep(60000)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
         }).timeout(120000);
 
         it("STEP_VerifyBalance", async() => {
@@ -79,15 +83,18 @@ describe("[Class] Send", () => {
         }).timeout(60000);
 
         it("STEP_Send", async() => {
-            tx = await sender.useSdk.sendToken(
-                TOKEN.DAI_UT,
+            tx = await sender.useSdk.sendToken({
+                token: TOKEN.DAI_UT,
                 receiver,
-                amountSend
-            )
+                amount: amountSend,
+            })
 
             logger.info({ tx })
             await node.getTransactionByHashRpc(tx)
-            await GenAction.sleep(60000)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.DAI_UT,
+                countNumber: 20,
+            })
         }).timeout(120000);
 
         it("STEP_VerifyBalance", async() => {

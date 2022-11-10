@@ -26,8 +26,10 @@ describe("[Class] Consolidate", () => {
             for (const tx of listTx) {
                 await node.getTransactionByHashRpc(tx)
             }
-
-            await GenAction.sleep(60000)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
         }).timeout(120000);
 
         it("STEP_VerifyNumberUtxo", async() => {
@@ -55,7 +57,10 @@ describe("[Class] Consolidate", () => {
                 await node.getTransactionByHashRpc(tx)
             }
 
-            await GenAction.sleep(60000)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.ZIL,
+                countNumber: 20,
+            })
         }).timeout(120000);
 
         it("STEP_VerifyNumberUtxo", async() => {

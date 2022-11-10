@@ -69,7 +69,10 @@ describe("[Class] Liquidity", () => {
             for (const tx of listTx) {
                 await incNode.getTransactionByHashRpc(tx)
             }
-            await GenAction.sleep(60000)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
         }).timeout(120000);
 
 
@@ -150,7 +153,10 @@ describe("[Class] Liquidity", () => {
             })
 
             await incNode.getTransactionByHashRpc(tx)
-            await GenAction.sleep(60000)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
         }).timeout(120000);
 
 
@@ -228,7 +234,10 @@ describe("[Class] Liquidity", () => {
             })
 
             await incNode.getTransactionByHashRpc(tx)
-            await GenAction.sleep(60000)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
         }).timeout(120000);
 
 

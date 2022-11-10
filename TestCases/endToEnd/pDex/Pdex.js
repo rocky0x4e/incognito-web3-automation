@@ -56,7 +56,10 @@ describe("[Class] Pdex", () => {
             logger.info({ tx })
 
             await incNode.getTransactionByHashRpc(tx)
-            await GenAction.sleep(60000)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.ZIL,
+                countNumber: 20,
+            })
         }).timeout(120000);
 
         it("STEP_CheckTradeSuccess", async() => {
@@ -124,7 +127,10 @@ describe("[Class] Pdex", () => {
             logger.info({ tx })
 
             await incNode.getTransactionByHashRpc(tx)
-            await GenAction.sleep(60000)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
         }).timeout(120000);
 
         it("STEP_CheckTradeSuccess", async() => {
@@ -178,7 +184,10 @@ describe("[Class] Pdex", () => {
             logger.info({ tx })
 
             await incNode.getTransactionByHashRpc(tx)
-            await GenAction.sleep(60000)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
         }).timeout(120000);
 
         it("STEP_CheckOrderStatus", async() => {
@@ -228,7 +237,10 @@ describe("[Class] Pdex", () => {
             logger.info({ tx })
 
             await incNode.getTransactionByHashRpc(tx)
-            await GenAction.sleep(60000)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
 
         }).timeout(120000);
 
@@ -278,7 +290,10 @@ describe("[Class] Pdex", () => {
             logger.info({ tx })
 
             await incNode.getTransactionByHashRpc(tx)
-            await GenAction.sleep(60000)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
         }).timeout(120000);
 
         it("STEP_CheckOrderStatus", async() => {
@@ -328,7 +343,10 @@ describe("[Class] Pdex", () => {
             logger.info({ tx })
 
             await incNode.getTransactionByHashRpc(tx)
-            await GenAction.sleep(60000)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
 
         }).timeout(120000);
 

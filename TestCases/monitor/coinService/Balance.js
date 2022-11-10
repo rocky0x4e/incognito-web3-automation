@@ -117,6 +117,10 @@ describe("[Class] Balance", () => {
             let tx = await sender.useCli.send(receiver, amountTransfer);
             await addingContent.addContent("tx", tx);
             await node.getTransactionByHashRpc(tx);
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
         }).timeout(50000);
 
         it("STEP_CompareBalance", async() => {
@@ -146,7 +150,7 @@ describe("[Class] Balance", () => {
 
     describe.skip("TC008_CheckBalanceTokenAfterSend", async() => {
         let amountTransfer = 0;
-        let USDT = "076a4423fa20922526bd50b0d7b0dc1c593ce16e15ba141ede5fb5a28aa3f229";
+
 
         it("STEP_InitData", async() => {
             amountTransfer = await GenAction.randomNumber(1000);
@@ -155,27 +159,31 @@ describe("[Class] Balance", () => {
         });
 
         it("STEP_CheckBalanceCli", async() => {
-            sender.balanceCLI = await sender.useCli.getBalance(USDT);
+            sender.balanceCLI = await sender.useCli.getBalance(TOKEN.ZIL);
             await addingContent.addContent("sender.balanceCLI", sender.balanceCLI);
             sender.oldBalance = sender.balanceCLI;
 
-            receiver.balanceCLI = await receiver.useCli.getBalance(USDT);
+            receiver.balanceCLI = await receiver.useCli.getBalance(TOKEN.ZIL);
             await addingContent.addContent("receiver.balanceCLI", receiver.balanceCLI);
             receiver.oldBalance = receiver.balanceCLI;
         }).timeout(1000000);
 
         it("STEP_CheckBalanceSdk", async() => {
-            sender.balanceSdk = await sender.useSdk.getBalance(USDT);
+            sender.balanceSdk = await sender.useSdk.getBalance(TOKEN.ZIL);
             await addingContent.addContent("sender.balanceSdk", sender.balanceSdk);
 
-            receiver.balanceSdk = await receiver.useSdk.getBalance(USDT);
+            receiver.balanceSdk = await receiver.useSdk.getBalance(TOKEN.ZIL);
             await addingContent.addContent("receiver.balanceSdk", receiver.balanceSdk);
         }).timeout(1000000);
 
         it("STEP_Send", async() => {
-            let tx = await sender.useCli.send(receiver, amountTransfer, USDT);
+            let tx = await sender.useCli.send(receiver, amountTransfer, TOKEN.ZIL);
             await addingContent.addContent("tx", tx);
             await node.getTransactionByHashRpc(tx);
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.ZIL,
+                countNumber: 20,
+            })
         }).timeout(1000000);
 
         it("STEP_CompareBalance", async() => {
@@ -195,11 +203,11 @@ describe("[Class] Balance", () => {
             receiver.balanceSdk = receiver.useCli.getBalanceAll();
             await addingContent.addContent("receiver.balanceSdk", receiver.balanceSdk);
 
-            chai.expect(sender.balanceCLI[USDT]).to.equal(sender.balanceSdk[USDT]);
-            chai.expect(receiver.balanceCLI[USDT]).to.equal(receiver.balanceSdk[USDT]);
+            chai.expect(sender.balanceCLI[TOKEN.ZIL]).to.equal(sender.balanceSdk[TOKEN.ZIL]);
+            chai.expect(receiver.balanceCLI[TOKEN.ZIL]).to.equal(receiver.balanceSdk[TOKEN.ZIL]);
 
-            chai.expect(sender.newBalance[USDT]).to.equal(sender.oldBalance[USDT] - amountTransfer);
-            chai.expect(receiver.newBalance[USDT]).to.equal(receiver.oldBalance[USDT] + amountTransfer);
+            chai.expect(sender.newBalance[TOKEN.ZIL]).to.equal(sender.oldBalance[TOKEN.ZIL] - amountTransfer);
+            chai.expect(receiver.newBalance[TOKEN.ZIL]).to.equal(receiver.oldBalance[TOKEN.ZIL] + amountTransfer);
         }).timeout(1000000);
     });
 });
