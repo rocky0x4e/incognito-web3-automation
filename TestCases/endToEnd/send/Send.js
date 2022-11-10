@@ -6,7 +6,6 @@ const { IncRpc } = require("../../../lib/Incognito/RPC/Rpc");
 const GenAction = require("../../../lib/Utils/GenAction");
 let chai = require("chai");
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
-const { SdkAction } = require('../../../lib/Incognito/Account/Actions');
 const logger = getLogger("Send")
 
 let rpc = new IncRpc();
