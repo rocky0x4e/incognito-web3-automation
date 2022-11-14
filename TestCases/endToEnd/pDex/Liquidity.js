@@ -1,19 +1,14 @@
 const { TOKEN, POOL } = require('../../../lib/Incognito/Constants')
-const listAccount = require("../../../constant/listAccount.json");
-const { IncNode } = require("../../../lib/Incognito/IncNode");
-const { IncAccount } = require("../../../lib/Incognito/Account/Account");
-const { IncRpc } = require("../../../lib/Incognito/RPC/Rpc");
 const GenAction = require("../../../lib/Utils/GenAction");
 let chai = require("chai");
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
+const { ACCOUNTS, NODES } = require('../../TestBase');
 const logger = getLogger("Pdex")
 
-let incRpc = new IncRpc();
-let incNode = new IncNode()
-let sender = new IncAccount(listAccount[2], incNode)
+let sender = ACCOUNTS.Incognito.get(2)
 
 describe("[Class] Pdex", () => {
-    describe("TC001_AddExistLiquidity", async() => {
+    describe("TC001_AddExistLiquidity", async () => {
         let amount1 = 0
         let amount2 = 0
         let actualAmount0Add
@@ -21,7 +16,7 @@ describe("[Class] Pdex", () => {
         let listTx = []
         let nftID
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
 
             //getBalance
@@ -46,7 +41,7 @@ describe("[Class] Pdex", () => {
             amount2 = await GenAction.randomNumber(10000)
         }).timeout(60000);
 
-        it("STEP_CreateTxContributeLiquidity", async() => {
+        it("STEP_CreateTxContributeLiquidity", async () => {
             //get AMP
             let poolInfo = await sender.useSdk.getListPoolsDetail(POOL.PRV_ZIL)
             let amp = poolInfo[0].amp
@@ -63,15 +58,15 @@ describe("[Class] Pdex", () => {
             })
 
             for (const tx of listTx) {
-                await incNode.getTransactionByHashRpc(tx)
+                await NODES.Incognito.getTransactionByHashRpc(tx)
             }
             await GenAction.sleep(60000)
         }).timeout(120000);
 
 
-        it("STEP_CheckTxStatus", async() => {
+        it("STEP_CheckTxStatus", async () => {
             for (const tx of listTx) {
-                let response = await incRpc.pdexv3_getContributionStatus(tx)
+                let response = await NODES.Incognito.rpc.pdexv3_getContributionStatus(tx)
 
                 actualAmount0Add = response.data.Result.Token0ContributedAmount
                 actualAmount1Add = response.data.Result.Token1ContributedAmount
@@ -84,7 +79,7 @@ describe("[Class] Pdex", () => {
         }).timeout(60000);
 
 
-        it("STEP_VerifyBalance", async() => {
+        it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
             sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
@@ -97,14 +92,14 @@ describe("[Class] Pdex", () => {
         }).timeout(60000);
     });
 
-    describe("TC002_RemoveExistLiquidity", async() => {
+    describe("TC002_RemoveExistLiquidity", async () => {
         let shareRemove
         let actualAmount0Remove
         let actualAmount1Remove
         let tx
         let nftID
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
 
             //getBalance
@@ -125,7 +120,7 @@ describe("[Class] Pdex", () => {
             }
         }).timeout(60000);
 
-        it("STEP_CreateTxRemoveLiquidity", async() => {
+        it("STEP_CreateTxRemoveLiquidity", async () => {
             //get AMP
             let listPoolShare = await sender.useSdk.getListShare()
             for (const pool of listPoolShare) {
@@ -145,13 +140,13 @@ describe("[Class] Pdex", () => {
                 amount2: 1,
             })
 
-            await incNode.getTransactionByHashRpc(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
             await GenAction.sleep(60000)
         }).timeout(120000);
 
 
-        it("STEP_CheckTxStatus", async() => {
-            let response = await incRpc.pdexv3_getWithdrawLiquidityStatus(tx)
+        it("STEP_CheckTxStatus", async () => {
+            let response = await NODES.Incognito.rpc.pdexv3_getWithdrawLiquidityStatus(tx)
 
             actualAmount0Remove = response.data.Result.Token0Amount
             actualAmount1Remove = response.data.Result.Token1Amount
@@ -162,7 +157,7 @@ describe("[Class] Pdex", () => {
         }).timeout(60000);
 
 
-        it("STEP_VerifyBalance", async() => {
+        it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
             sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
