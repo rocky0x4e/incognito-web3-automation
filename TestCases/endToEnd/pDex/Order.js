@@ -228,7 +228,7 @@ describe("[Class] Order", () => {
         }).timeout(60000);
     });
 
-    describe("TC003_AddOrderWithIncorrectToken", async() => {
+    describe("TC003_AddOrderWithIncorrectTokenBuy", async() => {
         let amountBuy = 0
         let amountSell = 0
         let tx
@@ -259,7 +259,125 @@ describe("[Class] Order", () => {
 
     });
 
-    describe("TC004_AddOrderThanMoreBalance", async() => {
+    describe("TC004_AddOrderWithIncorrectTokenSell", async() => {
+        let amountBuy = 0
+        let amountSell = 0
+        let tx
+        let nftID
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+            let balanceAll = await sender.useSdk.getBalanceAll()
+            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
+
+            logger.info({ balancePRVBefore: sender.balancePRVBefore })
+
+            amountBuy = await GenAction.randomNumber(100000)
+            amountSell = await GenAction.randomNumber(100000)
+        }).timeout(60000);
+
+        it("STEP_AddOrder", async() => {
+            tx = await sender.useSdk.addOrder({
+                poolPairID: POOL.PRV_ZIL,
+                tokenIDToSell: TOKEN.LINK_UT,
+                tokenIDToBuy: TOKEN.ZIL,
+                sellAmount: amountSell,
+                buyAmount: amountBuy,
+            })
+            logger.info({ tx })
+        }).timeout(120000);
+    });
+
+    describe("TC005_AddOrderWithInvalidSellAmount", async() => {
+        let amountBuy = 0
+        let amountSell = 0
+        let tx
+        let nftID
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+            let balanceAll = await sender.useSdk.getBalanceAll()
+            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
+
+            logger.info({ balancePRVBefore: sender.balancePRVBefore })
+
+            amountBuy = await GenAction.randomNumber(100000)
+            amountSell = await GenAction.randomNumber(100000)
+        }).timeout(60000);
+
+        it("STEP_AddOrder", async() => {
+            tx = await sender.useSdk.addOrder({
+                poolPairID: POOL.PRV_ZIL,
+                tokenIDToSell: TOKEN.LINK_UT,
+                tokenIDToBuy: TOKEN.ZIL,
+                sellAmount: null,
+                buyAmount: amountBuy,
+            })
+            logger.info({ tx })
+        }).timeout(120000);
+    });
+
+    describe("TC006_AddOrderWithInvalidBuyAmount", async() => {
+        let amountBuy = 0
+        let amountSell = 0
+        let tx
+        let nftID
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+            let balanceAll = await sender.useSdk.getBalanceAll()
+            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
+
+            logger.info({ balancePRVBefore: sender.balancePRVBefore })
+
+            amountBuy = await GenAction.randomNumber(100000)
+            amountSell = await GenAction.randomNumber(100000)
+        }).timeout(60000);
+
+        it("STEP_AddOrder", async() => {
+            tx = await sender.useSdk.addOrder({
+                poolPairID: POOL.PRV_ZIL,
+                tokenIDToSell: TOKEN.LINK_UT,
+                tokenIDToBuy: TOKEN.ZIL,
+                sellAmount: amountSell,
+                buyAmount: null,
+            })
+            logger.info({ tx })
+        }).timeout(120000);
+    });
+
+    describe("TC007_AddOrderWithTokenNotExit", async() => {
+        let amountBuy = 0
+        let amountSell = 0
+        let tx
+        let nftID
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+            let balanceAll = await sender.useSdk.getBalanceAll()
+            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
+
+            logger.info({ balancePRVBefore: sender.balancePRVBefore })
+
+            amountBuy = await GenAction.randomNumber(100000)
+            amountSell = await GenAction.randomNumber(100000)
+        }).timeout(60000);
+
+        it("STEP_AddOrder", async() => {
+            tx = await sender.useSdk.addOrder({
+                poolPairID: POOL.PRV_ZIL,
+                tokenIDToSell: "b35756452dc1fa1260513fa121c20c2b516a8645f8d496fa4235274dac011111",
+                tokenIDToBuy: TOKEN.ZIL,
+                sellAmount: amountSell,
+                buyAmount: amountBuy,
+            })
+            logger.info({ tx })
+        }).timeout(120000);
+
+
+    });
+
+    describe("TC008_AddOrderThanMoreBalance", async() => {
         let amountBuy = 0
         let tx
         let nftID
@@ -301,7 +419,7 @@ describe("[Class] Order", () => {
 
     });
 
-    describe.only("TC005_AddOrderNotExistPoolID", async() => {
+    describe("TC009_AddOrderNotExistPoolID", async() => {
         let amountBuy = 0
         let tx
         let nftID
@@ -313,14 +431,14 @@ describe("[Class] Order", () => {
             let balanceAll = await sender.useSdk.getBalanceAll()
             let nftData = await sender.useSdk.getNftData()
             console.log('hoanh nftData', nftData);
-            sender.balanceTokenSell = balanceAll[tokenSellID]
 
+            sender.balanceTokenSell = balanceAll[tokenSellID]
             console.log('hoanh, sender.balanceTokenSell', sender.balanceTokenSell);
 
             amountBuy = await GenAction.randomNumber(100000)
         }).timeout(60000);
 
-        it("STEP_AddOrder", async() => {
+        it("STEP_AddOrderAndVerify", async() => {
 
             let param = {
                 poolPairID: 'abc-def',
@@ -343,7 +461,7 @@ describe("[Class] Order", () => {
 
     });
 
-    describe.only("TC006_CancelOrderIdNotExist", async() => {
+    describe("TC010_CancelOrderWithNftInvalid", async() => {
 
         let pendingOrderObject
 
@@ -363,7 +481,48 @@ describe("[Class] Order", () => {
             }
         }).timeout(60000);
 
-        it("STEP_AddOrder", async() => {
+        it("STEP_CancelOrderAndVerify", async() => {
+
+            let param = {
+                token1ID: pendingOrderObject.SellTokenID,
+                token2ID: pendingOrderObject.BuyTokenID,
+                poolPairID: pendingOrderObject.PoolID,
+                orderID: pendingOrderObject.RequestTx,
+                nftID: null
+            }
+            console.log('hoanh param', param);
+            tx = await sender.useSdk.cancelOrder({
+                token1ID: pendingOrderObject.SellTokenID,
+                token2ID: pendingOrderObject.BuyTokenID,
+                poolPairID: pendingOrderObject.PoolID,
+                orderID: pendingOrderObject.RequestTx,
+                nftID: null
+            })
+            logger.info({ tx })
+        }).timeout(120000);
+    });
+
+    describe("TC011_CancelOrderIdNotExist", async() => {
+
+        let pendingOrderObject
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+            let nftData = await sender.useSdk.getNftData()
+            console.log('hoanh nftData', nftData);
+
+            for (const nft of nftData) {
+                if (nft.realAmount == 1 && nft.nftToken) {
+                    let response = await coinServiceApi.pendingLimit()
+                    if (response.data.Result.length > 0) {
+                        pendingOrderObject = response.data.Result[0]
+                        break;
+                    }
+                }
+            }
+        }).timeout(60000);
+
+        it("STEP_CancelOrderAndVerify", async() => {
 
             let param = {
                 token1ID: pendingOrderObject.SellTokenID,
@@ -384,7 +543,7 @@ describe("[Class] Order", () => {
         }).timeout(120000);
     });
 
-    describe.only("TC007_CancelOrderWithPoolIDIncorrect", async() => {
+    describe("TC012_CancelOrderWithPoolIDIncorrect", async() => {
 
         let pendingOrderObject
 
@@ -404,7 +563,7 @@ describe("[Class] Order", () => {
             }
         }).timeout(60000);
 
-        it("STEP_AddOrder", async() => {
+        it("STEP_CancelOrderAndVerify", async() => {
 
             let param = {
                 token1ID: pendingOrderObject.SellTokenID,
@@ -424,4 +583,174 @@ describe("[Class] Order", () => {
             logger.info({ tx })
         }).timeout(120000);
     });
+
+    describe("TC013_CancelOrderWithIncorrectToken1ID", async() => {
+
+        let pendingOrderObject
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+            let nftData = await sender.useSdk.getNftData()
+            console.log('hoanh nftData', nftData);
+
+            for (const nft of nftData) {
+                if (nft.realAmount == 1 && nft.nftToken) {
+                    let response = await coinServiceApi.pendingLimit()
+                    if (response.data.Result.length > 0) {
+                        pendingOrderObject = response.data.Result[0]
+                        break;
+                    }
+                }
+            }
+        }).timeout(60000);
+
+        it("STEP_CancelOrderAndVerify", async() => {
+
+            let param = {
+                token1ID: TOKEN.BTC,
+                token2ID: pendingOrderObject.BuyTokenID,
+                poolPairID: pendingOrderObject.PoolID,
+                orderID: pendingOrderObject.RequestTx,
+                nftID: pendingOrderObject.NFTID
+            }
+            console.log('hoanh param', param);
+            tx = await sender.useSdk.cancelOrder({
+                token1ID: TOKEN.BTC,
+                token2ID: pendingOrderObject.BuyTokenID,
+                poolPairID: pendingOrderObject.PoolID,
+                orderID: pendingOrderObject.RequestTx,
+                nftID: pendingOrderObject.NFTID
+            })
+            logger.info({ tx })
+        }).timeout(120000);
+    });
+
+    describe("TC014_CancelOrderWithIncorrectToken2ID", async() => {
+
+        let pendingOrderObject
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+            let nftData = await sender.useSdk.getNftData()
+            console.log('hoanh nftData', nftData);
+
+            for (const nft of nftData) {
+                if (nft.realAmount == 1 && nft.nftToken) {
+                    let response = await coinServiceApi.pendingLimit()
+                    if (response.data.Result.length > 0) {
+                        pendingOrderObject = response.data.Result[0]
+                        break;
+                    }
+                }
+            }
+        }).timeout(60000);
+
+        it("STEP_CancelOrderAndVerify", async() => {
+
+            let param = {
+                token1ID: pendingOrderObject.tokenSellID,
+                token2ID: TOKEN.BTC,
+                poolPairID: pendingOrderObject.PoolID,
+                orderID: pendingOrderObject.RequestTx,
+                nftID: pendingOrderObject.NFTID
+            }
+            console.log('hoanh param', param);
+            tx = await sender.useSdk.cancelOrder({
+                token1ID: pendingOrderObject.tokenSellID,
+                token2ID: TOKEN.BTC,
+                poolPairID: pendingOrderObject.PoolID,
+                orderID: pendingOrderObject.RequestTx,
+                nftID: pendingOrderObject.NFTID
+            })
+            logger.info({ tx })
+        }).timeout(120000);
+    });
+
+    describe("TC015_CancelOrderIDNotBelongWithOrder", async() => {
+
+        let pendingOrderObject1
+        let pendingOrderObject2
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+            let nftData = await sender.useSdk.getNftData()
+            console.log('hoanh nftData', nftData);
+
+            for (const nft of nftData) {
+                if (nft.realAmount == 1 && nft.nftToken) {
+                    let response = await coinServiceApi.pendingLimit()
+                    if (response.data.Result.length > 0) {
+                        pendingOrderObject1 = response.data.Result[0]
+                        pendingOrderObject2 = response.data.Result[1]
+                        break;
+                    }
+                }
+            }
+        }).timeout(60000);
+
+        it("STEP_CancelOrderAndVerify", async() => {
+
+            let param = {
+                token1ID: pendingOrderObject.tokenSellID,
+                token2ID: TOKEN.BTC,
+                poolPairID: pendingOrderObject.PoolID,
+                orderID: pendingOrderObject.RequestTx,
+                nftID: pendingOrderObject.NFTID
+            }
+            console.log('hoanh param', param);
+            tx = await sender.useSdk.cancelOrder({
+                token1ID: pendingOrderObject1.tokenSellID,
+                token2ID: pendingOrderObject1.BuyTokenID,
+                poolPairID: pendingOrderObject1.PoolID,
+                orderID: pendingOrderObject2.RequestTx,
+                nftID: pendingOrderObject1.NFTID
+            })
+            logger.info({ tx })
+        }).timeout(120000);
+    });
+
+    describe("TC016_CancelPoolIDNotBelongWithOrder", async() => {
+
+        let pendingOrderObject1
+        let pendingOrderObject2
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+            let nftData = await sender.useSdk.getNftData()
+            console.log('hoanh nftData', nftData);
+
+            for (const nft of nftData) {
+                if (nft.realAmount == 1 && nft.nftToken) {
+                    let response = await coinServiceApi.pendingLimit()
+                    if (response.data.Result.length > 0) {
+                        pendingOrderObject1 = response.data.Result[0]
+                        pendingOrderObject2 = response.data.Result[1]
+                        break;
+                    }
+                }
+            }
+        }).timeout(60000);
+
+        it("STEP_CancelOrderAndVerify", async() => {
+
+            let param = {
+                token1ID: pendingOrderObject.tokenSellID,
+                token2ID: TOKEN.BTC,
+                poolPairID: pendingOrderObject.PoolID,
+                orderID: pendingOrderObject.RequestTx,
+                nftID: pendingOrderObject.NFTID
+            }
+            console.log('hoanh param', param);
+            tx = await sender.useSdk.cancelOrder({
+                token1ID: pendingOrderObject1.tokenSellID,
+                token2ID: pendingOrderObject1.BuyTokenID,
+                poolPairID: pendingOrderObject2.PoolID,
+                orderID: pendingOrderObject1.RequestTx,
+                nftID: pendingOrderObject1.NFTID
+            })
+            logger.info({ tx })
+        }).timeout(120000);
+    });
+
+
 });
