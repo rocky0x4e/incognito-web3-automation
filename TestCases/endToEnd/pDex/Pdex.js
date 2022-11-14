@@ -156,4 +156,278 @@ describe("[Class] Pdex", () => {
         }).timeout(60000);
     });
 
+    describe("TC003_TradeWithInvalidRoute", async() => {
+        let amountTrade = 0
+        let estimateTradeObject
+        let tx
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+            let balanceAll = await sender.useCli.getBalanceAll()
+
+            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
+            sender.balanceZILBefore = balanceAll[TOKEN.ZIL]
+
+            logger.info({ balancePRVBefore: sender.balancePRVBefore })
+            logger.info({ balanceZILBefore: sender.balanceZILBefore })
+
+            amountTrade = await GenAction.randomNumber(100000)
+        }).timeout(60000);
+
+        it("STEP_CoinServiceEstimateTrade", async() => {
+            let estimateTrade = await coinServiceApi.estimateTrade({
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: TOKEN.PRV,
+                sellAmount: amountTrade
+            })
+            estimateTradeObject = estimateTrade.data
+            logger.info({ estimateTradeObject })
+        });
+
+        it("STEP_Trade", async() => {
+
+            tx = await sender.useSdk.swap({
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: TOKEN.PRV,
+                amount: amountTrade,
+                tradePath: POOL.MATIC_USDT,
+                tradingFee: estimateTradeObject.Result.FeeToken.Fee,
+                feeToken: TOKEN.ZIL,
+                minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
+            })
+            logger.info({ tx })
+
+            //TODO
+        }).timeout(120000);
+    });
+
+    describe("TC004_TradeWithInvalidSellAmount", async() => {
+        let amountTrade = 0
+        let estimateTradeObject
+        let tx
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+
+            amountTrade = await GenAction.randomNumber(100000)
+        }).timeout(60000);
+
+        it("STEP_CoinServiceEstimateTrade", async() => {
+            let response = await coinServiceApi.estimateTrade({
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: TOKEN.PRV,
+                sellAmount: amountTrade
+            })
+            estimateTradeObject = response.data
+            logger.info({ estimateTradeObject })
+        });
+
+        it("STEP_Trade", async() => {
+
+            tx = await sender.useSdk.swap({
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: TOKEN.PRV,
+                amount: "abc",
+                tradePath: estimateTradeObject.Result.FeeToken.Route,
+                tradingFee: estimateTradeObject.Result.FeeToken.Fee,
+                feeToken: TOKEN.ZIL,
+                minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
+            })
+            logger.info({ tx })
+
+            //TODO
+        }).timeout(120000);
+    });
+
+    describe("TC005_TradeWithInvalidMinAcceptableAmount", async() => {
+        let amountTrade = 0
+        let estimateTradeObject
+        let tx
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+
+            amountTrade = await GenAction.randomNumber(100000)
+        }).timeout(60000);
+
+        it("STEP_CoinServiceEstimateTrade", async() => {
+            let response = await coinServiceApi.estimateTrade({
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: TOKEN.PRV,
+                sellAmount: amountTrade
+            })
+            estimateTradeObject = response.data
+            logger.info({ estimateTradeObject })
+        });
+
+        it("STEP_Trade", async() => {
+
+            tx = await sender.useSdk.swap({
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: TOKEN.PRV,
+                amount: amountTrade,
+                tradePath: estimateTradeObject.Result.FeeToken.Route,
+                tradingFee: estimateTradeObject.Result.FeeToken.Fee,
+                feeToken: TOKEN.ZIL,
+                minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet + 100000,
+            })
+            logger.info({ tx })
+
+            //TODO
+        }).timeout(120000);
+    });
+
+    describe("TC006_TradeWithInvalidTradingFee", async() => {
+        let amountTrade = 0
+        let estimateTradeObject
+        let tx
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+
+            amountTrade = await GenAction.randomNumber(100000)
+        }).timeout(60000);
+
+        it("STEP_CoinServiceEstimateTrade", async() => {
+            let response = await coinServiceApi.estimateTrade({
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: TOKEN.PRV,
+                sellAmount: amountTrade
+            })
+            estimateTradeObject = response.data
+            logger.info({ estimateTradeObject })
+        });
+
+        it("STEP_Trade", async() => {
+
+            tx = await sender.useSdk.swap({
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: TOKEN.PRV,
+                amount: amountTrade,
+                tradePath: estimateTradeObject.Result.FeeToken.Route,
+                tradingFee: "abc",
+                feeToken: TOKEN.ZIL,
+                minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
+            })
+            logger.info({ tx })
+
+            //TODO
+        }).timeout(120000);
+    });
+
+    describe("TC007_TradeWithInvalidTokenSell", async() => {
+        let amountTrade = 0
+        let estimateTradeObject
+        let tx
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+
+            amountTrade = await GenAction.randomNumber(100000)
+        }).timeout(60000);
+
+        it("STEP_CoinServiceEstimateTrade", async() => {
+            let response = await coinServiceApi.estimateTrade({
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: TOKEN.PRV,
+                sellAmount: amountTrade
+            })
+            estimateTradeObject = response.data
+            logger.info({ estimateTradeObject })
+        });
+
+        it("STEP_Trade", async() => {
+
+            tx = await sender.useSdk.swap({
+                tokenSell: "abc",
+                tokenBuy: TOKEN.PRV,
+                amount: amountTrade,
+                tradePath: estimateTradeObject.Result.FeeToken.Route,
+                tradingFee: estimateTradeObject.Result.FeeToken.Fee,
+                feeToken: TOKEN.ZIL,
+                minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
+            })
+            logger.info({ tx })
+
+            //TODO
+        }).timeout(120000);
+    });
+
+    describe("TC008_TradeWithInvalidTokenBuy", async() => {
+        let amountTrade = 0
+        let estimateTradeObject
+        let tx
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+
+            amountTrade = await GenAction.randomNumber(100000)
+        }).timeout(60000);
+
+        it("STEP_CoinServiceEstimateTrade", async() => {
+            let response = await coinServiceApi.estimateTrade({
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: TOKEN.PRV,
+                sellAmount: amountTrade
+            })
+            estimateTradeObject = response.data
+            logger.info({ estimateTradeObject })
+        });
+
+        it("STEP_Trade", async() => {
+
+            tx = await sender.useSdk.swap({
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: "abc",
+                amount: amountTrade,
+                tradePath: estimateTradeObject.Result.FeeToken.Route,
+                tradingFee: estimateTradeObject.Result.FeeToken.Fee,
+                feeToken: TOKEN.ZIL,
+                minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
+            })
+            logger.info({ tx })
+
+            //TODO
+        }).timeout(120000);
+    });
+
+    describe("TC009_TradeWithInvalidTokenFee", async() => {
+        let amountTrade = 0
+        let estimateTradeObject
+        let tx
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+
+            amountTrade = await GenAction.randomNumber(100000)
+        }).timeout(60000);
+
+        it("STEP_CoinServiceEstimateTrade", async() => {
+            let response = await coinServiceApi.estimateTrade({
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: TOKEN.PRV,
+                sellAmount: amountTrade
+            })
+            estimateTradeObject = response.data
+            logger.info({ estimateTradeObject })
+        });
+
+        it("STEP_Trade", async() => {
+
+            tx = await sender.useSdk.swap({
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: TOKEN.PRV,
+                amount: amountTrade,
+                tradePath: estimateTradeObject.Result.FeeToken.Route,
+                tradingFee: estimateTradeObject.Result.FeeToken.Fee,
+                feeToken: TOKEN.BTC,
+                minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
+            })
+            logger.info({ tx })
+
+            //TODO
+        }).timeout(120000);
+    });
+
+
 });
