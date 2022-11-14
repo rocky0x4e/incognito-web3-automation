@@ -41,7 +41,7 @@ describe("[Class] Balance", () => {
         });
     });
 
-    describe.only("TC003_TokenInfo", async() => {
+    describe("TC003_TokenInfo", async() => {
         it("CallAPI", async() => {
             let TokenIDs = [
                 TOKEN.PRV,
