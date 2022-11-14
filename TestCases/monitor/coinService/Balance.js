@@ -41,17 +41,19 @@ describe("[Class] Balance", () => {
         });
     });
 
-    describe("TC003_TokenInfo", async() => {
+    describe.only("TC003_TokenInfo", async() => {
         it("CallAPI", async() => {
             let TokenIDs = [
-                "0000000000000000000000000000000000000000000000000000000000000004",
-                "076a4423fa20922526bd50b0d7b0dc1c593ce16e15ba141ede5fb5a28aa3f229",
-                "0cd19c9cc3f95f8ae9960df14fa5e2a7e7796b3a28058abdc9a8235d8726667d"
+                TOKEN.PRV,
+                TOKEN.USDT_UT,
+                TOKEN.ZIL
             ];
 
             let response = await coinServiceApi.tokenInfo({
                 TokenIDs: TokenIDs
             });
+
+            console.log("hoanh response", response.data);
 
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getTokenInfoSchemas, response.data);
         });
