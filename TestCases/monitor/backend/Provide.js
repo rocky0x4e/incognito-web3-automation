@@ -1,24 +1,21 @@
 const commonFunction = require("../../../constant/commonFunction");
-const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
-const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
 const addingContent = require("../../../lib/Utils/AddingContent");
 let chai = require("chai");
 const { IncAccount } = require("../../../lib/Incognito/Account/Account");
-const { IncNode } = require("../../../lib/Incognito/IncNode");
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
 const { BackendApi } = require("../../../lib/Incognito/BackendApi");
 const { ENV } = require("../../../global");
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
+const { NODES } = require("../../TestBase");
 const logger = getLogger("Provide");
 
-let node = new IncNode(ENV.urlFullNode);
 let sender = new IncAccount("112t8rnXVMJJZzfF1naXvfE9nkTKwUwFWFeh8cfEyViG1vpA8A9khJk3mhyB1hDuJ4RbreDTsZpgJK4YcSxdEpXJKMEd8Vmp5UqKWwBcYzxv").attachTo(
-    node
+    NODES.Incognito
 );
 let receiver = new IncAccount({
     PaymentAddress:
         "12suG5oV5KQspoUPseBAnLCmm8vBPQs3je7kbiLuBSyvhAG2dHbo3RP5zRsNoB9Y2m9fA342MyfbpoUJYNcS5zhB5pU89kUiU3YPGDCjh8Eg7Y5HdgAU33XrNQ3q77J5BwThnmcXZvyNekF6EnSr",
-}).attachTo(node);
+}).attachTo(NODES.Incognito);
 let coinServiceApi = new CoinServiceApi();
 let backendApi = new BackendApi(ENV.Backend);
 
@@ -34,7 +31,6 @@ describe("[Class] Provide", () => {
 
     describe("TC007_ProvidePRV", async () => {
         let amountProvide = 0;
-        const PRV = "0000000000000000000000000000000000000000000000000000000000000004";
 
         it("STEP_InitData", async () => {
             amountProvide = await commonFunction.randomNumberInRange(1234000123, 10234000567);

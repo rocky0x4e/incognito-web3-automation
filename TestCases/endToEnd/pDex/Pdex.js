@@ -10,7 +10,6 @@ const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const logger = getLogger("Pdex")
 
 let coinServiceApi = new CoinServiceApi();
-let incRpc = new IncRpc();
 let incNode = new IncNode()
 let sender = new IncAccount(listAccount[3], incNode)
 

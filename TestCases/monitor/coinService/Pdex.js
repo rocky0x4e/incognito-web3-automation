@@ -7,6 +7,7 @@ const { IncAccount } = require("../../../lib/Incognito/Account/Account");
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
 const listAccount = require("../../../constant/listAccount.json");
 const GenAction = require("../../../lib/Utils/GenAction");
+const { NODES } = require("../../TestBase");
 
 let account = new IncAccount(listAccount.main7);
 let coinServiceApi = new CoinServiceApi();
@@ -24,8 +25,8 @@ describe("[Class] Pdex", () => {
         });
     });
 
-    describe("TC002_SwapEstimateTrade_PRV_USDT(UT)", async() => {
-        it("CallAPI", async() => {
+    describe("TC002_SwapEstimateTrade_PRV_USDT(UT)", async () => {
+        it("CallAPI", async () => {
             let sellAmount = await GenAction.randomNumber(100000000);
 
             let response = await coinServiceApi.estimateTrade({
@@ -38,8 +39,8 @@ describe("[Class] Pdex", () => {
         });
     });
 
-    describe("TC003_SwapEstimateTrade_ETH_PRV", async() => {
-        it("CallAPI", async() => {
+    describe("TC003_SwapEstimateTrade_ETH_PRV", async () => {
+        it("CallAPI", async () => {
             let sellAmount = await GenAction.randomNumber(100000000);
 
             let response = await coinServiceApi.estimateTrade({
@@ -52,8 +53,8 @@ describe("[Class] Pdex", () => {
         });
     });
 
-    describe("TC004_SwapEstimateTrade_USDT(UT)_ETH(UT)", async() => {
-        it("CallAPI", async() => {
+    describe("TC004_SwapEstimateTrade_USDT(UT)_ETH(UT)", async () => {
+        it("CallAPI", async () => {
             const USDT = "076a4423fa20922526bd50b0d7b0dc1c593ce16e15ba141ede5fb5a28aa3f229";
             const ETH = "3ee31eba6376fc16cadb52c8765f20b6ebff92c0b1c5ab5fc78c8c25703bb19e";
             let sellAmount = await GenAction.randomNumber(100000000);
@@ -68,8 +69,8 @@ describe("[Class] Pdex", () => {
         });
     });
 
-    describe("TC005_SwapEstimateTradeNoRouteFound", async() => {
-        it("CallAPI", async() => {
+    describe("TC005_SwapEstimateTradeNoRouteFound", async () => {
+        it("CallAPI", async () => {
             const WBTC = "85bd957e7d89e6e1cc57b0b601af5bc710d7fc479112ed15cfab3ac74b4d1372";
             const DVI = "915ee926aec56046bc57f43156a3ba047c7910ca17caef154a3bd26d2cabdbb6";
             let sellAmount = await GenAction.randomNumber(100000000);
@@ -86,8 +87,8 @@ describe("[Class] Pdex", () => {
         });
     });
 
-    describe("TC006_OrderPendingOrder", async() => {
-        it("CallAPI", async() => {
+    describe("TC006_OrderPendingOrder", async () => {
+        it("CallAPI", async () => {
             const poolID_PRV_BTC =
                 "0000000000000000000000000000000000000000000000000000000000000004-b832e5d3b1f01a4f0623f7fe91d6673461e1f5d37d91fe78c5c2e6183ff39696-b2769c3d130a565027f05f74345760653bfc71200c3df9829e0e931a34f76cb4";
 
@@ -99,8 +100,8 @@ describe("[Class] Pdex", () => {
         });
     });
 
-    describe("TC007_OrderPendingLimit", async() => {
-        it("CallAPI", async() => {
+    describe("TC007_OrderPendingLimit", async () => {
+        it("CallAPI", async () => {
             const ID = [
                 "5756fc0f1661b2b66bc670683ae0f1ef08441c62d91bd22720fa30093ceacaae",
                 "7fa4fe70193c0ea9b6b218b7a530dcde2be0f5db1adee31a7589c7baf4625af1",
@@ -115,8 +116,8 @@ describe("[Class] Pdex", () => {
         });
     });
 
-    describe("TC008_OrderTradeHistory", async() => {
-        it("CallAPI", async() => {
+    describe("TC008_OrderTradeHistory", async () => {
+        it("CallAPI", async () => {
             const poolID =
                 "0000000000000000000000000000000000000000000000000000000000000004-b832e5d3b1f01a4f0623f7fe91d6673461e1f5d37d91fe78c5c2e6183ff39696-b2769c3d130a565027f05f74345760653bfc71200c3df9829e0e931a34f76cb4";
             const nftID = "7fa4fe70193c0ea9b6b218b7a530dcde2be0f5db1adee31a7589c7baf4625af1";

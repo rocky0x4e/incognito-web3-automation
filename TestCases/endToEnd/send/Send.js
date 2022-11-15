@@ -10,15 +10,15 @@ const logger = getLogger("Send")
 
 let rpc = new IncRpc();
 let node = new IncNode()
-let sender = new IncAccount(listAccount[3], node)
-let receiver = new IncAccount(listAccount[3], node)
+let sender = ACCOUNTS.Incognito.get(2)
+let receiver = ACCOUNTS.Incognito.get(3)
 
 describe("[Class] Send", () => {
     describe("TC001_SendPRV", async() => {
         let amountSend = 0
         let tx
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
             await receiver.initSdkInstance();
 
@@ -36,8 +36,6 @@ describe("[Class] Send", () => {
         it("STEP_Send", async() => {
             tx = await sender.useSdk.sendPRV({
                 receiver,
-                amount: amountSend,
-            })
 
             logger.info({ tx })
             await node.getTransactionByHashRpc(tx)
@@ -47,7 +45,7 @@ describe("[Class] Send", () => {
             })
         }).timeout(120000);
 
-        it("STEP_VerifyBalance", async() => {
+        it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
             logger.info({ balancePRVAfter: sender.balancePRVAfter })
@@ -62,11 +60,11 @@ describe("[Class] Send", () => {
         }).timeout(60000);
     });
 
-    describe("TC001_SendToken", async() => {
+    describe("TC001_SendToken", async () => {
         let amountSend = 0
         let tx
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
             await receiver.initSdkInstance();
 
@@ -89,14 +87,14 @@ describe("[Class] Send", () => {
             })
 
             logger.info({ tx })
-            await node.getTransactionByHashRpc(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.DAI_UT,
                 countNumber: 20,
             })
         }).timeout(120000);
 
-        it("STEP_VerifyBalance", async() => {
+        it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balanceTokenAfter = balanceAll[TOKEN.DAI_UT]
             logger.info({ balancePRVAfter: sender.balancePRVAfter })
