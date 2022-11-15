@@ -1,6 +1,5 @@
 const config = require("../../../constant/config");
 const { TOKEN } = require('../../../lib/Incognito/Constants');
-const listAccount = require("../../../constant/listAccount.json");
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
 const addingContent = require("../../../lib/Utils/AddingContent");
@@ -13,7 +12,7 @@ const { ACCOUNTS, NODES } = require("../../TestBase");
 
 //init
 let node = new IncNode();
-let account = new IncAccount(listAccount.main7);
+let account = ACCOUNTS.Incognito.get(2)
 let sender = ACCOUNTS.Incognito.get(2)
 let receiver = ACCOUNTS.Incognito.get(3)
 
@@ -30,8 +29,8 @@ describe("[Class] Balance", () => {
         });
     });
 
-    describe("TC002_CheckKeyImage", async () => {
-        it("CallAPI", async () => {
+    describe("TC002_CheckKeyImage", async() => {
+        it("CallAPI", async() => {
             let keyImages = ["7w0f383GlwJli1+7+5ocpLimo5iD6hZzmpL52Yh3EKM=", "XifUy+NcW/MU+zOTofbfCepu07iWPevoaXkextz9i8w="];
 
             let response = await coinServiceApi.getKeyImage({
@@ -42,8 +41,8 @@ describe("[Class] Balance", () => {
         });
     });
 
-    describe("TC003_TokenInfo", async () => {
-        it("CallAPI", async () => {
+    describe("TC003_TokenInfo", async() => {
+        it("CallAPI", async() => {
             let TokenIDs = [
                 TOKEN.PRV,
                 TOKEN.USDT_UT,
@@ -54,14 +53,12 @@ describe("[Class] Balance", () => {
                 TokenIDs: TokenIDs
             });
 
-            console.log("hoanh response", response.data);
-
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getTokenInfoSchemas, response.data);
         });
     });
 
-    describe("TC004_GetTxsBySender", async () => {
-        it("CallAPI", async () => {
+    describe("TC004_GetTxsBySender", async() => {
+        it("CallAPI", async() => {
             let keyImages = ["Wgff+rv59epyKHIjko4mkpiS5BFpopejqD7dkLFExGA=", "Alyc63FVuOpiTgk16o8BDAaQfL5hxMFv28H/djaoZPU="];
 
             let response = await coinServiceApi.getTxsBySender({
@@ -73,8 +70,8 @@ describe("[Class] Balance", () => {
         });
     });
 
-    describe("TC005_GetTxsByPubKey", async () => {
-        it("CallAPI", async () => {
+    describe("TC005_GetTxsByPubKey", async() => {
+        it("CallAPI", async() => {
             let pubkeys = ["/14cdQwaARSCnYPwI2GRw5NnnwPKF3Kp5qQ9SDrzNZs=", "aN6XseTePHYUf5j/myolNTr6okGvaBSqe2stlMKLZRs="];
 
             let response = await coinServiceApi.getTxsByPubkey({ pubkeys });
@@ -83,22 +80,22 @@ describe("[Class] Balance", () => {
         });
     });
 
-    describe("TC006_SubmitOtaKey", async () => {
-        it("CallAPI", async () => {
+    describe("TC006_SubmitOtaKey", async() => {
+        it("CallAPI", async() => {
             let response = await coinServiceApi.submitOtaKey(account.otaKey);
         });
     });
 
-    describe.skip("TC007_CheckBalancePrvAfterSend", async () => {
+    describe.skip("TC007_CheckBalancePrvAfterSend", async() => {
         let amountTransfer = 0;
 
-        it("STEP_InitData", async () => {
+        it("STEP_InitData", async() => {
             amountTransfer = await GenAction.randomNumber(1000);
             await sender.initSdkInstance();
             await receiver.initSdkInstance();
         });
 
-        it("STEP_CheckBalanceCli", async () => {
+        it("STEP_CheckBalanceCli", async() => {
             sender.balanceCLI = await sender.useCli.getBalanceAll();
             await addingContent.addContent("sender.getBalanceAll", sender.balanceCLI);
             sender.oldBalance = sender.balanceCLI;
@@ -108,7 +105,7 @@ describe("[Class] Balance", () => {
             receiver.oldBalance = receiver.balanceCLI;
         }).timeout(50000);
 
-        it("STEP_CheckBalanceSdk", async () => {
+        it("STEP_CheckBalanceSdk", async() => {
             sender.balanceSdk = await sender.useSdk.getBalanceAll();
             await addingContent.addContent("sender.balanceSdk", sender.balanceSdk);
 
@@ -116,17 +113,17 @@ describe("[Class] Balance", () => {
             await addingContent.addContent("receiver.balanceSdk", receiver.balanceSdk);
         }).timeout(100000);
 
-        it("STEP_Send", async () => {
+        it("STEP_Send", async() => {
             let tx = await sender.useCli.send(receiver, amountTransfer);
             await addingContent.addContent("tx", tx);
-           await NODES.Incognito.getTransactionByHashRpc(tx);
+            await NODES.Incognito.getTransactionByHashRpc(tx);
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
                 countNumber: 20,
             })
         }).timeout(50000);
 
-        it("STEP_CompareBalance", async () => {
+        it("STEP_CompareBalance", async() => {
             await GenAction.sleep(20000);
 
             sender.balanceCLI = await sender.useCli.getBalanceAll();
@@ -151,11 +148,11 @@ describe("[Class] Balance", () => {
         }).timeout(100000);
     });
 
-    describe.skip("TC008_CheckBalanceTokenAfterSend", async () => {
+    describe.skip("TC008_CheckBalanceTokenAfterSend", async() => {
         let amountTransfer = 0;
 
 
-        it("STEP_InitData", async () => {
+        it("STEP_InitData", async() => {
             amountTransfer = await GenAction.randomNumber(1000);
             await sender.initSdkInstance();
             await receiver.initSdkInstance();
@@ -189,7 +186,7 @@ describe("[Class] Balance", () => {
             })
         }).timeout(1000000);
 
-        it("STEP_CompareBalance", async () => {
+        it("STEP_CompareBalance", async() => {
             await GenAction.sleep(20000);
 
             sender.balanceCLI = sender.useCli.getBalanceAll();
