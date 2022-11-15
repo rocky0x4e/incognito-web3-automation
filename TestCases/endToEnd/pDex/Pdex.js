@@ -15,7 +15,7 @@ let incNode = new IncNode()
 let sender = new IncAccount(listAccount[3], incNode)
 
 describe("[Class] Pdex", () => {
-    describe("TC001_TradePRVToToken", async() => {
+    describe.skip("TC001_TradePRVToToken", async() => {
         let amountTrade = 0
         let estimateTradeObject
         let tx
@@ -39,9 +39,8 @@ describe("[Class] Pdex", () => {
                 sellAmount: amountTrade
             })
             estimateTradeObject = estimateTrade.data
-            logger.info({ estimateTradeObject })
+            console.log('hoanh estimateTradeObject', estimateTradeObject)
         });
-
 
         it("STEP_Trade", async() => {
             tx = await sender.useSdk.swap({
@@ -53,7 +52,7 @@ describe("[Class] Pdex", () => {
                 feeToken: TOKEN.PRV,
                 minAcceptableAmount: estimateTradeObject.Result.FeePRV.MaxGet,
             })
-            logger.info({ tx })
+            console.log('hoanh tx', tx)
 
             await incNode.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
@@ -85,7 +84,7 @@ describe("[Class] Pdex", () => {
         }).timeout(60000);
     });
 
-    describe("TC002_TradeTokenToPRV", async() => {
+    describe.skip("TC002_TradeTokenToPRV", async() => {
         let amountTrade = 0
         let estimateTradeObject
         let tx
@@ -110,7 +109,7 @@ describe("[Class] Pdex", () => {
                 sellAmount: amountTrade
             })
             estimateTradeObject = estimateTrade.data
-            logger.info({ estimateTradeObject })
+            console.log('hoanh estimateTradeObject', estimateTradeObject)
         });
 
         it("STEP_Trade", async() => {
@@ -124,7 +123,7 @@ describe("[Class] Pdex", () => {
                 feeToken: TOKEN.ZIL,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            logger.info({ tx })
+            console.log('hoanh tx', tx)
 
             await incNode.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
@@ -163,25 +162,18 @@ describe("[Class] Pdex", () => {
 
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
-            let balanceAll = await sender.useCli.getBalanceAll()
-
-            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
-            sender.balanceZILBefore = balanceAll[TOKEN.ZIL]
-
-            logger.info({ balancePRVBefore: sender.balancePRVBefore })
-            logger.info({ balanceZILBefore: sender.balanceZILBefore })
 
             amountTrade = await GenAction.randomNumber(100000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
-            let estimateTrade = await coinServiceApi.estimateTrade({
+            let response = await coinServiceApi.estimateTrade({
                 tokenSell: TOKEN.ZIL,
                 tokenBuy: TOKEN.PRV,
                 sellAmount: amountTrade
             })
-            estimateTradeObject = estimateTrade.data
-            logger.info({ estimateTradeObject })
+            estimateTradeObject = response.data
+            console.log('hoanh estimateTradeObject', estimateTradeObject)
         });
 
         it("STEP_Trade", async() => {
@@ -190,14 +182,25 @@ describe("[Class] Pdex", () => {
                 tokenSell: TOKEN.ZIL,
                 tokenBuy: TOKEN.PRV,
                 amount: amountTrade,
-                tradePath: POOL.MATIC_USDT,
+                tradePath: [POOL.MATIC_USDT],
                 tradingFee: estimateTradeObject.Result.FeeToken.Fee,
                 feeToken: TOKEN.ZIL,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            logger.info({ tx })
+            console.log('hoanh tx', tx)
+            await incNode.getTransactionByHashRpc(tx)
+            await incRpc.waitForTxSwapHaveStatus(tx)
 
-            //TODO
+        }).timeout(120000);
+
+        it("STEP_CheckTradeFail", async() => {
+            let response = await incRpc.pdexv3_getTradeStatus(tx)
+            console.log('hoanh response.data', response.data)
+
+            chai.expect(response.data.Result.Status).to.equal(0)
+            chai.expect(response.data.Result.BuyAmount).to.equal(0)
+            chai.expect(response.data.Result.TokenToBuy).to.equal('0000000000000000000000000000000000000000000000000000000000000000')
+
         }).timeout(120000);
     });
 
@@ -219,10 +222,10 @@ describe("[Class] Pdex", () => {
                 sellAmount: amountTrade
             })
             estimateTradeObject = response.data
-            logger.info({ estimateTradeObject })
+            console.log('hoanh estimateTradeObject', estimateTradeObject)
         });
 
-        it("STEP_Trade", async() => {
+        it("STEP_TradeAndVerify", async() => {
 
             tx = await sender.useSdk.swap({
                 tokenSell: TOKEN.ZIL,
@@ -233,9 +236,9 @@ describe("[Class] Pdex", () => {
                 feeToken: TOKEN.ZIL,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            logger.info({ tx })
+            console.log('hoanh tx', tx);
+            chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
 
-            //TODO
         }).timeout(120000);
     });
 
@@ -257,7 +260,7 @@ describe("[Class] Pdex", () => {
                 sellAmount: amountTrade
             })
             estimateTradeObject = response.data
-            logger.info({ estimateTradeObject })
+            console.log('hoanh estimateTradeObject', estimateTradeObject)
         });
 
         it("STEP_Trade", async() => {
@@ -271,9 +274,20 @@ describe("[Class] Pdex", () => {
                 feeToken: TOKEN.ZIL,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet + 100000,
             })
-            logger.info({ tx })
+            console.log('hoanh tx', tx)
+            await incNode.getTransactionByHashRpc(tx)
+            await incRpc.waitForTxSwapHaveStatus(tx)
 
-            //TODO
+        }).timeout(120000);
+
+        it("STEP_CheckTradeFail", async() => {
+            let response = await incRpc.pdexv3_getTradeStatus(tx)
+            console.log('hoanh response.data', response.data)
+
+            chai.expect(response.data.Result.Status).to.equal(0)
+            chai.expect(response.data.Result.BuyAmount).to.equal(0)
+            chai.expect(response.data.Result.TokenToBuy).to.equal('0000000000000000000000000000000000000000000000000000000000000000')
+
         }).timeout(120000);
     });
 
@@ -295,7 +309,7 @@ describe("[Class] Pdex", () => {
                 sellAmount: amountTrade
             })
             estimateTradeObject = response.data
-            logger.info({ estimateTradeObject })
+            console.log('hoanh estimateTradeObject', estimateTradeObject)
         });
 
         it("STEP_Trade", async() => {
@@ -309,9 +323,7 @@ describe("[Class] Pdex", () => {
                 feeToken: TOKEN.ZIL,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            logger.info({ tx })
-
-            //TODO
+            chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
         }).timeout(120000);
     });
 
@@ -322,6 +334,8 @@ describe("[Class] Pdex", () => {
 
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
+            let balanceAll = await sender.useSdk.getBalanceAll()
+            console.log('hoanh balanceAll', balanceAll);
 
             amountTrade = await GenAction.randomNumber(100000)
         }).timeout(60000);
@@ -333,7 +347,7 @@ describe("[Class] Pdex", () => {
                 sellAmount: amountTrade
             })
             estimateTradeObject = response.data
-            logger.info({ estimateTradeObject })
+            console.log('hoanh estimateTradeObject', estimateTradeObject)
         });
 
         it("STEP_Trade", async() => {
@@ -347,7 +361,7 @@ describe("[Class] Pdex", () => {
                 feeToken: TOKEN.ZIL,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            logger.info({ tx })
+            console.log('hoanh tx', tx)
 
             //TODO
         }).timeout(120000);
@@ -371,7 +385,7 @@ describe("[Class] Pdex", () => {
                 sellAmount: amountTrade
             })
             estimateTradeObject = response.data
-            logger.info({ estimateTradeObject })
+            console.log('hoanh estimateTradeObject', estimateTradeObject)
         });
 
         it("STEP_Trade", async() => {
@@ -385,9 +399,20 @@ describe("[Class] Pdex", () => {
                 feeToken: TOKEN.ZIL,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            logger.info({ tx })
+            console.log('hoanh tx', tx)
+            await incNode.getTransactionByHashRpc(tx)
+            await incRpc.waitForTxSwapHaveStatus(tx)
 
-            //TODO
+        }).timeout(120000);
+
+        it("STEP_CheckTradeFail", async() => {
+            let response = await incRpc.pdexv3_getTradeStatus(tx)
+            console.log('hoanh response.data', response.data)
+
+            chai.expect(response.data.Result.Status).to.equal(0)
+            chai.expect(response.data.Result.BuyAmount).to.equal(0)
+            chai.expect(response.data.Result.TokenToBuy).to.equal('0000000000000000000000000000000000000000000000000000000000000000')
+
         }).timeout(120000);
     });
 
@@ -398,6 +423,8 @@ describe("[Class] Pdex", () => {
 
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
+            let balanceAll = await sender.useSdk.getBalanceAll()
+            console.log('hoanh balanceAllBefore', balanceAll);
 
             amountTrade = await GenAction.randomNumber(100000)
         }).timeout(60000);
@@ -409,23 +436,49 @@ describe("[Class] Pdex", () => {
                 sellAmount: amountTrade
             })
             estimateTradeObject = response.data
-            logger.info({ estimateTradeObject })
+            console.log('hoanh estimateTradeObject', estimateTradeObject)
         });
 
         it("STEP_Trade", async() => {
 
+            let param = {
+                tokenSell: TOKEN.ZIL,
+                tokenBuy: TOKEN.PRV,
+                amount: amountTrade,
+                tradePath: estimateTradeObject.Result.FeeToken.Route,
+                tradingFee: estimateTradeObject.Result.FeeToken.Fee,
+                feeToken: TOKEN.LINK_UT,
+                minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
+            }
+            console.log('haonh param', param);
             tx = await sender.useSdk.swap({
                 tokenSell: TOKEN.ZIL,
                 tokenBuy: TOKEN.PRV,
                 amount: amountTrade,
                 tradePath: estimateTradeObject.Result.FeeToken.Route,
                 tradingFee: estimateTradeObject.Result.FeeToken.Fee,
-                feeToken: TOKEN.BTC,
+                feeToken: TOKEN.LINK_UT,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            logger.info({ tx })
+            console.log('hoanh tx', tx)
+            await incNode.getTransactionByHashRpc(tx)
+            await incRpc.waitForTxSwapHaveStatus(tx)
 
-            //TODO
+        }).timeout(120000);
+
+        it("STEP_CheckTradeFail", async() => {
+            await GenAction.sleep(20000)
+
+            let balanceAll = await sender.useSdk.getBalanceAll()
+            console.log('hoanh balanceAllAfter', balanceAll);
+
+            let response = await incRpc.pdexv3_getTradeStatus(tx)
+            console.log('hoanh response.data', response.data)
+
+            chai.expect(response.data.Result.Status).to.equal(0)
+            chai.expect(response.data.Result.BuyAmount).to.equal(0)
+            chai.expect(response.data.Result.TokenToBuy).to.equal('0000000000000000000000000000000000000000000000000000000000000000')
+
         }).timeout(120000);
     });
 

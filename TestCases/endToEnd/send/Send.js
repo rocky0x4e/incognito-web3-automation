@@ -14,7 +14,7 @@ let sender = new IncAccount(listAccount[3], node)
 let receiver = new IncAccount(listAccount[3], node)
 
 describe("[Class] Send", () => {
-    describe.only("TC001_SendPRV", async() => {
+    describe("TC001_SendPRV", async() => {
         let amountSend = 0
         let tx
 
