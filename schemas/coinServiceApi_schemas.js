@@ -720,9 +720,9 @@ const getCheckKeyImageSchemas = {
 const getTokenInfoSchemas = {
     "$id": "TokenInfoSchemas",
     "type": "object",
-    "$ref": "#/definitions/Welcome4",
+    "$ref": "#/definitions/Welcome2",
     "definitions": {
-        "Welcome4": {
+        "Welcome2": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -740,7 +740,7 @@ const getTokenInfoSchemas = {
                 "Error",
                 "Result"
             ],
-            "title": "Welcome4"
+            "title": "Welcome2"
         },
         "Result": {
             "type": "object",
@@ -795,28 +795,16 @@ const getTokenInfoSchemas = {
                     "type": "integer"
                 },
                 "ListChildToken": {
-                    "anyOf": [{
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/Result"
-                            }
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ]
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Result"
+                    }
                 },
                 "ListUnifiedToken": {
-                    "anyOf": [{
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/Result"
-                            }
-                        },
-                        {
-                            "type": "null"
-                        }
-                    ]
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Result"
+                    }
                 },
                 "PSymbol": {
                     "type": "string"
@@ -825,7 +813,7 @@ const getTokenInfoSchemas = {
                     "type": "string"
                 },
                 "LiquidityReward": {
-                    "type": "number"
+                    "type": "integer"
                 },
                 "ExternalPriceUSD": {
                     "type": "number"
@@ -861,7 +849,7 @@ const getTokenInfoSchemas = {
                     "type": "string"
                 },
                 "DefaultPairToken": {
-                    "$ref": "#/definitions/DefaultPairToken"
+                    "type": "string"
                 },
                 "NetworkID": {
                     "type": "integer"
@@ -912,15 +900,6 @@ const getTokenInfoSchemas = {
                 "volume24"
             ],
             "title": "Result"
-        },
-        "DefaultPairToken": {
-            "type": "string",
-            "enum": [
-                "076a4423fa20922526bd50b0d7b0dc1c593ce16e15ba141ede5fb5a28aa3f229",
-                "0000000000000000000000000000000000000000000000000000000000000004",
-                ""
-            ],
-            "title": "DefaultPairToken"
         }
     }
 };
