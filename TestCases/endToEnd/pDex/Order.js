@@ -483,43 +483,28 @@ describe("[Class] Order", () => {
     describe("TC008_AddOrderThanMoreBalance", async() => {
         let amountBuy = 0
         let tx
-        let nftID
-        let tokenSellID = TOKEN.MATIC_UT
+        let tokenSellID = TOKEN.PRV
         let tokenBuyID = TOKEN.USDT_UT
 
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
             let balanceAll = await sender.useSdk.getBalanceAll()
-            let nftData = await sender.useSdk.getNftData()
-            console.log('hoanh nftData', nftData);
             sender.balanceTokenSell = balanceAll[tokenSellID]
-
-            console.log('hoanh, sender.balanceTokenSell', sender.balanceTokenSell);
 
             amountBuy = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
-        it("STEP_AddOrder", async() => {
+        it("STEP_AddOrderThanMoreBalance", async() => {
 
-            let param = {
-                poolPairID: POOL.MATIC_USDT,
-                tokenIDToSell: tokenSellID,
-                tokenIDToBuy: tokenBuyID,
-                sellAmount: sender.balanceTokenSell + 10000,
-                buyAmount: amountBuy,
-            }
-            console.log('hoanh param', param);
             tx = await sender.useSdk.addOrder({
-                poolPairID: POOL.MATIC_USDT,
+                poolPairID: POOL.PRV_USDT,
                 tokenIDToSell: tokenSellID,
                 tokenIDToBuy: tokenBuyID,
                 sellAmount: sender.balanceTokenSell + 10000,
                 buyAmount: amountBuy,
             })
-            logger.info({ tx })
+            chai.expect(tx).to.contain(`WEB_JS_ERROR: Error while preparing inputs`)
         }).timeout(120000);
-
-
     });
 
     describe("TC009_AddOrderNotExistPoolID", async() => {
