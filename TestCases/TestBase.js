@@ -12,7 +12,7 @@ const NODES = {
 }
 
 const ACCOUNTS = {
-    Incognito: (new IncAccountGroup).importFromKeyList(ENV.Testdata.Keys.Incognito, NODES.Incognito.calCurrentBlockTim),
+    Incognito: (new IncAccountGroup).importFromKeyList(ENV.Testdata.Keys.Incognito, NODES.Incognito),
     Evm: []
 }
 
