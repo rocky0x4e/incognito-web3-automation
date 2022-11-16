@@ -223,7 +223,7 @@ describe("[Class] Order", () => {
         }).timeout(60000);
     });
 
-    describe("TC003_AddOrderWithIncorrectTokenBuy", async() => {
+    describe.only("TC003_AddOrderWithIncorrectTokenBuy", async() => {
         let amountBuy = 0
         let amountSell = 0
         let tx
@@ -231,16 +231,13 @@ describe("[Class] Order", () => {
 
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
-            let balanceAll = await sender.useSdk.getBalanceAll()
-            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
-
-            logger.info({ balancePRVBefore: sender.balancePRVBefore })
 
             amountBuy = await GenAction.randomNumber(100000)
             amountSell = await GenAction.randomNumber(100000)
         }).timeout(60000);
 
-        it("STEP_AddOrder", async() => {
+        it("STEP_AddOrderWithTokenBuyIsOtherToken", async() => {
+
             tx = await sender.useSdk.addOrder({
                 poolPairID: POOL.PRV_ZIL,
                 tokenIDToSell: TOKEN.PRV,
@@ -248,7 +245,37 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
-            logger.info({ tx })
+
+            chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Required. Found undefined (type of undefined)`)
+
+        }).timeout(120000);
+
+        it("STEP_AddOrderWithTokenBuyIsNull", async() => {
+
+            tx = await sender.useSdk.addOrder({
+                poolPairID: POOL.PRV_ZIL,
+                tokenIDToSell: TOKEN.PRV,
+                tokenIDToBuy: null,
+                sellAmount: amountSell,
+                buyAmount: amountBuy,
+            })
+
+            chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Required. Found null (type of object)`)
+
+        }).timeout(120000);
+
+        it("STEP_AddOrderWithTokenBuyIsNumber", async() => {
+
+            tx = await sender.useSdk.addOrder({
+                poolPairID: POOL.PRV_ZIL,
+                tokenIDToSell: TOKEN.PRV,
+                tokenIDToBuy: 123,
+                sellAmount: amountSell,
+                buyAmount: amountBuy,
+            })
+
+            chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Must be string. Found 123 (type of number)`)
+
         }).timeout(120000);
 
 

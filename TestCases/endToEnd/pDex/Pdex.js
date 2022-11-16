@@ -506,7 +506,7 @@ describe("[Class] Pdex", () => {
         }).timeout(120000);
     });
 
-    describe.only("TC009_TradeWithInvalidTokenFee", async() => {
+    describe("TC009_TradeWithInvalidTokenFee", async() => {
         let sellTokenID = TOKEN.ZIL
         let buyTokenID = TOKEN.PRV
         let amountTrade = 0
