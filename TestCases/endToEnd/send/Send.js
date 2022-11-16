@@ -1,24 +1,19 @@
 const { TOKEN, TOKEN_TESTNET } = require('../../../lib/Incognito/Constants')
-const listAccount = require("../../../constant/listAccount.json");
-const { IncNode } = require("../../../lib/Incognito/IncNode");
-const { IncAccount } = require("../../../lib/Incognito/Account/Account");
-const { IncRpc } = require("../../../lib/Incognito/RPC/Rpc");
 const GenAction = require("../../../lib/Utils/GenAction");
 let chai = require("chai");
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
+const { ACCOUNTS, NODES } = require('../../TestBase');
 const logger = getLogger("Send")
 
-let rpc = new IncRpc();
-let node = new IncNode()
-let sender = new IncAccount(listAccount[2], node)
-let receiver = new IncAccount(listAccount[3], node)
+let sender = ACCOUNTS.Incognito.get(2)
+let receiver = ACCOUNTS.Incognito.get(3)
 
 describe("[Class] Pdex", () => {
-    describe("TC001_SendPRV", async() => {
+    describe("TC001_SendPRV", async () => {
         let amountSend = 0
         let tx
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
             await receiver.initSdkInstance();
 
@@ -33,18 +28,18 @@ describe("[Class] Pdex", () => {
             amountSend = await GenAction.randomNumber(100000)
         }).timeout(60000);
 
-        it("STEP_Send", async() => {
+        it("STEP_Send", async () => {
             tx = await sender.useSdk.sendPRV(
                 receiver,
                 amountSend
             )
 
             logger.info({ tx })
-            await node.getTransactionByHashRpc(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
             await GenAction.sleep(60000)
         }).timeout(120000);
 
-        it("STEP_VerifyBalance", async() => {
+        it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
             logger.info({ balancePRVAfter: sender.balancePRVAfter })
@@ -59,11 +54,11 @@ describe("[Class] Pdex", () => {
         }).timeout(60000);
     });
 
-    describe("TC001_SendToken", async() => {
+    describe("TC001_SendToken", async () => {
         let amountSend = 0
         let tx
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
             await receiver.initSdkInstance();
 
@@ -78,7 +73,7 @@ describe("[Class] Pdex", () => {
             amountSend = await GenAction.randomNumber(100000)
         }).timeout(60000);
 
-        it("STEP_Send", async() => {
+        it("STEP_Send", async () => {
             tx = await sender.useSdk.sendToken(
                 TOKEN_TESTNET.DAI_UT,
                 receiver,
@@ -86,11 +81,11 @@ describe("[Class] Pdex", () => {
             )
 
             logger.info({ tx })
-            await node.getTransactionByHashRpc(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
             await GenAction.sleep(60000)
         }).timeout(120000);
 
-        it("STEP_VerifyBalance", async() => {
+        it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balanceTokenAfter = balanceAll[TOKEN_TESTNET.DAI_UT]
             logger.info({ balancePRVAfter: sender.balancePRVAfter })
