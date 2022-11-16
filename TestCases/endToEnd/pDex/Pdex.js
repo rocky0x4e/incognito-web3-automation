@@ -441,7 +441,7 @@ describe("[Class] Pdex", () => {
 
         });
 
-        it("STEP_Trade", async() => {
+        it("STEP_TradeWithSellTokenAbc", async() => {
             tx = await sender.useSdk.swap({
                 tokenSell: "abc",
                 tokenBuy: buyTokenID,
@@ -479,7 +479,7 @@ describe("[Class] Pdex", () => {
 
         });
 
-        it("STEP_Trade", async() => {
+        it("STEP_TradeWithBuyTokenNotValid", async() => {
 
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
@@ -490,6 +490,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
+            console.log('hoanh tx', tx);
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await NODES.Incognito.rpc.waitForTxSwapHaveStatus(tx)
 
@@ -505,7 +506,7 @@ describe("[Class] Pdex", () => {
         }).timeout(120000);
     });
 
-    describe("TC009_TradeWithInvalidTokenFee", async() => {
+    describe.only("TC009_TradeWithInvalidTokenFee", async() => {
         let sellTokenID = TOKEN.ZIL
         let buyTokenID = TOKEN.PRV
         let amountTrade = 0
@@ -528,17 +529,8 @@ describe("[Class] Pdex", () => {
 
         });
 
-        it("STEP_TradeWithTokenFeeisNumber", async() => {
+        it("STEP_TradeWithTokenFeeIsNumber", async() => {
 
-            let param = {
-                tokenSell: sellTokenID,
-                tokenBuy: buyTokenID,
-                amount: amountTrade,
-                tradePath: estimateTradeObject.Result.FeeToken.Route,
-                tradingFee: estimateTradeObject.Result.FeeToken.Fee,
-                feeToken: 123,
-                minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
-            }
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
                 tokenBuy: buyTokenID,
@@ -554,24 +546,16 @@ describe("[Class] Pdex", () => {
         }).timeout(120000);
 
         it("STEP_TradeWithTokenFeeInCorrect", async() => {
-            let param = {
-                tokenSell: sellTokenID,
-                tokenBuy: buyTokenID,
-                amount: amountTrade,
-                tradePath: estimateTradeObject.Result.FeeToken.Route,
-                tradingFee: estimateTradeObject.Result.FeeToken.Fee,
-                feeToken: TOKEN.WBNB,
-                minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
-            }
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
                 tokenBuy: buyTokenID,
                 amount: amountTrade,
                 tradePath: estimateTradeObject.Result.FeeToken.Route,
                 tradingFee: estimateTradeObject.Result.FeeToken.Fee,
-                feeToken: TOKEN.WBNB,
+                feeToken: "",
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
+            console.log('hoanh tx', tx);
             chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-feetoken" failed: Required. Found undefined (type of undefined)`)
 
 
