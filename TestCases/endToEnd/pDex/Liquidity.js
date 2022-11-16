@@ -4,18 +4,17 @@ let chai = require("chai");
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const { CoinServiceApi } = require('../../../lib/Incognito/CoinServiceApi');
 const logger = getLogger("Pdex")
+const { ACCOUNTS, NODES } = require('../../TestBase');
 
-let incRpc = new IncRpc();
-let incNode = new IncNode()
 let coinServiceApi = new CoinServiceApi()
-let sender = new IncAccount(listAccount[3], incNode)
+let sender = ACCOUNTS.Incognito.get(2)
 
 describe("[Class] Liquidity", () => {
     describe("TC001_AddExistLiquidity", async() => {
-const { ACCOUNTS, NODES } = require('../../TestBase');
-const logger = getLogger("Pdex")
 
-let sender = ACCOUNTS.Incognito.get(2)
+        const logger = getLogger("Pdex")
+
+        let sender = ACCOUNTS.Incognito.get(2)
 
         let amount1 = 0
         let amount2 = 0
@@ -24,7 +23,7 @@ let sender = ACCOUNTS.Incognito.get(2)
         let listTx = []
         let nftID
 
-        it("STEP_InitData", async () => {
+        it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
             //getBalance
@@ -51,7 +50,7 @@ let sender = ACCOUNTS.Incognito.get(2)
             amount2 = await GenAction.randomNumber(10000)
         }).timeout(60000);
 
-        it("STEP_CreateTxContributeLiquidity", async () => {
+        it("STEP_CreateTxContributeLiquidity", async() => {
             //get AMP
             let poolInfo = await sender.useSdk.getListPoolsDetail(POOL.PRV_ZIL)
             let amp = poolInfo[0].amp
@@ -77,7 +76,7 @@ let sender = ACCOUNTS.Incognito.get(2)
         }).timeout(120000);
 
 
-        it("STEP_CheckTxStatus", async () => {
+        it("STEP_CheckTxStatus", async() => {
             for (const tx of listTx) {
                 let response = await NODES.Incognito.rpc.pdexv3_getContributionStatus(tx)
 
@@ -92,7 +91,7 @@ let sender = ACCOUNTS.Incognito.get(2)
         }).timeout(60000);
 
 
-        it("STEP_VerifyBalance", async () => {
+        it("STEP_VerifyBalance", async() => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
             sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
@@ -105,14 +104,14 @@ let sender = ACCOUNTS.Incognito.get(2)
         }).timeout(60000);
     });
 
-    describe("TC002_RemoveExistLiquidity", async () => {
+    describe("TC002_RemoveExistLiquidity", async() => {
         let shareRemove
         let actualAmount0Remove
         let actualAmount1Remove
         let tx
         let nftID
 
-        it("STEP_InitData", async () => {
+        it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
             //getBalance
@@ -133,7 +132,7 @@ let sender = ACCOUNTS.Incognito.get(2)
             }
         }).timeout(60000);
 
-        it("STEP_CreateTxRemoveLiquidity", async () => {
+        it("STEP_CreateTxRemoveLiquidity", async() => {
             //get AMP
             let listPoolShare = await sender.useSdk.getListShare()
             for (const pool of listPoolShare) {
@@ -161,7 +160,7 @@ let sender = ACCOUNTS.Incognito.get(2)
         }).timeout(120000);
 
 
-        it("STEP_CheckTxStatus", async () => {
+        it("STEP_CheckTxStatus", async() => {
             let response = await NODES.Incognito.rpc.pdexv3_getWithdrawLiquidityStatus(tx)
 
             actualAmount0Remove = response.data.Result.Token0Amount
@@ -173,7 +172,7 @@ let sender = ACCOUNTS.Incognito.get(2)
         }).timeout(60000);
 
 
-        it("STEP_VerifyBalance", async () => {
+        it("STEP_VerifyBalance", async() => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
             sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
@@ -234,7 +233,7 @@ let sender = ACCOUNTS.Incognito.get(2)
                 nftID: nftID,
             })
 
-            await incNode.getTransactionByHashRpc(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
                 countNumber: 20,
@@ -244,7 +243,7 @@ let sender = ACCOUNTS.Incognito.get(2)
 
         it("STEP_CheckTxStatus", async() => {
             if (!poolHaveReward) return null
-            let response = await incRpc.pdexv3_getWithdrawalLPFeeStatus(tx)
+            let response = await NODES.Incognito.rpc.pdexv3_getWithdrawalLPFeeStatus(tx)
 
             let receivers = response.data.Result.Receivers
 

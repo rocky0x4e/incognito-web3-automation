@@ -1,16 +1,10 @@
 const { TOKEN } = require('../../../lib/Incognito/Constants')
-const listAccount = require("../../../constant/listAccount.json");
-const { IncNode } = require("../../../lib/Incognito/IncNode");
-const { IncAccount } = require("../../../lib/Incognito/Account/Account");
-const { IncRpc } = require("../../../lib/Incognito/RPC/Rpc");
 const GenAction = require("../../../lib/Utils/GenAction");
 let chai = require("chai");
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const logger = getLogger("Send")
-const { ACCOUNTS } = require('../../TestBase');
+const { ACCOUNTS, NODES } = require('../../TestBase');
 
-let rpc = new IncRpc();
-let node = new IncNode()
 let sender = ACCOUNTS.Incognito.get(2)
 let receiver = ACCOUNTS.Incognito.get(3)
 
@@ -41,7 +35,7 @@ describe("[Class] Send", () => {
                 amount: amountSend
             })
             logger.info({ tx })
-            await node.getTransactionByHashRpc(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
                 countNumber: 20,

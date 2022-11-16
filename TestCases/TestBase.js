@@ -12,15 +12,15 @@ const NODES = {
 }
 
 const ACCOUNTS = {
-    Incognito: (new IncAccountGroup).importFromKeyList(ENV.Testdata.Keys.Incognito, NODES.Incognito),
+    Incognito: (new IncAccountGroup).importFromKeyList(ENV.Testdata.Keys.Incognito, NODES.Incognito.calCurrentBlockTim),
     Evm: []
 }
 
-beforeEach(function () {
+beforeEach(function() {
     addingContent.resetContent()
 })
 
-afterEach(function () {
+afterEach(function() {
 
     for (const item of addingContent.getContent()) {
         if (item.value) {

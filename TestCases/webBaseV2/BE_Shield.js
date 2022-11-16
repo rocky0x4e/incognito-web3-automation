@@ -2,14 +2,13 @@ let chai = require('chai');
 const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
 const { BackendApi } = require('../../lib/Incognito/BackendApi');
 const { CoinServiceApi } = require('../../lib/Incognito/CoinServiceApi');
-const { IncRpc } = require('../../lib/Incognito/RPC/Rpc');
+const { ACCOUNTS, NODES } = require('../../TestCases/TestBase');
 
 let paymentAddress = '12sfV7Vo27Rz3aT4c2kyiTpvziwXjviQMMrp5gsFfupAvoDveHhQLunAWvqTao46DSEYpnbMpGYxuc4a9KGU7BppPM9uZtfVCqPAQ18WtPEijsLmYxVL1MWWDggDZHfRmhtxmVijadCjXyr7iC9X'
 
 let webServiceApi = new WebServiceApi()
 let coinServiceApi = new CoinServiceApi()
 let backendApi = new BackendApi()
-let incRpc = new IncRpc()
 
 //Our parent block
 describe('[Class]BEShield', async() => {
@@ -221,7 +220,7 @@ describe('[Class]BEShield', async() => {
 
         it('STEP_genShieldAddressFromFullNode', async() => {
 
-            let response = await incRpc.generateportalshieldmultisigaddress(paymentAddress, tokenID)
+            let response = await NODES.Incognito.rpc.generateportalshieldmultisigaddress(paymentAddress, tokenID)
 
             beShieldAddress = response.data.Result
         });

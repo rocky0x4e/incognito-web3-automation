@@ -1,12 +1,8 @@
 const { TOKEN } = require('../../../lib/Incognito/Constants')
-const listAccount = require("../../../constant/listAccount.json");
-const { IncNode } = require("../../../lib/Incognito/IncNode");
-const { IncAccount } = require("../../../lib/Incognito/Account/Account");
-const GenAction = require("../../../lib/Utils/GenAction");
 let chai = require("chai");
+const { ACCOUNTS, NODES } = require('../../TestBase');
 
-let node = new IncNode()
-let sender = new IncAccount(listAccount[3], node)
+let sender = ACCOUNTS.Incognito.get(2)
 
 describe("[Class] Consolidate", () => {
     describe("TC001_ConsolidatePRV", async() => {
@@ -24,7 +20,7 @@ describe("[Class] Consolidate", () => {
             listTx = await sender.useSdk.consolidate({ tokenID: TOKEN.PRV })
 
             for (const tx of listTx) {
-                await node.getTransactionByHashRpc(tx)
+                await NODES.Incognito.getTransactionByHashRpc(tx)
             }
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
@@ -54,7 +50,7 @@ describe("[Class] Consolidate", () => {
             listTx = await sender.useSdk.consolidate({ tokenID: TOKEN.ZIL })
 
             for (const tx of listTx) {
-                await node.getTransactionByHashRpc(tx)
+                await NODES.Incognito.getTransactionByHashRpc(tx)
             }
 
             await sender.useSdk.waitForUtxoChange({

@@ -3,7 +3,6 @@ const config = require("../../../constant/config");
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
 let chai = require("chai");
-const { IncAccount } = require("../../../lib/Incognito/Account/Account");
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
 const GenAction = require("../../../lib/Utils/GenAction");
 const { NODES, ACCOUNTS } = require("../../TestBase");

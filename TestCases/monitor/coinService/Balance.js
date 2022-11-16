@@ -1,17 +1,12 @@
-const config = require("../../../constant/config");
 const { TOKEN } = require('../../../lib/Incognito/Constants');
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
 const addingContent = require("../../../lib/Utils/AddingContent");
 let chai = require("chai");
-const { IncAccount } = require("../../../lib/Incognito/Account/Account");
-const { IncNode } = require("../../../lib/Incognito/IncNode");
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
 const GenAction = require("../../../lib/Utils/GenAction");
 const { ACCOUNTS, NODES } = require("../../TestBase");
 
-//init
-let node = new IncNode();
 let account = ACCOUNTS.Incognito.get(2)
 let sender = ACCOUNTS.Incognito.get(2)
 let receiver = ACCOUNTS.Incognito.get(3)
@@ -179,7 +174,7 @@ describe("[Class] Balance", () => {
         it("STEP_Send", async() => {
             let tx = await sender.useCli.send(receiver, amountTransfer, TOKEN.ZIL);
             await addingContent.addContent("tx", tx);
-            await node.getTransactionByHashRpc(tx);
+            await NODES.Incognito.getTransactionByHashRpc(tx);
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.ZIL,
                 countNumber: 20,

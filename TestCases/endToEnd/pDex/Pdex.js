@@ -1,17 +1,12 @@
 const { TOKEN, POOL } = require('../../../lib/Incognito/Constants')
-const { IncNode } = require("../../../lib/Incognito/IncNode");
-const { IncAccount } = require("../../../lib/Incognito/Account/Account");
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
-const { IncRpc } = require("../../../lib/Incognito/RPC/Rpc");
 const GenAction = require("../../../lib/Utils/GenAction");
 let chai = require("chai");
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
-const { ACCOUNTS } = require('../../TestBase');
+const { ACCOUNTS, NODES } = require('../../TestBase');
 const logger = getLogger("Pdex")
 
 let coinServiceApi = new CoinServiceApi();
-let incNode = new IncNode()
-let incRpc = new IncRpc()
 let sender = ACCOUNTS.Incognito.get(2)
 
 describe("[Class] Pdex", () => {
@@ -53,7 +48,7 @@ describe("[Class] Pdex", () => {
                 minAcceptableAmount: estimateTradeObject.Result.FeePRV.MaxGet,
             })
 
-            await incNode.getTransactionByHashRpc(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.ZIL,
                 countNumber: 20,
@@ -61,7 +56,7 @@ describe("[Class] Pdex", () => {
         }).timeout(120000);
 
         it("STEP_CheckTradeSuccess", async() => {
-            let response = await incRpc.pdexv3_getTradeStatus(tx)
+            let response = await NODES.Incognito.rpc.pdexv3_getTradeStatus(tx)
             logger.info({ response })
 
             chai.expect(response.data.Result.Status).to.equal(1)
@@ -123,7 +118,7 @@ describe("[Class] Pdex", () => {
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
 
-            await incNode.getTransactionByHashRpc(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
                 countNumber: 20,
@@ -131,7 +126,7 @@ describe("[Class] Pdex", () => {
         }).timeout(120000);
 
         it("STEP_CheckTradeSuccess", async() => {
-            let response = await incRpc.pdexv3_getTradeStatus(tx)
+            let response = await NODES.Incognito.rpc.pdexv3_getTradeStatus(tx)
             logger.info({ response })
 
             chai.expect(response.data.Result.Status).to.equal(1)
@@ -347,13 +342,13 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet + 100000,
             })
-            await incNode.getTransactionByHashRpc(tx)
-            await incRpc.waitForTxSwapHaveStatus(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
+            await NODES.Incognito.rpc.waitForTxSwapHaveStatus(tx)
 
         }).timeout(120000);
 
         it("STEP_CheckTradeFail", async() => {
-            let response = await incRpc.pdexv3_getTradeStatus(tx)
+            let response = await NODES.Incognito.rpc.pdexv3_getTradeStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(0)
             chai.expect(response.data.Result.BuyAmount).to.equal(0)
@@ -408,13 +403,13 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            await incNode.getTransactionByHashRpc(tx)
-            await incRpc.waitForTxSwapHaveStatus(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
+            await NODES.Incognito.rpc.waitForTxSwapHaveStatus(tx)
 
         }).timeout(120000);
 
         it("STEP_CheckTradeFail", async() => {
-            let response = await incRpc.pdexv3_getTradeStatus(tx)
+            let response = await NODES.Incognito.rpc.pdexv3_getTradeStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(0)
             chai.expect(response.data.Result.BuyAmount).to.equal(0)
@@ -495,13 +490,13 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            await incNode.getTransactionByHashRpc(tx)
-            await incRpc.waitForTxSwapHaveStatus(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
+            await NODES.Incognito.rpc.waitForTxSwapHaveStatus(tx)
 
         }).timeout(120000);
 
         it("STEP_CheckTradeFail", async() => {
-            let response = await incRpc.pdexv3_getTradeStatus(tx)
+            let response = await NODES.Incognito.rpc.pdexv3_getTradeStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(0)
             chai.expect(response.data.Result.BuyAmount).to.equal(0)

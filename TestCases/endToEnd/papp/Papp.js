@@ -1,20 +1,14 @@
 const { TOKEN, POOL } = require('../../../lib/Incognito/Constants')
-const listAccount = require("../../../constant/listAccount.json");
-const { IncNode } = require("../../../lib/Incognito/IncNode");
-const { IncAccount } = require("../../../lib/Incognito/Account/Account");
-const { IncRpc } = require("../../../lib/Incognito/RPC/Rpc");
 const GenAction = require("../../../lib/Utils/GenAction");
-let chai = require("chai");
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const { CoinServiceApi } = require('../../../lib/Incognito/CoinServiceApi');
 const { WebServiceApi } = require('../../../lib/Incognito/WebServiceApi');
 const logger = getLogger("Pdex")
+const { ACCOUNTS, NODES } = require('../../TestBase');
 
-let incRpc = new IncRpc();
-let incNode = new IncNode()
 let coinServiceApi = new CoinServiceApi()
 let webServiceApi = new WebServiceApi()
-let sender = new IncAccount(listAccount[3], incNode)
+let sender = ACCOUNTS.Incognito.get(2)
 
 describe("[Class] Papp", () => {
     describe.skip("TC001_AddExistLiquidity", async() => {

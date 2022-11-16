@@ -1,18 +1,13 @@
 const { TOKEN, POOL } = require('../../../lib/Incognito/Constants')
-const listAccount = require("../../../constant/listAccount.json");
-const { IncNode } = require("../../../lib/Incognito/IncNode");
-const { IncAccount } = require("../../../lib/Incognito/Account/Account");
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
-const { IncRpc } = require("../../../lib/Incognito/RPC/Rpc");
 const GenAction = require("../../../lib/Utils/GenAction");
 let chai = require("chai");
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
+const { ACCOUNTS, NODES } = require('../../TestBase');
 const logger = getLogger("Pdex")
 
 let coinServiceApi = new CoinServiceApi();
-let incRpc = new IncRpc();
-let incNode = new IncNode()
-let sender = new IncAccount(listAccount[3])
+let sender = ACCOUNTS.Incognito.get(2)
 
 describe("[Class] Order", () => {
 
@@ -43,7 +38,7 @@ describe("[Class] Order", () => {
             })
             logger.info({ tx })
 
-            await incNode.getTransactionByHashRpc(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
                 countNumber: 20,
@@ -51,14 +46,14 @@ describe("[Class] Order", () => {
         }).timeout(120000);
 
         it("STEP_CheckOrderStatus", async() => {
-            let response = await incRpc.pdexv3_getAddOrderStatus(tx)
+            let response = await NODES.Incognito.rpc.pdexv3_getAddOrderStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(1);
             chai.expect(response.data.Result.OrderID).to.equal(tx);
         }).timeout(120000);
 
         it("STEP_CheckPdexState", async() => {
-            let response = await incRpc.pdexv3_getState()
+            let response = await NODES.Incognito.rpc.pdexv3_getState()
             let orders = response.data.Result.PoolPairs[POOL.PRV_ZIL].Orderbook.orders
             let isFind = false
             for (const order of orders) {
@@ -96,7 +91,7 @@ describe("[Class] Order", () => {
             })
             logger.info({ tx })
 
-            await incNode.getTransactionByHashRpc(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
                 countNumber: 20,
@@ -105,7 +100,7 @@ describe("[Class] Order", () => {
         }).timeout(120000);
 
         it("STEP_CheckCancelOrderStatus", async() => {
-            let response = await incRpc.pdexv3_getWithdrawOrderStatus(tx)
+            let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(1);
             chai.expect(response.data.Result.TokenID).to.equal(TOKEN.PRV);
@@ -149,7 +144,7 @@ describe("[Class] Order", () => {
             })
             logger.info({ tx })
 
-            await incNode.getTransactionByHashRpc(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
                 countNumber: 20,
@@ -157,14 +152,14 @@ describe("[Class] Order", () => {
         }).timeout(120000);
 
         it("STEP_CheckOrderStatus", async() => {
-            let response = await incRpc.pdexv3_getAddOrderStatus(tx)
+            let response = await NODES.Incognito.rpc.pdexv3_getAddOrderStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(1);
             chai.expect(response.data.Result.OrderID).to.equal(tx);
         }).timeout(120000);
 
         it("STEP_CheckPdexState", async() => {
-            let response = await incRpc.pdexv3_getState()
+            let response = await NODES.Incognito.rpc.pdexv3_getState()
             let orders = response.data.Result.PoolPairs[POOL.PRV_ZIL].Orderbook.orders
             let isFind = false
             for (const order of orders) {
@@ -202,7 +197,7 @@ describe("[Class] Order", () => {
             })
             logger.info({ tx })
 
-            await incNode.getTransactionByHashRpc(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
                 countNumber: 20,
@@ -211,7 +206,7 @@ describe("[Class] Order", () => {
         }).timeout(120000);
 
         it("STEP_CheckCancelOrderStatus", async() => {
-            let response = await incRpc.pdexv3_getWithdrawOrderStatus(tx)
+            let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(1);
             chai.expect(response.data.Result.TokenID).to.equal(TOKEN.ZIL);
