@@ -16,3 +16,4 @@ bin
 package-lock.json
 environments
 config.json
+.DS_Store
