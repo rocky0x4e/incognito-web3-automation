@@ -8,7 +8,7 @@ const logger = getLogger("pNode");
 
 let sender = ACCOUNTS.Incognito.get(3);
 let coinServiceApi = new CoinServiceApi();
-let backendApi = new BackendApi(ENV.Backend);
+let backendApi = new BackendApi();
 
 describe("[Class] pNode", () => {
     var execute_test = true;
