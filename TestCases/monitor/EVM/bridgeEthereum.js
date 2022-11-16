@@ -4,13 +4,9 @@ const backendApischemas = require("../../../schemas/backendApi_schemas");
 const { BackendApi } = require('../../../lib/Incognito/BackendApi')
 const { IncAccount } = require('../../../lib/Incognito/Account/Account');
 const { IncNode } = require('../../../lib/Incognito/IncNode');
-const { CoinServiceApi } = require('../../../lib/Incognito/CoinService/CoinServiceApi');
 const { ENV } = require('../../../global');
-const addingContent = require('../../../testbase/addingContent');
 const { wait } = require('../../../lib/Utils/Timer');
-let fs = require('fs');
 let Tx = require('ethereumjs-tx').Transaction;
-let Common = require('ethereumjs-common').default;
 // const web3CommonFuntion = require('../../../constant/web3CommonFuntion');
 
 let chai = require('chai');
@@ -23,12 +19,11 @@ describe(`[Ethereum brigde]`, async () => {
     const tokenID = Constants.TOKEN.ETH
     const tokenUnifiedID = Constants.TOKEN.UnifiedETH
 
-    let node = await new IncNode()
-    let account = await new IncAccount(privateKey).attachTo(node)
-    let coinServiceApi = await new CoinServiceApi(ENV.CoinService)
-    let backendApi = await new BackendApi(ENV.Backend)
+    let node = new IncNode()
+    let account = new IncAccount(privateKey).attachTo(node)
+    let backendApi = new BackendApi()
 
-    let web3 = await new Web3(new Web3.providers.HttpProvider(ENV.EthereumFullnode[0].url))
+    let web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.EthereumFullnode[0].url))
     let extAccount = await web3.eth.accounts.privateKeyToAccount(extPrivateKey)
 
     let SignPublicKeyEncode = 'f78fcecf2b0e2b3267d5a1845c314b76f3787f86981c7abcc5b04abc49ae434a';
@@ -125,7 +120,7 @@ async function pickNewShield(WalletAddress,
     PrivacyTokenAddress,
     SignPublicKeyEncode = 'f78fcecf2b0e2b3267d5a1845c314b76f3787f86981c7abcc5b04abc49ae434a'
 ) {
-    let backendApi = await new BackendApi(ENV.Backend)
+    let backendApi = await new BackendApi()
     let id = 0
     const resBefore = await backendApi.historyByTokenAccount(WalletAddress, PrivacyTokenAddress, SignPublicKeyEncode)
     console.log(resBefore.data)
