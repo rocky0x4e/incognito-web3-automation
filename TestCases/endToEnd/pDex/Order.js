@@ -410,8 +410,6 @@ describe("[Class] Order", () => {
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject not sansity tx transaction's sansity ${tx} is error`)
             chai.expect(response.data.ErrMsg).to.contain(`SellAmount cannot be 0`)
-
-
         }).timeout(120000);
 
         it("STEP_AddOrderSellAmountIsString", async() => {
@@ -544,11 +542,10 @@ describe("[Class] Order", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
             let nftData = await sender.useSdk.getNftData()
-            console.log('hoanh nftData', nftData);
 
             for (const nft of nftData) {
                 if (nft.realAmount == 1 && nft.nftToken) {
-                    let response = await coinServiceApi.pendingLimit()
+                    let response = await coinServiceApi.pendingLimit({ ID: [nft.nftToken] })
                     if (response.data.Result.length > 0) {
                         pendingOrderObject = response.data.Result[0]
                         break;
@@ -557,16 +554,7 @@ describe("[Class] Order", () => {
             }
         }).timeout(60000);
 
-        it("STEP_CancelOrderAndVerify", async() => {
-
-            let param = {
-                token1ID: pendingOrderObject.SellTokenID,
-                token2ID: pendingOrderObject.BuyTokenID,
-                poolPairID: pendingOrderObject.PoolID,
-                orderID: pendingOrderObject.RequestTx,
-                nftID: null
-            }
-            console.log('hoanh param', param);
+        it("STEP_CancelOrderWithNftIdNull", async() => {
             tx = await sender.useSdk.cancelOrder({
                 token1ID: pendingOrderObject.SellTokenID,
                 token2ID: pendingOrderObject.BuyTokenID,
@@ -574,7 +562,9 @@ describe("[Class] Order", () => {
                 orderID: pendingOrderObject.RequestTx,
                 nftID: null
             })
-            logger.info({ tx })
+            console.log('hoanh tx', tx);
+            chai.expect(tx).to.contain(`Validating "createAndSendWithdrawOrderRequestTx-nftID" failed: Required. Found null (type of object)`)
+
         }).timeout(120000);
     });
 
