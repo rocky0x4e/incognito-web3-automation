@@ -289,10 +289,6 @@ describe("[Class] Order", () => {
 
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
-            let balanceAll = await sender.useSdk.getBalanceAll()
-            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
-
-            logger.info({ balancePRVBefore: sender.balancePRVBefore })
 
             amountBuy = await GenAction.randomNumber(100000)
             amountSell = await GenAction.randomNumber(100000)
@@ -349,10 +345,6 @@ describe("[Class] Order", () => {
 
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
-            let balanceAll = await sender.useSdk.getBalanceAll()
-            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
-
-            logger.info({ balancePRVBefore: sender.balancePRVBefore })
 
             amountBuy = await GenAction.randomNumber(100000)
             amountSell = await GenAction.randomNumber(100000)
@@ -406,24 +398,48 @@ describe("[Class] Order", () => {
 
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
-            let balanceAll = await sender.useSdk.getBalanceAll()
-            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
-
-            logger.info({ balancePRVBefore: sender.balancePRVBefore })
 
             amountBuy = await GenAction.randomNumber(100000)
             amountSell = await GenAction.randomNumber(100000)
         }).timeout(60000);
 
-        it("STEP_AddOrder", async() => {
+        it("STEP_AddOrderBuyAmountNull", async() => {
             tx = await sender.useSdk.addOrder({
-                poolPairID: POOL.PRV_ZIL,
-                tokenIDToSell: TOKEN.LINK_UT,
-                tokenIDToBuy: TOKEN.ZIL,
+                poolPairID: POOL.PRV_USDT,
+                tokenIDToSell: TOKEN.PRV,
+                tokenIDToBuy: TOKEN.USDT_UT,
                 sellAmount: amountSell,
                 buyAmount: null,
             })
-            logger.info({ tx })
+            chai.expect(tx).to.contain(`strconv.ParseUint: parsing "null": invalid syntax`)
+
+        }).timeout(120000);
+
+        it("STEP_AddOrderBuyAmountEqual0", async() => {
+            tx = await sender.useSdk.addOrder({
+                poolPairID: POOL.PRV_USDT,
+                tokenIDToSell: TOKEN.PRV,
+                tokenIDToBuy: TOKEN.USDT_UT,
+                sellAmount: amountSell,
+                buyAmount: 0,
+            })
+            let response = await coinServiceApi.gettxstatus({ tx })
+            chai.expect(response.data.ErrMsg).to.contain(`Reject not sansity tx transaction's sansity ${tx} is error`)
+            chai.expect(response.data.ErrMsg).to.contain(`MinAcceptableAmount cannot be 0`)
+
+
+        }).timeout(120000);
+
+        it("STEP_AddOrderBuyAmountIsString", async() => {
+            tx = await sender.useSdk.addOrder({
+                poolPairID: POOL.PRV_USDT,
+                tokenIDToSell: TOKEN.PRV,
+                tokenIDToBuy: TOKEN.USDT_UT,
+                sellAmount: amountSell,
+                buyAmount: 'abc',
+            })
+            chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
+
         }).timeout(120000);
     });
 
