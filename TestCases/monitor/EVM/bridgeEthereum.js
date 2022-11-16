@@ -23,7 +23,7 @@ describe(`[Ethereum brigde]`, async () => {
     let account = new IncAccount(privateKey).attachTo(node)
     let backendApi = new BackendApi()
 
-    let web3 = await new Web3(new Web3.providers.HttpProvider())
+    let web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.EthereumFullnode[0].url))
     let extAccount = await web3.eth.accounts.privateKeyToAccount(extPrivateKey)
 
     let SignPublicKeyEncode = 'f78fcecf2b0e2b3267d5a1845c314b76f3787f86981c7abcc5b04abc49ae434a';
