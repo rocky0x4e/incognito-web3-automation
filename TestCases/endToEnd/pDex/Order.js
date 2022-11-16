@@ -509,44 +509,32 @@ describe("[Class] Order", () => {
 
     describe("TC009_AddOrderNotExistPoolID", async() => {
         let amountBuy = 0
+        let amountSell = 0
         let tx
-        let nftID
-        let tokenSellID = TOKEN.MATIC_UT
+        let tokenSellID = TOKEN.PRV
         let tokenBuyID = TOKEN.USDT_UT
 
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
             let balanceAll = await sender.useSdk.getBalanceAll()
-            let nftData = await sender.useSdk.getNftData()
-            console.log('hoanh nftData', nftData);
-
             sender.balanceTokenSell = balanceAll[tokenSellID]
-            console.log('hoanh, sender.balanceTokenSell', sender.balanceTokenSell);
 
             amountBuy = await GenAction.randomNumber(1000)
+            amountSell = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_AddOrderAndVerify", async() => {
-
-            let param = {
-                poolPairID: 'abc-def',
-                tokenIDToSell: tokenSellID,
-                tokenIDToBuy: tokenBuyID,
-                sellAmount: sender.balanceTokenSell + 10000,
-                buyAmount: amountBuy,
-            }
-            console.log('hoanh param', param);
             tx = await sender.useSdk.addOrder({
                 poolPairID: 'abc-def',
                 tokenIDToSell: tokenSellID,
                 tokenIDToBuy: tokenBuyID,
-                sellAmount: sender.balanceTokenSell + 10000,
+                sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
-            logger.info({ tx })
+            let response = await coinServiceApi.gettxstatus({ tx })
+            chai.expect(response.data.ErrMsg).to.contain(`Reject invalid metadata with blockchain validate metadata of tx ${tx}`)
+            chai.expect(response.data.ErrMsg).to.contain(`error Not found poolPairID`)
         }).timeout(120000);
-
-
     });
 
     describe("TC010_CancelOrderWithNftInvalid", async() => {
