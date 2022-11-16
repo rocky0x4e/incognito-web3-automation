@@ -19,7 +19,7 @@ describe("[Class] Order", () => {
 
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
-            let balanceAll = await sender.useCli.getBalanceAll()
+            let balanceAll = await sender.useSdk.getBalanceAll()
             sender.balancePRVBefore = balanceAll[TOKEN.PRV]
 
             logger.info({ balancePRVBefore: sender.balancePRVBefore })
@@ -74,7 +74,7 @@ describe("[Class] Order", () => {
         }).timeout(120000);
 
         it("STEP_VerifyBalanceAfterAdd", async() => {
-            let balanceAll = await sender.useCli.getBalanceAll()
+            let balanceAll = await sender.useSdk.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - amountSell - 100);
@@ -109,7 +109,7 @@ describe("[Class] Order", () => {
         }).timeout(60000);
 
         it("STEP_VerifyBalanceAfterCancel", async() => {
-            let balanceAll = await sender.useCli.getBalanceAll()
+            let balanceAll = await sender.useSdk.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - 100 - 100);
@@ -125,7 +125,7 @@ describe("[Class] Order", () => {
 
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
-            let balanceAll = await sender.useCli.getBalanceAll()
+            let balanceAll = await sender.useSdk.getBalanceAll()
             sender.balancePRVBefore = balanceAll[TOKEN.ZIL]
 
             logger.info({ balancePRVBefore: sender.balancePRVBefore })
@@ -180,7 +180,7 @@ describe("[Class] Order", () => {
         }).timeout(120000);
 
         it("STEP_VerifyBalanceAfterAdd", async() => {
-            let balanceAll = await sender.useCli.getBalanceAll()
+            let balanceAll = await sender.useSdk.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.ZIL]
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - amountSell);
@@ -215,7 +215,7 @@ describe("[Class] Order", () => {
         }).timeout(60000);
 
         it("STEP_VerifyBalanceAfterCancel", async() => {
-            let balanceAll = await sender.useCli.getBalanceAll()
+            let balanceAll = await sender.useSdk.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.ZIL]
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore);
@@ -575,11 +575,11 @@ describe("[Class] Order", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
             let nftData = await sender.useSdk.getNftData()
-            console.log('hoanh nftData', nftData);
+            console.log("hoanh nftData", nftData);
 
             for (const nft of nftData) {
                 if (nft.realAmount == 1 && nft.nftToken) {
-                    let response = await coinServiceApi.pendingLimit()
+                    let response = await coinServiceApi.pendingLimit({ ID: [nft.nftToken] })
                     if (response.data.Result.length > 0) {
                         pendingOrderObject = response.data.Result[0]
                         break;
@@ -590,14 +590,8 @@ describe("[Class] Order", () => {
 
         it("STEP_CancelOrderAndVerify", async() => {
 
-            let param = {
-                token1ID: pendingOrderObject.SellTokenID,
-                token2ID: pendingOrderObject.BuyTokenID,
-                poolPairID: pendingOrderObject.PoolID,
-                orderID: "abc-desf",
-                nftID: pendingOrderObject.NFTID
-            }
-            console.log('hoanh param', param);
+            if (!pendingOrderObject) return null
+            console.log("hoanh pendingOrderObject", pendingOrderObject);
             tx = await sender.useSdk.cancelOrder({
                 token1ID: pendingOrderObject.SellTokenID,
                 token2ID: pendingOrderObject.BuyTokenID,
@@ -605,7 +599,19 @@ describe("[Class] Order", () => {
                 orderID: "abc-desf",
                 nftID: pendingOrderObject.NFTID
             })
-            logger.info({ tx })
+
+            console.log('hoanh tx', tx);
+            await NODES.Incognito.getTransactionByHashRpc(tx)
+            await sender.useSdk.waitForUtxoChange({ tokenID: TOKEN.PRV })
+            await GenAction.sleep(20000)
+
+            let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
+            console.log('hoanh response.data', response.data);
+            chai.expect(response.data.Result.Status).to.equal(0)
+            chai.expect(response.data.Result.TokenID).to.equal("0000000000000000000000000000000000000000000000000000000000000000")
+            chai.expect(response.data.Result.Amount).to.equal(0)
+
+
         }).timeout(120000);
     });
 
@@ -620,7 +626,7 @@ describe("[Class] Order", () => {
 
             for (const nft of nftData) {
                 if (nft.realAmount == 1 && nft.nftToken) {
-                    let response = await coinServiceApi.pendingLimit()
+                    let response = await coinServiceApi.pendingLimit({ ID: [nft.nftToken] })
                     if (response.data.Result.length > 0) {
                         pendingOrderObject = response.data.Result[0]
                         break;
@@ -631,14 +637,7 @@ describe("[Class] Order", () => {
 
         it("STEP_CancelOrderAndVerify", async() => {
 
-            let param = {
-                token1ID: pendingOrderObject.SellTokenID,
-                token2ID: pendingOrderObject.BuyTokenID,
-                poolPairID: "abc-desf",
-                orderID: pendingOrderObject.RequestTx,
-                nftID: pendingOrderObject.NFTID
-            }
-            console.log('hoanh param', param);
+            if (!pendingOrderObject) return null
             tx = await sender.useSdk.cancelOrder({
                 token1ID: pendingOrderObject.SellTokenID,
                 token2ID: pendingOrderObject.BuyTokenID,
@@ -646,7 +645,16 @@ describe("[Class] Order", () => {
                 orderID: pendingOrderObject.RequestTx,
                 nftID: pendingOrderObject.NFTID
             })
-            logger.info({ tx })
+            console.log('hoanh tx', tx);
+            await NODES.Incognito.getTransactionByHashRpc(tx)
+            await sender.useSdk.waitForUtxoChange({ tokenID: TOKEN.PRV })
+            await GenAction.sleep(20000)
+
+            let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
+            console.log('hoanh response.data', response.data);
+            chai.expect(response.data.Result.Status).to.equal(0)
+            chai.expect(response.data.Result.TokenID).to.equal("0000000000000000000000000000000000000000000000000000000000000000")
+            chai.expect(response.data.Result.Amount).to.equal(0)
         }).timeout(120000);
     });
 
@@ -661,7 +669,7 @@ describe("[Class] Order", () => {
 
             for (const nft of nftData) {
                 if (nft.realAmount == 1 && nft.nftToken) {
-                    let response = await coinServiceApi.pendingLimit()
+                    let response = await coinServiceApi.pendingLimit({ ID: [nft.nftToken] })
                     if (response.data.Result.length > 0) {
                         pendingOrderObject = response.data.Result[0]
                         break;
@@ -702,7 +710,7 @@ describe("[Class] Order", () => {
 
             for (const nft of nftData) {
                 if (nft.realAmount == 1 && nft.nftToken) {
-                    let response = await coinServiceApi.pendingLimit()
+                    let response = await coinServiceApi.pendingLimit({ ID: [nft.nftToken] })
                     if (response.data.Result.length > 0) {
                         pendingOrderObject = response.data.Result[0]
                         break;
@@ -744,7 +752,7 @@ describe("[Class] Order", () => {
 
             for (const nft of nftData) {
                 if (nft.realAmount == 1 && nft.nftToken) {
-                    let response = await coinServiceApi.pendingLimit()
+                    let response = await coinServiceApi.pendingLimit({ ID: [nft.nftToken] })
                     if (response.data.Result.length > 0) {
                         pendingOrderObject1 = response.data.Result[0]
                         pendingOrderObject2 = response.data.Result[1]
@@ -787,7 +795,7 @@ describe("[Class] Order", () => {
 
             for (const nft of nftData) {
                 if (nft.realAmount == 1 && nft.nftToken) {
-                    let response = await coinServiceApi.pendingLimit()
+                    let response = await coinServiceApi.pendingLimit({ ID: [nft.nftToken] })
                     if (response.data.Result.length > 0) {
                         pendingOrderObject1 = response.data.Result[0]
                         pendingOrderObject2 = response.data.Result[1]
