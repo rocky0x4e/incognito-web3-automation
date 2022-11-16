@@ -153,7 +153,7 @@ describe("[Class] Pdex", () => {
         }).timeout(60000);
     });
 
-    describe.skip("TC003_TradeWithInvalidRoute", async() => {
+    describe("TC003_TradeWithInvalidRoute", async() => {
         let sellTokenID = TOKEN.ZIL
         let buyTokenID = TOKEN.PRV
         let poolID = POOL.MATIC_USDT
@@ -178,7 +178,55 @@ describe("[Class] Pdex", () => {
             estimateTradeObject = response.data
         });
 
-        it("STEP_Trade", async() => {
+        it("STEP_TradeWithRouteNotArray", async() => {
+
+            tx = await sender.useSdk.swap({
+                tokenSell: sellTokenID,
+                tokenBuy: buyTokenID,
+                amount: amountTrade,
+                tradePath: poolID,
+                tradingFee: estimateTradeObject.Result.FeeToken.Fee,
+                feeToken: sellTokenID,
+                minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
+            })
+            chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-tradePath" failed: Required. Found undefined (type of undefined)`)
+
+        }).timeout(120000);
+
+        it("STEP_TradeWithRouteInvalidData", async() => {
+
+            tx = await sender.useSdk.swap({
+                tokenSell: sellTokenID,
+                tokenBuy: buyTokenID,
+                amount: amountTrade,
+                tradePath: [123],
+                tradingFee: estimateTradeObject.Result.FeeToken.Fee,
+                feeToken: sellTokenID,
+                minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
+            })
+            chai.expect(tx).to.contain(`create-tx error - error parsing parameters - error parsing metadata`)
+            chai.expect(tx).to.contain(`cannot unmarshal number into Go struct field .TradePath of type string`)
+
+        }).timeout(120000);
+
+        it("STEP_TradeWithRouteNull", async() => {
+
+            tx = await sender.useSdk.swap({
+                tokenSell: sellTokenID,
+                tokenBuy: buyTokenID,
+                amount: amountTrade,
+                tradePath: [],
+                tradingFee: estimateTradeObject.Result.FeeToken.Fee,
+                feeToken: sellTokenID,
+                minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
+            })
+
+            let response = await coinServiceApi.gettxstatus({ tx })
+            chai.expect(response.data.ErrMsg).to.contain(`Reject not sansity tx transaction's sansity ${tx} is error -3000: Invalid sanity data for privacy Token Invalid trade request - path empty`)
+
+        }).timeout(120000);
+
+        it("STEP_TradeWithRouteInCorrect", async() => {
 
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
@@ -189,17 +237,9 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            await incNode.getTransactionByHashRpc(tx)
-            await incRpc.waitForTxSwapHaveStatus(tx)
+            let response = await coinServiceApi.gettxstatus({ tx })
+            chai.expect(response.data.ErrMsg).to.contain(`Reject invalid metadata with blockchain validate metadata of tx ${tx} with blockchain error Not found poolPairID`)
 
-        }).timeout(120000);
-
-        it("STEP_CheckTradeFail", async() => {
-            let response = await incRpc.pdexv3_getTradeStatus(tx)
-
-            chai.expect(response.data.Result.Status).to.equal(0)
-            chai.expect(response.data.Result.BuyAmount).to.equal(0)
-            chai.expect(response.data.Result.TokenToBuy).to.equal('0000000000000000000000000000000000000000000000000000000000000000')
 
         }).timeout(120000);
     });
