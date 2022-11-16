@@ -24,13 +24,13 @@ describe("[Class] Order", () => {
 
             logger.info({ balancePRVBefore: sender.balancePRVBefore })
 
-            amountBuy = await GenAction.randomNumber(100000)
-            amountSell = await GenAction.randomNumber(100000)
+            amountBuy = await GenAction.randomNumber(1000)
+            amountSell = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_AddOrder", async() => {
             tx = await sender.useSdk.addOrder({
-                poolPairID: POOL.PRV_ZIL,
+                poolPairID: POOL.PRV_USDT,
                 tokenIDToSell: TOKEN.PRV,
                 tokenIDToBuy: TOKEN.ZIL,
                 sellAmount: amountSell,
@@ -85,7 +85,7 @@ describe("[Class] Order", () => {
             tx = await sender.useSdk.cancelOrder({
                 token1ID: TOKEN.PRV,
                 token2ID: TOKEN.ZIL,
-                poolPairID: POOL.PRV_ZIL,
+                poolPairID: POOL.PRV_USDT,
                 orderID: tx,
                 nftID: nftID,
             })
@@ -130,13 +130,13 @@ describe("[Class] Order", () => {
 
             logger.info({ balancePRVBefore: sender.balancePRVBefore })
 
-            amountBuy = await GenAction.randomNumber(100000)
-            amountSell = await GenAction.randomNumber(100000)
+            amountBuy = await GenAction.randomNumber(1000)
+            amountSell = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_AddOrder", async() => {
             tx = await sender.useSdk.addOrder({
-                poolPairID: POOL.PRV_ZIL,
+                poolPairID: POOL.PRV_USDT,
                 tokenIDToSell: TOKEN.ZIL,
                 tokenIDToBuy: TOKEN.PRV,
                 sellAmount: amountSell,
@@ -191,7 +191,7 @@ describe("[Class] Order", () => {
             tx = await sender.useSdk.cancelOrder({
                 token1ID: TOKEN.PRV,
                 token2ID: TOKEN.ZIL,
-                poolPairID: POOL.PRV_ZIL,
+                poolPairID: POOL.PRV_USDT,
                 orderID: tx,
                 nftID: nftID,
             })
@@ -232,14 +232,14 @@ describe("[Class] Order", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
-            amountBuy = await GenAction.randomNumber(100000)
-            amountSell = await GenAction.randomNumber(100000)
+            amountBuy = await GenAction.randomNumber(1000)
+            amountSell = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_AddOrderWithTokenBuyIsOtherToken", async() => {
 
             tx = await sender.useSdk.addOrder({
-                poolPairID: POOL.PRV_ZIL,
+                poolPairID: POOL.PRV_USDT,
                 tokenIDToSell: TOKEN.PRV,
                 tokenIDToBuy: TOKEN.LINK_UT,
                 sellAmount: amountSell,
@@ -253,7 +253,7 @@ describe("[Class] Order", () => {
         it("STEP_AddOrderWithTokenBuyIsNull", async() => {
 
             tx = await sender.useSdk.addOrder({
-                poolPairID: POOL.PRV_ZIL,
+                poolPairID: POOL.PRV_USDT,
                 tokenIDToSell: TOKEN.PRV,
                 tokenIDToBuy: null,
                 sellAmount: amountSell,
@@ -267,7 +267,7 @@ describe("[Class] Order", () => {
         it("STEP_AddOrderWithTokenBuyIsNumber", async() => {
 
             tx = await sender.useSdk.addOrder({
-                poolPairID: POOL.PRV_ZIL,
+                poolPairID: POOL.PRV_USDT,
                 tokenIDToSell: TOKEN.PRV,
                 tokenIDToBuy: 123,
                 sellAmount: amountSell,
@@ -275,6 +275,28 @@ describe("[Class] Order", () => {
             })
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Must be string. Found 123 (type of number)`)
+
+        }).timeout(120000);
+
+        it("STEP_AddOrderWithTokenBuyNotExist", async() => {
+
+            tx = await sender.useSdk.addOrder({
+                poolPairID: POOL.PRV_USDT,
+                tokenIDToSell: TOKEN.PRV,
+                tokenIDToBuy: "b35756452dc1fa1260513fa121c20c2b516a8645f8d496fa4235274dac011111",
+                sellAmount: amountSell,
+                buyAmount: amountBuy,
+            })
+
+            await NODES.Incognito.getTransactionByHashRpc(tx)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
+            let response = await NODES.Incognito.rpc.pdexv3_getAddOrderStatus(tx)
+
+            chai.expect(response.data.Result.Status).to.equal(0)
+            chai.expect(response.data.Result.OrderID).to.equal("")
 
         }).timeout(120000);
 
@@ -290,14 +312,14 @@ describe("[Class] Order", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
-            amountBuy = await GenAction.randomNumber(100000)
-            amountSell = await GenAction.randomNumber(100000)
+            amountBuy = await GenAction.randomNumber(1000)
+            amountSell = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_AddOrderWithTokenSellIsOtherToken", async() => {
 
             tx = await sender.useSdk.addOrder({
-                poolPairID: POOL.PRV_ZIL,
+                poolPairID: POOL.PRV_USDT,
                 tokenIDToSell: TOKEN.LINK_UT,
                 tokenIDToBuy: TOKEN.ZIL,
                 sellAmount: amountSell,
@@ -311,7 +333,7 @@ describe("[Class] Order", () => {
         it("STEP_AddOrderWithTokenSellIsNull", async() => {
 
             tx = await sender.useSdk.addOrder({
-                poolPairID: POOL.PRV_ZIL,
+                poolPairID: POOL.PRV_USDT,
                 tokenIDToSell: null,
                 tokenIDToBuy: TOKEN.PRV,
                 sellAmount: amountSell,
@@ -325,7 +347,7 @@ describe("[Class] Order", () => {
         it("STEP_AddOrderWithTokenSellIsNumber", async() => {
 
             tx = await sender.useSdk.addOrder({
-                poolPairID: POOL.PRV_ZIL,
+                poolPairID: POOL.PRV_USDT,
                 tokenIDToSell: 123,
                 tokenIDToBuy: TOKEN.ZIL,
                 sellAmount: amountSell,
@@ -333,6 +355,21 @@ describe("[Class] Order", () => {
             })
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToSell" failed: Must be string. Found 123 (type of number)`)
+
+        }).timeout(120000);
+
+        it("STEP_AddOrderWithTokenSellNotExist", async() => {
+
+            tx = await sender.useSdk.addOrder({
+                poolPairID: POOL.PRV_USDT,
+                tokenIDToSell: 'b35756452dc1fa1260513fa121c20c2b516a8645f8d496fa4235274dac011111',
+                tokenIDToBuy: TOKEN.USDT_UT,
+                sellAmount: amountSell,
+                buyAmount: amountBuy,
+            })
+
+
+            chai.expect(tx).to.contain(`Error while preparing inputs Not enough coin to spend`)
 
         }).timeout(120000);
     });
@@ -346,8 +383,8 @@ describe("[Class] Order", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
-            amountBuy = await GenAction.randomNumber(100000)
-            amountSell = await GenAction.randomNumber(100000)
+            amountBuy = await GenAction.randomNumber(1000)
+            amountSell = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_AddOrderSellAmountNull", async() => {
@@ -399,8 +436,8 @@ describe("[Class] Order", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
-            amountBuy = await GenAction.randomNumber(100000)
-            amountSell = await GenAction.randomNumber(100000)
+            amountBuy = await GenAction.randomNumber(1000)
+            amountSell = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_AddOrderBuyAmountNull", async() => {
@@ -443,37 +480,6 @@ describe("[Class] Order", () => {
         }).timeout(120000);
     });
 
-    describe("TC007_AddOrderWithTokenNotExit", async() => {
-        let amountBuy = 0
-        let amountSell = 0
-        let tx
-        let nftID
-
-        it("STEP_InitData", async() => {
-            await sender.initSdkInstance();
-            let balanceAll = await sender.useSdk.getBalanceAll()
-            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
-
-            logger.info({ balancePRVBefore: sender.balancePRVBefore })
-
-            amountBuy = await GenAction.randomNumber(100000)
-            amountSell = await GenAction.randomNumber(100000)
-        }).timeout(60000);
-
-        it("STEP_AddOrder", async() => {
-            tx = await sender.useSdk.addOrder({
-                poolPairID: POOL.PRV_ZIL,
-                tokenIDToSell: "b35756452dc1fa1260513fa121c20c2b516a8645f8d496fa4235274dac011111",
-                tokenIDToBuy: TOKEN.ZIL,
-                sellAmount: amountSell,
-                buyAmount: amountBuy,
-            })
-            logger.info({ tx })
-        }).timeout(120000);
-
-
-    });
-
     describe("TC008_AddOrderThanMoreBalance", async() => {
         let amountBuy = 0
         let tx
@@ -490,7 +496,7 @@ describe("[Class] Order", () => {
 
             console.log('hoanh, sender.balanceTokenSell', sender.balanceTokenSell);
 
-            amountBuy = await GenAction.randomNumber(100000)
+            amountBuy = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_AddOrder", async() => {
@@ -532,7 +538,7 @@ describe("[Class] Order", () => {
             sender.balanceTokenSell = balanceAll[tokenSellID]
             console.log('hoanh, sender.balanceTokenSell', sender.balanceTokenSell);
 
-            amountBuy = await GenAction.randomNumber(100000)
+            amountBuy = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_AddOrderAndVerify", async() => {
