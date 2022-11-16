@@ -281,7 +281,7 @@ describe("[Class] Order", () => {
 
     });
 
-    describe.only("TC004_AddOrderWithIncorrectTokenSell", async() => {
+    describe("TC004_AddOrderWithIncorrectTokenSell", async() => {
         let amountBuy = 0
         let amountSell = 0
         let tx
@@ -358,15 +358,43 @@ describe("[Class] Order", () => {
             amountSell = await GenAction.randomNumber(100000)
         }).timeout(60000);
 
-        it("STEP_AddOrder", async() => {
+        it("STEP_AddOrderSellAmountNull", async() => {
             tx = await sender.useSdk.addOrder({
-                poolPairID: POOL.PRV_ZIL,
-                tokenIDToSell: TOKEN.LINK_UT,
-                tokenIDToBuy: TOKEN.ZIL,
+                poolPairID: POOL.PRV_USDT,
+                tokenIDToSell: TOKEN.PRV,
+                tokenIDToBuy: TOKEN.USDT_UT,
                 sellAmount: null,
                 buyAmount: amountBuy,
             })
-            logger.info({ tx })
+            chai.expect(tx).to.contain(`strconv.ParseUint: parsing "null": invalid syntax`)
+
+        }).timeout(120000);
+
+        it("STEP_AddOrderSellAmountEqual0", async() => {
+            tx = await sender.useSdk.addOrder({
+                poolPairID: POOL.PRV_USDT,
+                tokenIDToSell: TOKEN.PRV,
+                tokenIDToBuy: TOKEN.USDT_UT,
+                sellAmount: 0,
+                buyAmount: amountBuy,
+            })
+            let response = await coinServiceApi.gettxstatus({ tx })
+            chai.expect(response.data.ErrMsg).to.contain(`Reject not sansity tx transaction's sansity ${tx} is error`)
+            chai.expect(response.data.ErrMsg).to.contain(`SellAmount cannot be 0`)
+
+
+        }).timeout(120000);
+
+        it("STEP_AddOrderSellAmountIsString", async() => {
+            tx = await sender.useSdk.addOrder({
+                poolPairID: POOL.PRV_USDT,
+                tokenIDToSell: TOKEN.PRV,
+                tokenIDToBuy: TOKEN.USDT_UT,
+                sellAmount: 'abc',
+                buyAmount: amountBuy,
+            })
+            chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
+
         }).timeout(120000);
     });
 
