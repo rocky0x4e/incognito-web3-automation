@@ -1,5 +1,6 @@
 const addContext = require('mochawesome/addContext');
 const { ENV } = require('../global');
+const { EvmAccountGroup } = require('../lib/EVM/Account');
 const { IncAccountGroup } = require('../lib/Incognito/Account/Account');
 const { IncNode } = require('../lib/Incognito/IncNode');
 const addingContent = require("../lib/Utils/AddingContent");
@@ -12,8 +13,8 @@ const NODES = {
 }
 
 const ACCOUNTS = {
-    Incognito: (new IncAccountGroup).importFromKeyList(ENV.Testdata.Keys.Incognito, NODES.Incognito),
-    Evm: []
+    Incognito: (new IncAccountGroup()).importKeyList(ENV.Testdata.Keys.Incognito, NODES.Incognito),
+    Evm: (new EvmAccountGroup()).importKeyList(ENV.Testdata.Keys.EVM)
 }
 
 beforeEach(function() {
