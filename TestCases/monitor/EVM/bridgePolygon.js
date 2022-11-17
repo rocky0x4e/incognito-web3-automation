@@ -16,7 +16,7 @@ let Common = require('ethereumjs-common').default;
 let chai = require('chai');
 let Web3 = require('web3');
 let slackNotify = require('slack-notify');
-const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/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';
+const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/T048YD16HQT/B049B6J7RMX/xxxxx';
 
 
 const networkInfo = {
@@ -27,8 +27,8 @@ const networkInfo = {
 }
 
 describe(`[ ======  POLYGON BRIDGE - SHIELD ======  ]`, async () => {
-    const extPrivateKey = '0x03a731311839ea8c9d0d7eae6dc761ec67c14dc8497336c194d102d21a3de5f1'
-    const privateKey = `112t8rnX3VTd3MTWMpfbYP8HGY4ToAaLjrmUYzfjJBrAcb8iPLkNqvVDXWrLNiFV5yb2NBpR3FDZj3VW8GcLUwRdQ61hPMWP3YrREZAZ1UbH`
+    const extPrivateKey = 'xxxxx'
+    const privateKey = `xxxxxxxx`
     const tokenID = Constants.TOKEN.MATIC
     const tokenUnifiedID = Constants.TOKEN.UnifiedMATIC
     const fullnodeEVM = ENV.PLGFullnode[0].url
@@ -60,7 +60,7 @@ describe(`[ ======  POLYGON BRIDGE - SHIELD ======  ]`, async () => {
         shieldPrvFee: 0,
         shieldTokenFee: 0,
         tmpWalletAddress: null,
-        countWating: 5,
+        countWating: 10,
         txDeposit: null
     }
 
@@ -87,8 +87,6 @@ describe(`[ ======  POLYGON BRIDGE - SHIELD ======  ]`, async () => {
         it(`[2.1] Get balance before deposit`, async () => {
             accountInfoBefore.extTokenBal = await web3.eth.getBalance(extAccount.address)
             console.log('accountInfoBefore.extTokenBal: ', accountInfoBefore.extTokenBal)
-            tmpWalletBal = await web3.eth.getBalance(extAccount.address)
-            console.log('tmpWalletBal: ', tmpWalletBal)
         })
         it(`[2.2] Deposit token`, async () => {
             console.log('sender %s -- receiver %s ', extAccount.address, shieldInfo.tmpWalletAddress)
@@ -109,7 +107,7 @@ describe(`[ ======  POLYGON BRIDGE - SHIELD ======  ]`, async () => {
 
             accountInfoAfter.extTokenBal = await web3.eth.getBalance(extAccount.address)
             console.log('accountInfoBefore.extTokenBal: ', accountInfoBefore.extTokenBal)
-            tmpWalletBal = await web3.eth.getBalance(extAccount.address)
+            tmpWalletBal = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             console.log('tmpWalletBal new: ', tmpWalletBal)
         })
     })
@@ -178,8 +176,8 @@ describe(`[ ======  POLYGON BRIDGE - SHIELD ======  ]`, async () => {
 
 
 describe(`[======  POLYGON BRIDGE - UNSHIELD ======]`, async () => {
-    const extPrivateKey = '0xa5ae26c7154410df235bc8669ffd27c0fc9d3068c21e469a4cc68165c68cd5cb'
-    const privateKey = `112t8rnX3VTd3MTWMpfbYP8HGY4ToAaLjrmUYzfjJBrAcb8iPLkNqvVDXWrLNiFV5yb2NBpR3FDZj3VW8GcLUwRdQ61hPMWP3YrREZAZ1UbH`
+    const extPrivateKey = 'xxxxxxx'
+    const privateKey = `xxxxxxxxx`
     let SignPublicKeyEncode = 'f78fcecf2b0e2b3267d5a1845c314b76f3787f86981c7abcc5b04abc49ae434a'
 
     const tokenID = Constants.TOKEN.MATIC

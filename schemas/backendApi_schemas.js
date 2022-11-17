@@ -1637,7 +1637,7 @@
                     "type": "string"
                 },
                 "EstFeeAt": {
-                    "type": "null"
+                    
                 },
                 "AddressType": {
                     "type": "integer"

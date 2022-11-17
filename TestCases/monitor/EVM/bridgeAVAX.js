@@ -19,12 +19,19 @@ let slackNotify = require('slack-notify');
 const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/T048YD16HQT/B049B6J7RMX/xxxxx';
 
 
-describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
+const networkInfo = {
+    networkName: 'avax testnet',
+    chainId: 43113,
+    currencyType: 28,
+    decentralized: 8
+}
+
+describe(`[ ======  AVALANCHE BRIDGE - SHIELD ======  ]`, async () => {
     const extPrivateKey = 'xxxxx'
-    const privateKey = `xxxxxx`
-    const tokenID = Constants.TOKEN.ETH
-    const tokenUnifiedID = Constants.TOKEN.UnifiedETH
-    const fullnodeEVM = ENV.EthereumFullnode[0].url
+    const privateKey = `xxxxxxx`
+    const tokenID = Constants.TOKEN.AVAX
+    const tokenUnifiedID = Constants.TOKEN.UnifiedAVAX
+    const fullnodeEVM = ENV.AvaxFullnode[0].url
 
     let node = await new IncNode()
     let account = await new IncAccount(privateKey).attachTo(node)
@@ -48,16 +55,17 @@ describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
     }
 
     const shieldInfo = {
-        shieldAmt: 0.01, // ETH
+        shieldAmt: 0.1, // avax
         shieldBackendId: null,
         shieldPrvFee: 0,
         shieldTokenFee: 0,
         tmpWalletAddress: null,
-        countWating: 5,
+        countWating: 8,
         txDeposit: null
     }
 
-    describe('SHIELDING ETH', async () => {
+
+    describe('SHIELDING AVAX', async () => {
         it('Init data', async () => {
             accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
             await console.log('accountInfoBefore: ', accountInfoBefore.incTokenBal)
@@ -66,7 +74,7 @@ describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
 
     describe(`STEP_1 get shielding address and estimate shield fee`, async () => {
         it('Call API backend..', async () => {
-            let res = await backendApi.ethGenerate(1, account.paymentK, tokenID, SignPublicKeyEncode)
+            let res = await backendApi.avaxGenerate(1, account.paymentK, tokenID, SignPublicKeyEncode)
             await validateSchemaCommand.validateSchema(backendApischemas.generateShieldAddressSchemas, res.data)
             shieldInfo.tmpWalletAddress = res.data.Result.Address
             shieldInfo.shieldTokenFee = res.data.Result.EstimateFee
@@ -84,7 +92,7 @@ describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
             console.log('sender %s -- receiver %s ', extAccount.address, shieldInfo.tmpWalletAddress)
             let depositAmt = web3.utils.toWei((shieldInfo.shieldAmt + shieldInfo.shieldTokenFee).toString(), 'ether')
 
-            let resDeposit = await sendNativeToken(
+            let resDeposit = await sendNativeAvaxToken(
                 extAccount.address,
                 shieldInfo.tmpWalletAddress,
                 extPrivateKey,
@@ -129,12 +137,12 @@ describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
             await chai.assert.notEqual(shieldInfo.shieldBackendId, 0, 'Backend seems to be not creating new shield')
         })
         it('[3.3] Verify shielding detail', async () => {
-            let resDetail = await backendApi.historyDetail(shieldInfo.shieldBackendId, 1, SignPublicKeyEncode, 2)
+            let resDetail = await backendApi.historyDetail(shieldInfo.shieldBackendId, networkInfo.currencyType, SignPublicKeyEncode, networkInfo.decentralized)
             await validateSchemaCommand.validateSchema(backendApischemas.historyTokenAccountDetailSchemas, resDetail.data)
 
             let counter = 0
             while (resDetail.data.Result.Status != 12) {
-                let tmp = await backendApi.historyDetail(shieldInfo.shieldBackendId, 1, SignPublicKeyEncode, 2)
+                let tmp = await backendApi.historyDetail(shieldInfo.shieldBackendId, networkInfo.currencyType, SignPublicKeyEncode, networkInfo.decentralized)
                 console.log('Shield status = ' + tmp.data.Result.Status + ' ---- ' + tmp.data.Result.StatusMessage + ' --- ' + tmp.data.Result.StatusDetail)
                 resDetail.data.Result.Status = tmp.data.Result.Status
                 if (resDetail.data.Result.Status === 12) {
@@ -149,7 +157,7 @@ describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
                     await slack.send('Shield seem to be stuck in the backend -- shield Id = ' + shieldInfo.shieldBackendId + ' in status = ' + resDetail.data.Result.Status + ' --- ' + tmp.data.Result.StatusDetail)
                     break
                 }
-                // await slack.send('send slack for fun -- shield Id = ' + shieldInfo.shieldBackendId + ' in status = ' + resDetail.data.Result.Status + ' --- ' + tmp.data.Result.StatusDetail)
+                await slack.send('send slack for fun -- shield Id = ' + shieldInfo.shieldBackendId + ' in status = ' + resDetail.data.Result.Status + ' --- ' + tmp.data.Result.StatusDetail)
                 await wait(120)
                 await counter++
             }
@@ -167,14 +175,14 @@ describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
 
 
 
-
-describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, async () => {
+describe(`[======  AVALANCHE BRIDGE - UNSHIELD ======]`, async () => {
     const extPrivateKey = 'xxxxxx'
-    const privateKey = `xxxxxxx`
-    const tokenID = Constants.TOKEN.ETH
-    const tokenUnifiedID = Constants.TOKEN.UnifiedETH
+    const privateKey = `xxxxxxxx`
     let SignPublicKeyEncode = 'f78fcecf2b0e2b3267d5a1845c314b76f3787f86981c7abcc5b04abc49ae434a'
-    const fullnodeEVM = ENV.EthereumFullnode[0].url
+
+    const tokenID = Constants.TOKEN.AVAX
+    const tokenUnifiedID = Constants.TOKEN.UnifiedAVAX
+    const fullnodeEVM = ENV.AvaxFullnode[0].url
 
     let node = await new IncNode()
     let account = await new IncAccount(privateKey).attachTo(node)
@@ -206,9 +214,7 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, async () => {
         countWating: 5
     }
 
-
-
-    describe('UNSHIELDING ETH', async () => {
+    describe('UNSHIELDING AVAX', async () => {
         it('Init data', async () => {
             accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
             await console.log('accountInfoBefore: ', accountInfoBefore.incTokenBal)
@@ -219,7 +225,7 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, async () => {
 
     describe('STEP_1 Estimate Unshield Fee', async () => {
         it('Call API get estimate Fee and backendUnshielId', async () => {
-            resEst = await backendApi.ethUnshieldEstFee(
+            resEst = await backendApi.avaxUnshieldEstFee(
                 unshieldInfo.unshieldAmt,
                 2,
                 extAccount.address,
@@ -259,8 +265,8 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, async () => {
 
         })
         it(`[2.2] Submit unshield tx to backend`, async () => {
-            let resSubmitTx = await backendApi.submutTxEthereumUnshield(
-                1, //currencyType ETH
+            let resSubmitTx = await backendApi.submutTxAvaxUnshield(
+                networkInfo.currencyType, // currencyType = avax
                 2,
                 unshieldInfo.unshieldAmt,
                 9,
@@ -279,12 +285,12 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, async () => {
 
     describe(`STEP_3 Verify record unshield backend`, async () => {
         it('[3.1] Verify unshielding detail', async () => {
-            let resDetail = await backendApi.historyDetail(unshieldInfo.backendId, 1, SignPublicKeyEncode, 2)
+            let resDetail = await backendApi.historyDetail(unshieldInfo.backendId, networkInfo.currencyType, SignPublicKeyEncode, networkInfo.decentralized)
             console.log(resDetail.data)
             await validateSchemaCommand.validateSchema(backendApischemas.historyTokenAccountDetailSchemas, resDetail.data)
             let counter = 0
             while (resDetail.data.Result.Status != 25) {
-                let tmp = await backendApi.historyDetail(unshieldInfo.backendId, 1, SignPublicKeyEncode, 2)
+                let tmp = await backendApi.historyDetail(unshieldInfo.backendId, networkInfo.currencyType, SignPublicKeyEncode, networkInfo.decentralized)
                 console.log('Unshield status = ' + tmp.data.Result.Status + ' ---- ' + tmp.data.Result.StatusMessage + ' --- ' + tmp.data.Result.StatusDetail)
                 resDetail.data.Result.Status = tmp.data.Result.Status
                 if (resDetail.data.Result.Status === 25) {
@@ -313,16 +319,15 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, async () => {
 
     describe(`STEP_4 Verify balance in Incognito`, async () => {
         it('Verify balance affter unshield', async () => {
-            await wait(40)
             accountInfoAfter.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
             console.log('accountInfoAfter: ', accountInfoAfter.incTokenBal)
             chai.assert.notEqual(accountInfoBefore.incTokenBal, accountInfoAfter.incTokenBal, 'burn token unsuceessfull')
         })
     })
 
-    describe('STEP_5 Verify data on Ethereum', async () => {
+    describe('STEP_5 Verify data on AVALANCHE', async () => {
         it('Verify transaction', async () => {
-            await console.log('tx unshield on ethereum : ', unshieldInfo.unshieldExtTx)
+            await console.log('tx unshield on AVALANCHE : ', unshieldInfo.unshieldExtTx)
             let res = await web3.eth.getTransactionReceipt(unshieldInfo.unshieldExtTx)
             chai.assert.isTrue(res.status)
         })
@@ -366,11 +371,20 @@ async function pickNewRecordBackend(
     return id
 }
 
-async function sendNativeToken(fromAddress, toAddress, pk, amountToSend, networkNode) {
+async function sendNativeAvaxToken(fromAddress, toAddress, pk, amountToSend, networkNode) {
     let web3 = await new Web3(new Web3.providers.HttpProvider(networkNode))
     let privateKey = await Buffer.from(pk.slice(2), 'hex')
     let count = await web3.eth.getTransactionCount(fromAddress)
 
+    let chainAvaxTestnet = await Common.forCustomChain(
+        'goerli',
+        {
+            'name': 'avax testnet',
+            'networkId': 43113,
+            'chainId': 43113
+        },
+        'petersburg'
+    )
 
     let rawTransaction = {
         "gasPrice": web3.utils.toHex(web3.utils.toWei('90', 'gwei')),
@@ -380,7 +394,7 @@ async function sendNativeToken(fromAddress, toAddress, pk, amountToSend, network
         "nonce": web3.utils.toHex(count)
     }
 
-    let transaction = new Tx(rawTransaction, { chain: 'goerli' })
+    let transaction = new Tx(rawTransaction, { common: chainAvaxTestnet })
     transaction.sign(privateKey)
 
     let result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'))
