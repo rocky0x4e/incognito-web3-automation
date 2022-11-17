@@ -2,14 +2,12 @@ const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const backendApi_schemas = require("../../../schemas/backendApi_schemas");
 const { BackendApi } = require('../../../lib/Incognito/BackendApi');
 const { IncAccount } = require("../../../lib/Incognito/Account/Account");
-const { ENV } = require('../../../global');
-const listAccount = require('../../../constant/listAccount.json');
+const { ACCOUNTS } = require("../../TestBase");
 
 
 // let privateKey = (await config.getAccount('main7')).privateKey
-let privateKey = listAccount.main7
 var backendApi = new BackendApi()
-var account = new IncAccount(privateKey)
+var account = ACCOUNTS.Incognito.get(2)
 
 describe('[CLASS] Papp', async() => {
 
@@ -90,5 +88,4 @@ describe('[CLASS] Papp', async() => {
             await validateSchemaCommand.validateSchema(backendApi_schemas.curveRewardHistorySchemas, response.data)
         })
     })
-
 })

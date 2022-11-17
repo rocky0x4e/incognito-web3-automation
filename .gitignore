@@ -1,4 +1,5 @@
 zlab
+lab.js
 log
 logs
 node_modules
@@ -15,3 +16,4 @@ bin
 package-lock.json
 environments
 config.json
+.DS_Store

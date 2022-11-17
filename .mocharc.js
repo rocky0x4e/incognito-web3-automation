@@ -7,15 +7,13 @@ module.exports = {
     spec: [
         // './TestCases/TestBase.js',
 
-        // './TestCases/monitor/backend',
-        // './TestCases/monitor/coinService',
-        // './TestCases/monitor/checkAlive',
-        // './TestCases/monitor/EVM/bridgeEthereum.js',
-        // './TestCases/monitor/EVM/bridgeBSC.js',
-        './TestCases/monitor/EVM/bridgePolygon.js',
-        // './TestCases/monitor/EVM/bridgeFantom.js',
-        // './TestCases/monitor/EVM/bridgeAvax.js',
-        // './TestCases/webBaseV1',
+        './TestCases/monitor/backend',
+        './TestCases/monitor/coinService',
+        './TestCases/monitor/checkAlive',
+        './TestCases/monitor/EVM',
+        './TestCases/webBaseV1',
+        './TestCases/webBaseV2',
+        './TestCases/endToEnd/pDex/Pdex.js',
     ],
     reporter: 'node_modules/mochawesome',
     'reporter-option': [

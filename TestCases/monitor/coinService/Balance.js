@@ -1,42 +1,23 @@
-const config = require("../../../constant/config");
 const { TOKEN } = require('../../../lib/Incognito/Constants');
-const listAccount = require("../../../constant/listAccount.json");
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
 const addingContent = require("../../../lib/Utils/AddingContent");
 let chai = require("chai");
-const { IncAccount } = require("../../../lib/Incognito/Account/Account");
-const { IncNode } = require("../../../lib/Incognito/IncNode");
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
 const GenAction = require("../../../lib/Utils/GenAction");
+const { ACCOUNTS, NODES } = require("../../TestBase");
 
-//init
-let node = new IncNode();
-let sender = new IncAccount(listAccount["2"]).attachTo(node);
-let receiver = new IncAccount(listAccount["3"]).attachTo(node);
-let account = {
-    privateKey: null,
-    otaKey: null
-};
+let account = ACCOUNTS.Incognito.get(2)
+let sender = ACCOUNTS.Incognito.get(2)
+let receiver = ACCOUNTS.Incognito.get(3)
+
 let coinServiceApi = new CoinServiceApi();
 
 describe("[Class] Balance", () => {
-    describe("Before_InitData", async() => {
-        it("InitData", async() => {
-            let privateKey = (await config.getAccount("main7")).privateKey;
-
-            let node = new IncNode();
-            let accountNode = new IncAccount(privateKey).attachTo(node);
-
-            account.otaKey = accountNode.otaPrivateK;
-            account.privateKey = accountNode.privateK;
-        });
-    });
-
     describe("TC001_GetKeyInfo", async() => {
         it("CallAPI", async() => {
             let response = await coinServiceApi.getKeyInfo({
-                otaKey: account.otaKey
+                otaKey: account.otaPrivateK
             });
 
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getGetKeyInfoSchemas, response.data);
@@ -58,9 +39,9 @@ describe("[Class] Balance", () => {
     describe("TC003_TokenInfo", async() => {
         it("CallAPI", async() => {
             let TokenIDs = [
-                "0000000000000000000000000000000000000000000000000000000000000004",
-                "076a4423fa20922526bd50b0d7b0dc1c593ce16e15ba141ede5fb5a28aa3f229",
-                "0cd19c9cc3f95f8ae9960df14fa5e2a7e7796b3a28058abdc9a8235d8726667d"
+                TOKEN.PRV,
+                TOKEN.USDT_UT,
+                TOKEN.ZIL
             ];
 
             let response = await coinServiceApi.tokenInfo({
@@ -130,7 +111,11 @@ describe("[Class] Balance", () => {
         it("STEP_Send", async() => {
             let tx = await sender.useCli.send(receiver, amountTransfer);
             await addingContent.addContent("tx", tx);
-            await node.getTransactionByHashRpc(tx);
+            await NODES.Incognito.getTransactionByHashRpc(tx);
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
         }).timeout(50000);
 
         it("STEP_CompareBalance", async() => {
@@ -160,7 +145,7 @@ describe("[Class] Balance", () => {
 
     describe.skip("TC008_CheckBalanceTokenAfterSend", async() => {
         let amountTransfer = 0;
-        let USDT = "076a4423fa20922526bd50b0d7b0dc1c593ce16e15ba141ede5fb5a28aa3f229";
+
 
         it("STEP_InitData", async() => {
             amountTransfer = await GenAction.randomNumber(1000);
@@ -169,27 +154,31 @@ describe("[Class] Balance", () => {
         });
 
         it("STEP_CheckBalanceCli", async() => {
-            sender.balanceCLI = await sender.useCli.getBalance(USDT);
+            sender.balanceCLI = await sender.useCli.getBalance(TOKEN.ZIL);
             await addingContent.addContent("sender.balanceCLI", sender.balanceCLI);
             sender.oldBalance = sender.balanceCLI;
 
-            receiver.balanceCLI = await receiver.useCli.getBalance(USDT);
+            receiver.balanceCLI = await receiver.useCli.getBalance(TOKEN.ZIL);
             await addingContent.addContent("receiver.balanceCLI", receiver.balanceCLI);
             receiver.oldBalance = receiver.balanceCLI;
         }).timeout(1000000);
 
         it("STEP_CheckBalanceSdk", async() => {
-            sender.balanceSdk = await sender.useSdk.getBalance(USDT);
+            sender.balanceSdk = await sender.useSdk.getBalance(TOKEN.ZIL);
             await addingContent.addContent("sender.balanceSdk", sender.balanceSdk);
 
-            receiver.balanceSdk = await receiver.useSdk.getBalance(USDT);
+            receiver.balanceSdk = await receiver.useSdk.getBalance(TOKEN.ZIL);
             await addingContent.addContent("receiver.balanceSdk", receiver.balanceSdk);
         }).timeout(1000000);
 
         it("STEP_Send", async() => {
-            let tx = await sender.useCli.send(receiver, amountTransfer, USDT);
+            let tx = await sender.useCli.send(receiver, amountTransfer, TOKEN.ZIL);
             await addingContent.addContent("tx", tx);
-            await node.getTransactionByHashRpc(tx);
+            await NODES.Incognito.getTransactionByHashRpc(tx);
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.ZIL,
+                countNumber: 20,
+            })
         }).timeout(1000000);
 
         it("STEP_CompareBalance", async() => {
@@ -209,11 +198,11 @@ describe("[Class] Balance", () => {
             receiver.balanceSdk = receiver.useCli.getBalanceAll();
             await addingContent.addContent("receiver.balanceSdk", receiver.balanceSdk);
 
-            chai.expect(sender.balanceCLI[USDT]).to.equal(sender.balanceSdk[USDT]);
-            chai.expect(receiver.balanceCLI[USDT]).to.equal(receiver.balanceSdk[USDT]);
+            chai.expect(sender.balanceCLI[TOKEN.ZIL]).to.equal(sender.balanceSdk[TOKEN.ZIL]);
+            chai.expect(receiver.balanceCLI[TOKEN.ZIL]).to.equal(receiver.balanceSdk[TOKEN.ZIL]);
 
-            chai.expect(sender.newBalance[USDT]).to.equal(sender.oldBalance[USDT] - amountTransfer);
-            chai.expect(receiver.newBalance[USDT]).to.equal(receiver.oldBalance[USDT] + amountTransfer);
+            chai.expect(sender.newBalance[TOKEN.ZIL]).to.equal(sender.oldBalance[TOKEN.ZIL] - amountTransfer);
+            chai.expect(receiver.newBalance[TOKEN.ZIL]).to.equal(receiver.oldBalance[TOKEN.ZIL] + amountTransfer);
         }).timeout(1000000);
     });
 });

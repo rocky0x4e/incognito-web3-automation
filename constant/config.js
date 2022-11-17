@@ -63,40 +63,30 @@ global.apiLog = {
 }
 
 global.listAccount = [{
-        name: 'master',
-        privateKey: '112t8roafGgHL1rhAP9632Yef3sx5k8xgp8cwK4MCJsCL1UWcxXvpzg97N4dwvcD735iKf31Q2ZgrAvKfVjeSUEvnzKJyyJD3GqqSZdxN4or',
-        address: '14yJXBcq3EZ8dGh2DbL3a78bUUhWHDN579fMFx6zGVBLhWGzr2V4ZfUgjGHXkPnbpcvpepdzqAJEKJ6m8Cfq4kYiqaeSRGu37ns87ss'
-    }, {
-        name: 'pool',
-        privateKey: '113djaAdbyfaxM88E5VmAA4nwcqxgqgPcDM2YdEQL4atNLBrLK4RYkMZhkAeNiPm9M2cmuhcAD5zVcYBBjwxx5HMc3HQKbuXPzfwVrUznq7i'
-    }, {
-        name: "anon",
-        privateKey: '112t8rnXL11v8knnaWfD5tp3cmFynTX4UJEHyh9dnk55nGvmGXkm4q6v4cAMCiuCxvLgHqC9sHEiAbN8BLmghKrSniLPqCURVmNYAZNDysmt',
-        address: ''
-    }, {
-        name: 15,
-        privateKey: '112t8rnXdAqwz4XVnLqfcopFuQbof6n141BPKY1uHfwmyir324SNod9sWSFNXDBSNKXp26SXPhNdVFNyeeqiCs6Tc8yrcsVPaBWrk5auTrNP',
-        address: '12sveuNGdToMM98xz5Q8EKbkAtNoi6qsFdA4yei2wBe73X3Fwt5qDY6PHGvwxLVqDT8MMmGy7yuU4GzeJ6mCc7MJNYepC54jaWKxLW2kyWPhzQUuFm4FnK4QDr9fuj4cpvXqkm5PB9XXwXUyUniy'
-    }, {
-        name: 16,
-        privateKey: '112t8rnbCCek7nrtAgijV9YXpdxoDKUkewcTXJzvBrBDRUkhnsYakV9GycjqGUH8JyZqDFzK4Y8QCNZo17PK5ewop8WogZgNY5BTRarZYJLn',
-        address: '12stAkYPNg1XuF3D47BvQLdEJjiHAd1qrSL2cUPEptQLhrrr1oZxAJmTQKL2iVyWsAk7JsMag22EGQRcJamedV1L1uS1keoiLom4jLu3F7B6RRFjMYQNuQ8DnL1Zo3N7s7bdU5jU4Bf1UwS7GCXe'
-    }, {
-        name: 2,
-        privateKey: '112t8rnY86q7sNHHZo9XEJMWgVds7kM913hc6pxqVrqzSA7LdMVZX6vgttLzGqNeHAjPofB5wHfNeKBGs6NZF7ZPfE5cge8ZC6TgtJPbuLru',
-        otaKey: "14y9hoChwabp12Vcd6kcY6of78GYKDc4bTR72vfRieZwtpoEeXG8gimAi26hSSpTAVPL7gr8aye5PyXk59HXLtuhZsvPa5MoyRsiorv"
-    }, {
-        name: 3,
-        privateKey: '112t8rnaoYv9FppLCA7u84ay2K6ybXcCwykzCLoLT1bD9jXiSpbh8DpTKuaJD8t9Myvk2yR1hHxAu7Ac9gmox1NpKqX5ooTefprXjE1s1nd3',
-        otaKey: '14y4Ef2taiMZLYGhkGTzoUxsfrKoE95xivbYXQVtzWmr2dxEBkteygrf63bTVZjvarP1X2D66fDzV61F4xjAar6vuD1KpHkymiLW48s'
+    name: 'pool',
+    privateKey: '113djaAdbyfaxM88E5VmAA4nwcqxgqgPcDM2YdEQL4atNLBrLK4RYkMZhkAeNiPm9M2cmuhcAD5zVcYBBjwxx5HMc3HQKbuXPzfwVrUznq7i'
+}, {
+    name: "anon",
+    privateKey: '112t8rnXL11v8knnaWfD5tp3cmFynTX4UJEHyh9dnk55nGvmGXkm4q6v4cAMCiuCxvLgHqC9sHEiAbN8BLmghKrSniLPqCURVmNYAZNDysmt',
+    address: ''
+}, {
+    name: 15,
+    privateKey: '112t8rnXdAqwz4XVnLqfcopFuQbof6n141BPKY1uHfwmyir324SNod9sWSFNXDBSNKXp26SXPhNdVFNyeeqiCs6Tc8yrcsVPaBWrk5auTrNP',
+    address: '12sveuNGdToMM98xz5Q8EKbkAtNoi6qsFdA4yei2wBe73X3Fwt5qDY6PHGvwxLVqDT8MMmGy7yuU4GzeJ6mCc7MJNYepC54jaWKxLW2kyWPhzQUuFm4FnK4QDr9fuj4cpvXqkm5PB9XXwXUyUniy'
+}, {
+    name: 16,
+    privateKey: '112t8rnbCCek7nrtAgijV9YXpdxoDKUkewcTXJzvBrBDRUkhnsYakV9GycjqGUH8JyZqDFzK4Y8QCNZo17PK5ewop8WogZgNY5BTRarZYJLn',
+    address: '12stAkYPNg1XuF3D47BvQLdEJjiHAd1qrSL2cUPEptQLhrrr1oZxAJmTQKL2iVyWsAk7JsMag22EGQRcJamedV1L1uS1keoiLom4jLu3F7B6RRFjMYQNuQ8DnL1Zo3N7s7bdU5jU4Bf1UwS7GCXe'
+}, {
+    name: 2,
+    privateKey: '112t8rnY86q7sNHHZo9XEJMWgVds7kM913hc6pxqVrqzSA7LdMVZX6vgttLzGqNeHAjPofB5wHfNeKBGs6NZF7ZPfE5cge8ZC6TgtJPbuLru',
+    otaKey: "14y9hoChwabp12Vcd6kcY6of78GYKDc4bTR72vfRieZwtpoEeXG8gimAi26hSSpTAVPL7gr8aye5PyXk59HXLtuhZsvPa5MoyRsiorv"
+}, {
+    name: 3,
+    privateKey: '112t8rnaoYv9FppLCA7u84ay2K6ybXcCwykzCLoLT1bD9jXiSpbh8DpTKuaJD8t9Myvk2yR1hHxAu7Ac9gmox1NpKqX5ooTefprXjE1s1nd3',
+    otaKey: '14y4Ef2taiMZLYGhkGTzoUxsfrKoE95xivbYXQVtzWmr2dxEBkteygrf63bTVZjvarP1X2D66fDzV61F4xjAar6vuD1KpHkymiLW48s'
 
-    },
-    {
-        name: "main7",
-        privateKey: '112t8rniy8xiBEew6XBHHHv45SoSHyGyFKZ1MktSYvVS9phVseJJJA3qgLhD9QwbSvamoeTMca1rT4ih1VCFvy3bbfHXxjJe4q9t3hzvfaDr',
-        otaKey: ''
-    }
-]
+}]
 
 const getAccount = async(expectedName) => {
     let account = listAccount.find(item => item.name == expectedName)

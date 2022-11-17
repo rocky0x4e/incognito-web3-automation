@@ -2,38 +2,25 @@ const Constants = require('../../../lib/Incognito/Constants');
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const backendApischemas = require("../../../schemas/backendApi_schemas");
 const { BackendApi } = require('../../../lib/Incognito/BackendApi')
-const { IncAccount } = require('../../../lib/Incognito/Account/Account');
-const { IncNode } = require('../../../lib/Incognito/IncNode');
-// const { CoinServiceApi } = require('../../../lib/Incognito/CoinServiceApi');
 const { ENV } = require('../../../global');
-// const addingContent = require('../../../testbase/addingContent');
 const { wait } = require('../../../lib/Utils/Timer');
-let fs = require('fs');
-let Tx = require('ethereumjs-tx').Transaction;
-let Common = require('ethereumjs-common').default;
+// const web3CommonFuntion = require('../../../constant/web3CommonFuntion');
 
 
 let chai = require('chai');
-let Web3 = require('web3');
-let slackNotify = require('slack-notify');
-const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/T048YD16HQT/B049B6J7RMX/xxxxx';
+const { ACCOUNTS } = require('../../TestBase');
+const { EvmAccount } = require('../../../lib/EVM/Account');
 
 
-describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
-    const extPrivateKey = 'xxxxx'
-    const privateKey = `xxxxxx`
+describe(`[Ethereum brigde]`, async () => {
     const tokenID = Constants.TOKEN.ETH
     const tokenUnifiedID = Constants.TOKEN.UnifiedETH
     const fullnodeEVM = ENV.EthereumFullnode[0].url
 
-    let node = await new IncNode()
-    let account = await new IncAccount(privateKey).attachTo(node)
-    let backendApi = await new BackendApi(ENV.Backend)
+    let account = ACCOUNTS.Incognito.get(1)
+    let backendApi = new BackendApi()
+    let extAccount = ACCOUNTS.Evm.get(0).setProvider(ENV.Testbed.EthereumFullnode[0].url)
 
-    let web3 = await new Web3(new Web3.providers.HttpProvider(fullnodeEVM))
-    let extAccount = await web3.eth.accounts.privateKeyToAccount(extPrivateKey)
-    let slack = await slackNotify(MY_SLACK_WEBHOOK_URL)
-    const masterFeeWallet = '0xfebefa80332863d292c768dfed0a3f5bee74e632'
     let SignPublicKeyEncode = 'f78fcecf2b0e2b3267d5a1845c314b76f3787f86981c7abcc5b04abc49ae434a';
     const MIN_BAL_FEE_MASTER_WALLET = 0.05 * 1e18
 
@@ -52,10 +39,8 @@ describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
         shieldBackendId: null,
         shieldPrvFee: 0,
         shieldTokenFee: 0,
-        tmpWalletAddress: null,
-        countWating: 5,
-        txDeposit: null
     }
+    const tmpAccount = new EvmAccount().setProvider(ENV.Testbed.EthereumFullnode[0].url)
 
     describe('SHIELDING ETH', async () => {
         it('Init data', async () => {
@@ -68,39 +53,24 @@ describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
         it('Call API backend..', async () => {
             let res = await backendApi.ethGenerate(1, account.paymentK, tokenID, SignPublicKeyEncode)
             await validateSchemaCommand.validateSchema(backendApischemas.generateShieldAddressSchemas, res.data)
-            shieldInfo.tmpWalletAddress = res.data.Result.Address
+            tmpAccount.address = res.data.Result.Address
             shieldInfo.shieldTokenFee = res.data.Result.EstimateFee
-            console.log('tmp wallet address : ' + shieldInfo.tmpWalletAddress)
+            console.log('tmp wallet address : ' + tmpAccount.address)
             console.log('estimate shielding fee : ' + shieldInfo.shieldTokenFee)
         })
     })
 
-    describe(`STEP_2 Deposit token`, async () => {
-        it(`[2.1] Get balance before deposit`, async () => {
-            accountInfoBefore.extTokenBal = await web3.eth.getBalance(extAccount.address)
-            console.log('accountInfoBefore.extTokenBal: ', accountInfoBefore.extTokenBal)
-        })
-        it(`[2.2] Deposit token`, async () => {
-            console.log('sender %s -- receiver %s ', extAccount.address, shieldInfo.tmpWalletAddress)
-            let depositAmt = web3.utils.toWei((shieldInfo.shieldAmt + shieldInfo.shieldTokenFee).toString(), 'ether')
-
-            let resDeposit = await sendNativeToken(
-                extAccount.address,
-                shieldInfo.tmpWalletAddress,
-                extPrivateKey,
-                depositAmt,
-                fullnodeEVM
-            )
-            await wait(25)
-
-            shieldInfo.txDeposit = resDeposit.transactionHash
-            let resReceipt = await web3.eth.getTransactionReceipt(shieldInfo.txDeposit)
-            chai.assert.isTrue(resReceipt.status)
-
-            accountInfoAfter.extTokenBal = await web3.eth.getBalance(extAccount.address)
-            console.log('accountInfoBefore.extTokenBal: ', accountInfoBefore.extTokenBal)
-            tmpWalletBal = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
-            console.log('tmpWalletBal new: ', tmpWalletBal)
+    describe(`[WEB3] Deposit token`, async () => {
+        it(`Get balance before deposit`, async () => {
+            accountInfoBefore.extTokenBal = await extAccount.getBalance()
+            await console.log('accountInfoBefore.extTokenBal: ', accountInfoBefore.extTokenBal)
+        });
+        it(`Deposit token`, async () => {
+            await console.log('sender %s -- receiver %s ', extAccount.address, shieldInfo.tmpWalletAddress)
+            extAccount.sendNativeToken({ to: tmpAccount, amount: (0.01 + shieldInfo.shieldTokenFee) * 1e18 })
+            await wait(10)
+            accountInfoAfter.extTokenBal = await extAccount.getBalance()
+            await console.log('accountInfoBefore.extTokenBal: ', accountInfoBefore.extTokenBal)
         })
     })
 
@@ -114,19 +84,8 @@ describe(`[ ======  ETHEREUM BRIDGE -- SHIELDING ====== ]`, async () => {
         it('[3.2] Call API backend to get new shielding ', async () => {
             let resBefore = await backendApi.historyByTokenAccount(account.paymentK, tokenUnifiedID, SignPublicKeyEncode)
             await validateSchemaCommand.validateSchema(backendApischemas.historyTokenAccountSchemas, resBefore.data)
-
-            shieldInfo.shieldBackendId = await pickNewRecordBackend(
-                account.paymentK,
-                tokenUnifiedID,
-                SignPublicKeyEncode,
-                shieldInfo.countWating
-            )
-
-            console.log('newShieldID : ', shieldInfo.shieldBackendId)
-            if (shieldInfo.shieldBackendId === 0) {
-                slack.send(`Seem to be stuck in the backend -- not listened to tx deposit yet `)
-            }
-            await chai.assert.notEqual(shieldInfo.shieldBackendId, 0, 'Backend seems to be not creating new shield')
+            shieldID = await account.waitForNewShieldRecord({ tokenId: tokenUnifiedID })
+            console.log('newShieldID : ', shieldID)
         })
         it('[3.3] Verify shielding detail', async () => {
             let resDetail = await backendApi.historyDetail(shieldInfo.shieldBackendId, 1, SignPublicKeyEncode, 2)
@@ -333,58 +292,3 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, async () => {
         })
     })
 })
-
-
-
-
-async function pickNewRecordBackend(
-    WalletAddress,
-    PrivacyTokenAddress,
-    SignPublicKeyEncode = 'f78fcecf2b0e2b3267d5a1845c314b76f3787f86981c7abcc5b04abc49ae434a',
-    countWating
-) {
-    let backendApi = await new BackendApi(ENV.Backend)
-    let id = 0
-    const resBefore = await backendApi.historyByTokenAccount(WalletAddress, PrivacyTokenAddress, SignPublicKeyEncode)
-    console.log(resBefore.data)
-    await validateSchemaCommand.validateSchema(backendApischemas.historyTokenAccountSchemas, resBefore.data)
-
-    for (let i = 0; i < countWating; i++) {
-        let resAfter = await backendApi.historyByTokenAccount(WalletAddress, PrivacyTokenAddress, SignPublicKeyEncode)
-        console.log('resAfter.data.Result.length = ' + resAfter.data.Result.length + ' ---- ' + 'resBefore.data.Result.length = ' + resBefore.data.Result.length)
-        console.log('[Round %d] Waiting backend listen tx .... ', i + 1)
-        if (resAfter.data.Result.length > resBefore.data.Result.length) {
-            const idList = []
-            for (const iterator of resAfter.data.Result) {
-                idList.push(iterator.ID)
-            }
-            id = idList.sort(function (a, b) { return b - a });
-            return id[0]
-        }
-        await wait(120)
-    }
-    return id
-}
-
-async function sendNativeToken(fromAddress, toAddress, pk, amountToSend, networkNode) {
-    let web3 = await new Web3(new Web3.providers.HttpProvider(networkNode))
-    let privateKey = await Buffer.from(pk.slice(2), 'hex')
-    let count = await web3.eth.getTransactionCount(fromAddress)
-
-
-    let rawTransaction = {
-        "gasPrice": web3.utils.toHex(web3.utils.toWei('90', 'gwei')),
-        "gasLimit": web3.utils.toHex(220000),
-        "to": toAddress,
-        "value": web3.utils.toHex(amountToSend),
-        "nonce": web3.utils.toHex(count)
-    }
-
-    let transaction = new Tx(rawTransaction, { chain: 'goerli' })
-    transaction.sign(privateKey)
-
-    let result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'))
-    console.log(result)
-    return result
-}
-

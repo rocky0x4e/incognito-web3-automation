@@ -1,19 +1,21 @@
 const { TOKEN, POOL } = require('../../../lib/Incognito/Constants')
-const listAccount = require("../../../constant/listAccount.json");
-const { IncNode } = require("../../../lib/Incognito/IncNode");
-const { IncAccount } = require("../../../lib/Incognito/Account/Account");
-const { IncRpc } = require("../../../lib/Incognito/RPC/Rpc");
 const GenAction = require("../../../lib/Utils/GenAction");
 let chai = require("chai");
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
+const { CoinServiceApi } = require('../../../lib/Incognito/CoinServiceApi');
 const logger = getLogger("Pdex")
+const { ACCOUNTS, NODES } = require('../../TestBase');
 
-let incRpc = new IncRpc();
-let incNode = new IncNode()
-let sender = new IncAccount(listAccount[2], incNode)
+let coinServiceApi = new CoinServiceApi()
+let sender = ACCOUNTS.Incognito.get(2)
 
-describe("[Class] Pdex", () => {
+describe("[Class] Liquidity", () => {
     describe("TC001_AddExistLiquidity", async() => {
+
+        const logger = getLogger("Pdex")
+
+        let sender = ACCOUNTS.Incognito.get(2)
+
         let amount1 = 0
         let amount2 = 0
         let actualAmount0Add
@@ -26,6 +28,8 @@ describe("[Class] Pdex", () => {
 
             //getBalance
             let balanceAll = await sender.useCli.getBalanceAll()
+
+
             sender.balancePRVBefore = balanceAll[TOKEN.PRV]
             sender.balanceZILBefore = balanceAll[TOKEN.ZIL]
 
@@ -63,15 +67,18 @@ describe("[Class] Pdex", () => {
             })
 
             for (const tx of listTx) {
-                await incNode.getTransactionByHashRpc(tx)
+                await NODES.Incognito.getTransactionByHashRpc(tx)
             }
-            await GenAction.sleep(60000)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
         }).timeout(120000);
 
 
         it("STEP_CheckTxStatus", async() => {
             for (const tx of listTx) {
-                let response = await incRpc.pdexv3_getContributionStatus(tx)
+                let response = await NODES.Incognito.rpc.pdexv3_getContributionStatus(tx)
 
                 actualAmount0Add = response.data.Result.Token0ContributedAmount
                 actualAmount1Add = response.data.Result.Token1ContributedAmount
@@ -91,7 +98,7 @@ describe("[Class] Pdex", () => {
             logger.info({ balancePRVAfter: sender.balancePRVAfter })
             logger.info({ balanceZILAfter: sender.balanceZILAfter })
 
-            chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - actualAmount0Add - 200); //2 tx => fee = 200
+            chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - actualAmount0Add - 200);
             chai.expect(sender.balanceZILAfter).to.be.least(sender.balanceZILBefore - actualAmount1Add);
 
         }).timeout(60000);
@@ -145,13 +152,16 @@ describe("[Class] Pdex", () => {
                 amount2: 1,
             })
 
-            await incNode.getTransactionByHashRpc(tx)
-            await GenAction.sleep(60000)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
         }).timeout(120000);
 
 
         it("STEP_CheckTxStatus", async() => {
-            let response = await incRpc.pdexv3_getWithdrawLiquidityStatus(tx)
+            let response = await NODES.Incognito.rpc.pdexv3_getWithdrawLiquidityStatus(tx)
 
             actualAmount0Remove = response.data.Result.Token0Amount
             actualAmount1Remove = response.data.Result.Token1Amount
@@ -171,6 +181,96 @@ describe("[Class] Pdex", () => {
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore + actualAmount0Remove - 100);
             chai.expect(sender.balanceZILAfter).to.be.least(sender.balanceZILBefore + actualAmount1Remove);
+
+        }).timeout(60000);
+    });
+
+    describe("TC003_WithdrawRewardLiquidity", async() => {
+        let tx
+        let nftID
+        let poolHaveReward
+
+        it("STEP_InitData", async() => {
+            await sender.initSdkInstance();
+
+            //getBalance
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
+
+            //selectNFT
+            let nftData = await sender.useSdk.getNftData()
+            for (const nft of nftData) {
+                if (nft.realAmount == 1) {
+                    nftID = nft.nftToken
+                }
+                break
+            }
+        }).timeout(60000);
+
+        it("STEP_FindLiqudityHaveReward", async() => {
+            let poolShare = await coinServiceApi.poolShare(nftID)
+            for (const pool of poolShare.data.Result) {
+                if (pool.Rewards[TOKEN.PRV] > 0) {
+                    poolHaveReward = pool
+                    break
+                }
+            }
+        }).timeout(120000);
+
+
+        it("STEP_CreateTxRemoveLiquidity", async() => {
+
+            if (!poolHaveReward) return null
+            let withdrawTokenIDs = []
+            for (const tokenId of Object.keys(poolHaveReward.Rewards)) {
+                withdrawTokenIDs.push(tokenId)
+            }
+
+            //create tx
+            tx = await sender.useSdk.withdrawFeeLiquidity({
+                withdrawTokenIDs,
+                poolPairID: poolHaveReward.PoolID,
+                nftID: nftID,
+            })
+
+            await NODES.Incognito.getTransactionByHashRpc(tx)
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 20,
+            })
+        }).timeout(120000);
+
+
+        it("STEP_CheckTxStatus", async() => {
+            if (!poolHaveReward) return null
+            let response = await NODES.Incognito.rpc.pdexv3_getWithdrawalLPFeeStatus(tx)
+
+            let receivers = response.data.Result.Receivers
+
+            for (const item of Object.keys(receivers)) {
+                for (const tokenID of Object.keys(poolHaveReward.Rewards)) {
+                    if (tokenID == item) {
+                        let totalReward = 0
+                        totalReward += poolHaveReward.Rewards[tokenID] ? poolHaveReward.Rewards[tokenID] : 0
+                        totalReward += poolHaveReward.OrderRewards[tokenID] ? poolHaveReward.OrderRewards[tokenID] : 0
+
+                        chai.expect(receivers[item].Amount).to.equal(totalReward)
+                    }
+                }
+            }
+        }).timeout(60000);
+
+
+        it("STEP_VerifyBalance", async() => {
+            if (!poolHaveReward) return null
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balancePRVAfter = balanceAll[TOKEN.PRV]
+
+            let totalReward = 0
+            totalReward += poolHaveReward.Rewards[TOKEN.PRV] ? poolHaveReward.Rewards[TOKEN.PRV] : 0
+            totalReward += poolHaveReward.OrderRewards[TOKEN.PRV] ? poolHaveReward.OrderRewards[TOKEN.PRV] : 0
+
+            chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore + totalReward - 100);
 
         }).timeout(60000);
     });
