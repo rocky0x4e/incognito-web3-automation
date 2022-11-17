@@ -18,9 +18,13 @@ describe("[Class] Order", () => {
         let amountSell = 0
         let tx
         let nftID
+        let tokenSellID = TOKEN.PRV
+        let tokenBuyID = TOKEN.USDT_UT
+        let poolPairID = POOL.PRV_USDT
 
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
+
             let balanceAll = await sender.useSdk.getBalanceAll()
             sender.balancePRVBefore = balanceAll[TOKEN.PRV]
 
@@ -32,18 +36,18 @@ describe("[Class] Order", () => {
 
         it("STEP_AddOrder", async() => {
             tx = await sender.useSdk.addOrder({
-                poolPairID: POOL.PRV_USDT,
-                tokenIDToSell: TOKEN.PRV,
-                tokenIDToBuy: TOKEN.ZIL,
+                poolPairID: poolPairID,
+                tokenIDToSell: tokenSellID,
+                tokenIDToBuy: tokenBuyID,
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
-            logger.info({ tx })
+            await AddingContent.addContent('tx', tx)
 
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
-                tokenID: TOKEN.PRV,
-                countNumber: 20,
+                tokenID: tokenSellID,
+                countNumber: 7,
             })
         }).timeout(120000);
 
@@ -56,7 +60,7 @@ describe("[Class] Order", () => {
 
         it("STEP_CheckPdexState", async() => {
             let response = await NODES.Incognito.rpc.pdexv3_getState()
-            let orders = response.data.Result.PoolPairs[POOL.PRV_ZIL].Orderbook.orders
+            let orders = response.data.Result.PoolPairs[poolPairID].Orderbook.orders
             let isFind = false
             for (const order of orders) {
                 if (order.Id == tx) {
@@ -77,7 +81,7 @@ describe("[Class] Order", () => {
 
         it("STEP_VerifyBalanceAfterAdd", async() => {
             let balanceAll = await sender.useSdk.getBalanceAll()
-            sender.balancePRVAfter = balanceAll[TOKEN.PRV]
+            sender.balancePRVAfter = balanceAll[tokenSellID]
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - amountSell - 100);
 
@@ -85,9 +89,9 @@ describe("[Class] Order", () => {
 
         it("STEP_CancelOrder", async() => {
             tx = await sender.useSdk.cancelOrder({
-                token1ID: TOKEN.PRV,
-                token2ID: TOKEN.ZIL,
-                poolPairID: POOL.PRV_USDT,
+                token1ID: tokenSellID,
+                token2ID: tokenBuyID,
+                poolPairID: poolPairID,
                 orderID: tx,
                 nftID: nftID,
             })
@@ -105,14 +109,14 @@ describe("[Class] Order", () => {
             let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(1);
-            chai.expect(response.data.Result.TokenID).to.equal(TOKEN.PRV);
+            chai.expect(response.data.Result.TokenID).to.equal(tokenSellID);
             chai.expect(response.data.Result.Amount).to.equal(amountSell);
 
         }).timeout(60000);
 
         it("STEP_VerifyBalanceAfterCancel", async() => {
             let balanceAll = await sender.useSdk.getBalanceAll()
-            sender.balancePRVAfter = balanceAll[TOKEN.PRV]
+            sender.balancePRVAfter = balanceAll[tokenSellID]
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - 100 - 100);
 
@@ -577,7 +581,6 @@ describe("[Class] Order", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
             let nftData = await sender.useSdk.getNftData()
-            console.log("hoanh nftData", nftData);
 
             for (const nft of nftData) {
                 if (nft.realAmount > 0 && nft.nftToken) {
@@ -593,7 +596,6 @@ describe("[Class] Order", () => {
         it("STEP_CancelOrderAndVerify", async() => {
 
             if (!pendingOrderObject) return null
-            console.log("hoanh pendingOrderObject", pendingOrderObject);
             tx = await sender.useSdk.cancelOrder({
                 token1ID: pendingOrderObject.SellTokenID,
                 token2ID: pendingOrderObject.BuyTokenID,
@@ -678,16 +680,8 @@ describe("[Class] Order", () => {
         }).timeout(60000);
 
         it("STEP_CancelOrderAndVerify", async() => {
-            console.log('hoanh pendingOrderObject', pendingOrderObject);
             if (!pendingOrderObject) return null
 
-            let param = {
-                token1ID: TOKEN.BTC,
-                token2ID: pendingOrderObject.BuyTokenID,
-                poolPairID: pendingOrderObject.PoolID,
-                orderID: pendingOrderObject.RequestTx,
-                nftID: pendingOrderObject.NFTID
-            }
             tx = await sender.useSdk.cancelOrder({
                 token1ID: TOKEN.BTC,
                 token2ID: pendingOrderObject.BuyTokenID,
@@ -695,7 +689,7 @@ describe("[Class] Order", () => {
                 orderID: pendingOrderObject.RequestTx,
                 nftID: pendingOrderObject.NFTID
             })
-            console.log('hoanh tx', tx);
+            await AddingContent.addContent("tx", tx)
 
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({ tokenID: TOKEN.PRV })
@@ -708,13 +702,16 @@ describe("[Class] Order", () => {
         }).timeout(120000);
     });
 
-    describe.skip("TC014_CancelOrderWithIncorrectToken2ID", async() => {
+    describe("TC014_CancelOrderWithIncorrectToken2ID", async() => {
 
         let pendingOrderObject
 
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
+            await sender.useSdk.clearCacheBalance()
+
             let nftData = await sender.useSdk.getNftData()
+            console.log('hoanh nftData', nftData);
 
             for (const nft of nftData) {
                 if (nft.realAmount > 0 && nft.nftToken) {
@@ -728,14 +725,8 @@ describe("[Class] Order", () => {
         }).timeout(60000);
 
         it("STEP_CancelOrderAndVerify", async() => {
+            if (!pendingOrderObject) return null
 
-            let param = {
-                token1ID: pendingOrderObject.tokenSellID,
-                token2ID: TOKEN.BTC,
-                poolPairID: pendingOrderObject.PoolID,
-                orderID: pendingOrderObject.RequestTx,
-                nftID: pendingOrderObject.NFTID
-            }
             tx = await sender.useSdk.cancelOrder({
                 token1ID: pendingOrderObject.tokenSellID,
                 token2ID: TOKEN.BTC,
@@ -743,7 +734,16 @@ describe("[Class] Order", () => {
                 orderID: pendingOrderObject.RequestTx,
                 nftID: pendingOrderObject.NFTID
             })
-            logger.info({ tx })
+            await AddingContent.addContent("tx", tx)
+
+            await NODES.Incognito.getTransactionByHashRpc(tx)
+            await sender.useSdk.waitForUtxoChange({ tokenID: TOKEN.PRV })
+            await GenAction.sleep(20000)
+
+            let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
+            assert.equal(response.data.Result.Status, 0, await AddingContent.addContent(response.data))
+            assert.equal(response.data.Result.TokenID, "0000000000000000000000000000000000000000000000000000000000000000")
+            assert.equal(response.data.Result.Amount, 0)
         }).timeout(120000);
     });
 
