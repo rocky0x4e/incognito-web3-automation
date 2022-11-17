@@ -1,29 +1,47 @@
 {
-    "FullNode": {
-        "url": "https://mainnet.incognito.org/fullnode",
-        "authPath": ""
-    },
-    "CoinService": {
-        "url": "https://api-coinservice.incognito.org",
-        "authPath": ""
-    },
-    "PubsubService": {
-        "url": "https://api-coinservice.incognito.org/txservice",
-        "authPath": ""
-    },
-    "Backend": {
-        "url": "https://api-service.incognito.org",
-        "authPath": "auth/new-token"
-    },
-    "BackendTool": {
-        "url": "http://34.123.53.141",
-        "authPath": ""
-    },
-    "Web3": {
-        "url": "https://mainnet.infura.io/v3/",
-        "authPath": ""
-    },
-    "WebService": {
-        "url": "https://api-webapp.incognito.org"
+    "Incognito": {
+        "FullNode": {
+            "url": "https://mainnet.incognito.org/fullnode",
+            "authPath": ""
+        },
+        "CoinService": {
+            "url": "https://api-coinservice.incognito.org",
+            "authPath": ""
+        },
+        "PubsubService": {
+            "url": "https://api-coinservice.incognito.org/txservice",
+            "authPath": ""
+        },
+        "Backend": {
+            "url": "https://api-service.incognito.org",
+            "authPath": "auth/new-token"
+        },
+        "BackendTool": {
+            "url": "http://34.123.53.141",
+            "authPath": ""
+        },
+        "Web3": {
+            "url": "https://mainnet.infura.io/v3/",
+            "authPath": ""
+        },
+        "WebService": {
+            "url": "https://api-webapp.incognito.org"
+        },
+        "PortalService": {
+            "url": "https://api-portalv4.incognito.org"
+        },
+        "Tokens": {
+            "PRV": "0000000000000000000000000000000000000000000000000000000000000004",
+            "DAI_UT": "0d953a47a7a488cee562e64c80c25d3dbe29d3b477ccd2b54408c0553a93f126",
+            "USDT_UT": "076a4423fa20922526bd50b0d7b0dc1c593ce16e15ba141ede5fb5a28aa3f229",
+            "ZIL": "880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc",
+            "ETH_ETH": "ffd8d42dc40a8d166ea4848baf8b5f6e912ad79875f4373070b59392b1756c8f",
+            "ETH_UT": "3ee31eba6376fc16cadb52c8765f20b6ebff92c0b1c5ab5fc78c8c25703bb19e",
+            "WBNB": "2f6c3f6d1aa7adb6b57b39a1c293918eb2b1452983beceac978ef946d5d1cccd"
+        },
+        "Pools": {
+            "PRV_USDT": "0000000000000000000000000000000000000000000000000000000000000004-076a4423fa20922526bd50b0d7b0dc1c593ce16e15ba141ede5fb5a28aa3f229-33a8ceae6db677d9860a6731de1a01de7e1ca7930404d7ec9ef5028f226f1633",
+            "PRV_ZIL": "0000000000000000000000000000000000000000000000000000000000000004-880ea0787f6c1555e59e3958a595086b7802fc7a38276bcd80d4525606557fbc-14a749e883312bc56ec80509abd895d737e14fbb160a4dfd238452ba8dca6a42"
+        }
     }
 }

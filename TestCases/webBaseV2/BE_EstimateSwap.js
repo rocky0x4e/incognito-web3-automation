@@ -76,7 +76,7 @@ describe("[Class] EstimateTrade", async() => {
             chai.assert.equal(response.data.Result.Networks.inc[0].AppName, "pdex");
             chai.assert.equal(response.data.Result.Networks.inc[0].CallContract, "");
             chai.assert.equal(response.data.Result.Networks.inc[0].AmountIn, amount);
-            chai.assert.equal(response.data.Result.Networks.inc[0].AmountInRaw, Math.round(amount * decimalSellToken));
+            chai.assert.equal(Math.round(response.data.Result.Networks.inc[0].AmountInRaw / 10), Math.round(amount * decimalSellToken / 10));
             chai.assert.equal(response.data.Result.Networks.inc[0].Fee[0].tokenid, fromToken);
 
             let Paths = response.data.Result.Networks.inc[0].Paths;
@@ -89,10 +89,10 @@ describe("[Class] EstimateTrade", async() => {
     describe("TC004_EstimateTradePappOnly", async() => {
         it("STEP_webEstimateSwapFee", async() => {
             //call api
-            let fromToken = await selectToken("link", "ut");
+            let fromToken = await selectToken("usdt", "ut");
             let sellTokenContract = await coinServiceApi.getTokenContract(fromToken, "bsc");
 
-            let toToken = await selectToken("busd", "ut");
+            let toToken = await selectToken("dai", "ut");
             let buyTokenContract = await coinServiceApi.getTokenContract(toToken, "bsc");
             let amount = 1 / (await GenAction.randomNumber(100)) + "";
             let network = "inc";
@@ -110,7 +110,7 @@ describe("[Class] EstimateTrade", async() => {
 
             //verify
             chai.assert.equal(response.data.Result.Networks.bsc[0].AppName, "pancake");
-            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract, "0x0e2923c21E2C5A2BDD18aa460B3FdDDDaDb0aE18");
+            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract, "0x95Cd8898917c7216Da0517aAB6A115d7A7b6CA90");
             chai.assert.equal(response.data.Result.Networks.bsc[0].AmountIn, amount);
             chai.assert.equal(response.data.Result.Networks.bsc[0].AmountInRaw, "");
             chai.assert.equal(response.data.Result.Networks.bsc[0].Fee[0].tokenid, fromToken);
@@ -126,7 +126,7 @@ describe("[Class] EstimateTrade", async() => {
         it("STEP_webEstimateSwapFee", async() => {
             //call api
             let fromToken = await selectToken("xmr", "xmr");
-            let toToken = await selectToken("busd", "ut");
+            let toToken = await selectToken("dcn", "eth");
 
             let amount = 1 / (await GenAction.randomNumber(100)) + "";
             let network = "inc";
@@ -140,18 +140,19 @@ describe("[Class] EstimateTrade", async() => {
                 toToken
             });
 
-            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data);
-            chai.assert.equal(response.Error, "No tradeable network found");
+
+            // await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data);
+            chai.assert.equal(response.data.Error, "No tradeable network found");
         });
     });
 
     describe("TC006_EstimateTradeBscPancake", async() => {
         it("STEP_webEstimateSwapFee", async() => {
             //call api
-            let fromToken = await selectToken("link", "ut");
+            let fromToken = await selectToken("usdt", "ut");
             let sellTokenContract = await coinServiceApi.getTokenContract(fromToken, "bsc");
 
-            let toToken = await selectToken("busd", "ut");
+            let toToken = await selectToken("eth", "ut");
             let buyTokenContract = await coinServiceApi.getTokenContract(toToken, "bsc");
 
             let amount = 1 / (await GenAction.randomNumber(100)) + "";
@@ -168,7 +169,7 @@ describe("[Class] EstimateTrade", async() => {
 
             await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data);
             chai.assert.equal(response.data.Result.Networks.bsc[0].AppName, "pancake");
-            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract, "0x0e2923c21E2C5A2BDD18aa460B3FdDDDaDb0aE18");
+            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract, "0x95Cd8898917c7216Da0517aAB6A115d7A7b6CA90");
             chai.assert.equal(response.data.Result.Networks.bsc[0].AmountIn, amount);
             chai.assert.equal(response.data.Result.Networks.bsc[0].AmountInRaw, "");
             chai.assert.equal(response.data.Result.Networks.bsc[0].Fee[0].tokenid, fromToken);
@@ -184,10 +185,10 @@ describe("[Class] EstimateTrade", async() => {
     describe("TC007_EstimateTradeIncPancake", async() => {
         it("STEP_webEstimateSwapFee", async() => {
             //call api
-            let fromToken = await selectToken("link", "ut");
+            let fromToken = await selectToken("usdt", "ut");
             let sellTokenContract = await coinServiceApi.getTokenContract(fromToken, "bsc");
 
-            let toToken = await selectToken("busd", "ut");
+            let toToken = await selectToken("dai", "ut");
             let buyTokenContract = await coinServiceApi.getTokenContract(toToken, "bsc");
 
             let amount = 1 / (await GenAction.randomNumber(100)) + "";
@@ -204,7 +205,7 @@ describe("[Class] EstimateTrade", async() => {
 
             await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data);
             chai.assert.equal(response.data.Result.Networks.bsc[0].AppName, "pancake");
-            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract, "0x0e2923c21E2C5A2BDD18aa460B3FdDDDaDb0aE18");
+            chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract, "0x95Cd8898917c7216Da0517aAB6A115d7A7b6CA90");
             chai.assert.equal(response.data.Result.Networks.bsc[0].AmountIn, amount);
             chai.assert.equal(response.data.Result.Networks.bsc[0].AmountInRaw, "");
             chai.assert.equal(response.data.Result.Networks.bsc[0].Fee[0].tokenid, fromToken);
@@ -220,8 +221,8 @@ describe("[Class] EstimateTrade", async() => {
     describe("TC008_EstimateTradeBscPancakeCannotTrade", async() => {
         it("STEP_webEstimateSwapFee", async() => {
             //call api
-            let fromToken = await selectToken("link", "ut");
-            let toToken = await selectToken("dai", "ut");
+            let fromToken = await selectToken("ltc", "bsc");
+            let toToken = await selectToken("usdc", "eth");
 
             let amount = 1 / (await GenAction.randomNumber(100)) + "";
             let network = "inc";
@@ -235,8 +236,7 @@ describe("[Class] EstimateTrade", async() => {
                 toToken
             });
 
-            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data);
-            chai.assert.equal(response.Error, "No tradeable network found");
+            chai.assert.equal(response.data.Error, "No tradeable network found");
         });
     });
 });

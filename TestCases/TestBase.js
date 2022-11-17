@@ -16,11 +16,11 @@ const ACCOUNTS = {
     Evm: []
 }
 
-beforeEach(function () {
+beforeEach(function() {
     addingContent.resetContent()
 })
 
-afterEach(function () {
+afterEach(function() {
 
     for (const item of addingContent.getContent()) {
         if (item.value) {
