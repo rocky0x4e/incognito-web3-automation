@@ -6,6 +6,7 @@ let assert = require("chai").assert
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const AddingContent = require("../../../lib/Utils/AddingContent");
 const { ACCOUNTS, NODES } = require('../../TestBase');
+const { expect } = require('chai');
 const logger = getLogger("Pdex")
 
 let coinServiceApi = new CoinServiceApi();
@@ -49,14 +50,14 @@ describe("[Class] Order", () => {
                 tokenID: tokenSellID,
                 countNumber: 7,
             })
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_CheckOrderStatus", async() => {
             let response = await NODES.Incognito.rpc.pdexv3_getAddOrderStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(1);
             chai.expect(response.data.Result.OrderID).to.equal(tx);
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_CheckPdexState", async() => {
             let response = await NODES.Incognito.rpc.pdexv3_getState()
@@ -77,7 +78,7 @@ describe("[Class] Order", () => {
                 chai.expect.fail('Cannot find order book');
             }
 
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_VerifyBalanceAfterAdd", async() => {
             let balanceAll = await sender.useSdk.getBalanceAll()
@@ -100,10 +101,9 @@ describe("[Class] Order", () => {
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
-                countNumber: 20,
             })
 
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_CheckCancelOrderStatus", async() => {
             let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
@@ -153,16 +153,15 @@ describe("[Class] Order", () => {
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
-                countNumber: 20,
             })
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_CheckOrderStatus", async() => {
             let response = await NODES.Incognito.rpc.pdexv3_getAddOrderStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(1);
             chai.expect(response.data.Result.OrderID).to.equal(tx);
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_CheckPdexState", async() => {
             let response = await NODES.Incognito.rpc.pdexv3_getState()
@@ -183,7 +182,7 @@ describe("[Class] Order", () => {
                 chai.expect.fail('Cannot find order book');
             }
 
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_VerifyBalanceAfterAdd", async() => {
             let balanceAll = await sender.useSdk.getBalanceAll()
@@ -206,10 +205,9 @@ describe("[Class] Order", () => {
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
-                countNumber: 20,
             })
 
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_CheckCancelOrderStatus", async() => {
             let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
@@ -254,7 +252,7 @@ describe("[Class] Order", () => {
 
             chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Required. Found undefined (type of undefined)`)
 
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_AddOrderWithTokenBuyIsNull", async() => {
 
@@ -268,7 +266,7 @@ describe("[Class] Order", () => {
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Required. Found null (type of object)`)
 
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_AddOrderWithTokenBuyIsNumber", async() => {
 
@@ -282,7 +280,7 @@ describe("[Class] Order", () => {
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Must be string. Found 123 (type of number)`)
 
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_AddOrderWithTokenBuyNotExist", async() => {
 
@@ -297,14 +295,13 @@ describe("[Class] Order", () => {
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
-                countNumber: 20,
             })
             let response = await NODES.Incognito.rpc.pdexv3_getAddOrderStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(0)
             chai.expect(response.data.Result.OrderID).to.equal("")
 
-        }).timeout(120000);
+        }).timeout(140000);
 
 
     });
@@ -334,7 +331,7 @@ describe("[Class] Order", () => {
 
             chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-tokenIDToSell" failed: Required. Found undefined (type of undefined)`)
 
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_AddOrderWithTokenSellIsNull", async() => {
 
@@ -348,7 +345,7 @@ describe("[Class] Order", () => {
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToSell" failed: Required. Found null (type of object)`)
 
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_AddOrderWithTokenSellIsNumber", async() => {
 
@@ -362,7 +359,7 @@ describe("[Class] Order", () => {
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToSell" failed: Must be string. Found 123 (type of number)`)
 
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_AddOrderWithTokenSellNotExist", async() => {
 
@@ -377,7 +374,7 @@ describe("[Class] Order", () => {
 
             chai.expect(tx).to.contain(`Error while preparing inputs Not enough coin to spend`)
 
-        }).timeout(120000);
+        }).timeout(140000);
     });
 
     describe("TC005_AddOrderWithInvalidSellAmount", async() => {
@@ -403,7 +400,7 @@ describe("[Class] Order", () => {
             })
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "null": invalid syntax`)
 
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_AddOrderSellAmountEqual0", async() => {
             tx = await sender.useSdk.addOrder({
@@ -416,7 +413,7 @@ describe("[Class] Order", () => {
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject not sansity tx transaction's sansity ${tx} is error`)
             chai.expect(response.data.ErrMsg).to.contain(`SellAmount cannot be 0`)
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_AddOrderSellAmountIsString", async() => {
             tx = await sender.useSdk.addOrder({
@@ -428,7 +425,7 @@ describe("[Class] Order", () => {
             })
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
 
-        }).timeout(120000);
+        }).timeout(140000);
     });
 
     describe("TC006_AddOrderWithInvalidBuyAmount", async() => {
@@ -454,7 +451,7 @@ describe("[Class] Order", () => {
             })
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "null": invalid syntax`)
 
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_AddOrderBuyAmountEqual0", async() => {
             tx = await sender.useSdk.addOrder({
@@ -469,7 +466,7 @@ describe("[Class] Order", () => {
             chai.expect(response.data.ErrMsg).to.contain(`MinAcceptableAmount cannot be 0`)
 
 
-        }).timeout(120000);
+        }).timeout(140000);
 
         it("STEP_AddOrderBuyAmountIsString", async() => {
             tx = await sender.useSdk.addOrder({
@@ -481,7 +478,7 @@ describe("[Class] Order", () => {
             })
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
 
-        }).timeout(120000);
+        }).timeout(140000);
     });
 
     describe("TC008_AddOrderThanMoreBalance", async() => {
@@ -508,7 +505,7 @@ describe("[Class] Order", () => {
                 buyAmount: amountBuy,
             })
             chai.expect(tx).to.contain(`WEB_JS_ERROR: Error while preparing inputs`)
-        }).timeout(120000);
+        }).timeout(140000);
     });
 
     describe("TC009_AddOrderNotExistPoolID", async() => {
@@ -538,7 +535,7 @@ describe("[Class] Order", () => {
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject invalid metadata with blockchain validate metadata of tx ${tx}`)
             chai.expect(response.data.ErrMsg).to.contain(`error Not found poolPairID`)
-        }).timeout(120000);
+        }).timeout(140000);
     });
 
     describe("TC010_CancelOrderWithNftInvalid", async() => {
@@ -571,7 +568,7 @@ describe("[Class] Order", () => {
             })
             chai.expect(tx).to.contain(`Validating "createAndSendWithdrawOrderRequestTx-nftID" failed: Required. Found null (type of object)`)
 
-        }).timeout(120000);
+        }).timeout(140000);
     });
 
     describe("TC011_CancelOrderIdNotExist", async() => {
@@ -614,7 +611,7 @@ describe("[Class] Order", () => {
             chai.expect(response.data.Result.Amount).to.equal(0)
 
 
-        }).timeout(120000);
+        }).timeout(140000);
     });
 
     describe("TC012_CancelOrderWithPoolIDIncorrect", async() => {
@@ -623,6 +620,8 @@ describe("[Class] Order", () => {
 
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
+            await sender.useSdk.clearCacheBalance()
+
             let nftData = await sender.useSdk.getNftData()
 
             for (const nft of nftData) {
@@ -646,15 +645,11 @@ describe("[Class] Order", () => {
                 orderID: pendingOrderObject.RequestTx,
                 nftID: pendingOrderObject.NFTID
             })
-            await NODES.Incognito.getTransactionByHashRpc(tx)
-            await sender.useSdk.waitForUtxoChange({ tokenID: TOKEN.PRV })
-            await GenAction.sleep(20000)
+            await AddingContent.addContent(tx)
 
-            let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
-            chai.expect(response.data.Result.Status).to.equal(0)
-            chai.expect(response.data.Result.TokenID).to.equal("0000000000000000000000000000000000000000000000000000000000000000")
-            chai.expect(response.data.Result.Amount).to.equal(0)
-        }).timeout(120000);
+            let response = await coinServiceApi.gettxstatus({ tx })
+            assert.include(response.data.ErrMsg, `Reject Double Spend With Current Blockchain -1039: Reject invalid metadata with blockchain validate metadata of tx ${tx} with blockchain error Not found poolPairID abc-desf`, await AddingContent.addContent(response.data))
+        }).timeout(140000);
     });
 
     describe("TC013_CancelOrderWithIncorrectToken1ID", async() => {
@@ -699,7 +694,7 @@ describe("[Class] Order", () => {
             assert.equal(response.data.Result.Status, 0, await AddingContent.addContent(response.data))
             assert.equal(response.data.Result.TokenID, "0000000000000000000000000000000000000000000000000000000000000000")
             assert.equal(response.data.Result.Amount, 0)
-        }).timeout(120000);
+        }).timeout(140000);
     });
 
     describe("TC014_CancelOrderWithIncorrectToken2ID", async() => {
@@ -711,7 +706,6 @@ describe("[Class] Order", () => {
             await sender.useSdk.clearCacheBalance()
 
             let nftData = await sender.useSdk.getNftData()
-            console.log('hoanh nftData', nftData);
 
             for (const nft of nftData) {
                 if (nft.realAmount > 0 && nft.nftToken) {
@@ -744,7 +738,7 @@ describe("[Class] Order", () => {
             assert.equal(response.data.Result.Status, 0, await AddingContent.addContent(response.data))
             assert.equal(response.data.Result.TokenID, "0000000000000000000000000000000000000000000000000000000000000000")
             assert.equal(response.data.Result.Amount, 0)
-        }).timeout(120000);
+        }).timeout(140000);
     });
 
     describe("TC015_CancelOrderIDNotBelongWithOrder", async() => {
@@ -757,7 +751,6 @@ describe("[Class] Order", () => {
             await sender.useSdk.clearCacheBalance()
 
             let nftData = await sender.useSdk.getNftData()
-            console.log('hoanh nftData', nftData);
 
             for (const nft of nftData) {
                 if (nft.realAmount > 0 && nft.nftToken) {
@@ -790,7 +783,7 @@ describe("[Class] Order", () => {
             assert.equal(response.data.Result.Status, 0, await AddingContent.addContent(response.data))
             assert.equal(response.data.Result.TokenID, "0000000000000000000000000000000000000000000000000000000000000000")
             assert.equal(response.data.Result.Amount, 0)
-        }).timeout(120000);
+        }).timeout(140000);
     });
 
     describe("TC016_CancelPoolIDNotBelongWithOrder", async() => {
@@ -815,6 +808,7 @@ describe("[Class] Order", () => {
         }).timeout(60000);
 
         it("STEP_CancelOrderAndVerify", async() => {
+            if (!pendingOrderObject1 || !pendingOrderObject2) return null
 
             tx = await sender.useSdk.cancelOrder({
                 token1ID: pendingOrderObject1.tokenSellID,
@@ -832,7 +826,7 @@ describe("[Class] Order", () => {
             assert.equal(response.data.Result.Status, 0, await AddingContent.addContent(response.data))
             assert.equal(response.data.Result.TokenID, "0000000000000000000000000000000000000000000000000000000000000000")
             assert.equal(response.data.Result.Amount, 0)
-        }).timeout(120000);
+        }).timeout(140000);
     });
 
 
