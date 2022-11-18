@@ -793,7 +793,7 @@ describe("[Class] Order", () => {
         }).timeout(120000);
     });
 
-    describe.skip("TC016_CancelPoolIDNotBelongWithOrder", async() => {
+    describe("TC016_CancelPoolIDNotBelongWithOrder", async() => {
 
         let pendingOrderObject1
         let pendingOrderObject2
@@ -816,13 +816,6 @@ describe("[Class] Order", () => {
 
         it("STEP_CancelOrderAndVerify", async() => {
 
-            let param = {
-                token1ID: pendingOrderObject.tokenSellID,
-                token2ID: TOKEN.BTC,
-                poolPairID: pendingOrderObject.PoolID,
-                orderID: pendingOrderObject.RequestTx,
-                nftID: pendingOrderObject.NFTID
-            }
             tx = await sender.useSdk.cancelOrder({
                 token1ID: pendingOrderObject1.tokenSellID,
                 token2ID: pendingOrderObject1.BuyTokenID,
@@ -830,7 +823,15 @@ describe("[Class] Order", () => {
                 orderID: pendingOrderObject1.RequestTx,
                 nftID: pendingOrderObject1.NFTID
             })
-            logger.info({ tx })
+            await AddingContent.addContent(tx)
+            await NODES.Incognito.getTransactionByHashRpc(tx)
+            await sender.useSdk.waitForUtxoChange({ tokenID: TOKEN.PRV })
+            await GenAction.sleep(20000)
+
+            let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
+            assert.equal(response.data.Result.Status, 0, await AddingContent.addContent(response.data))
+            assert.equal(response.data.Result.TokenID, "0000000000000000000000000000000000000000000000000000000000000000")
+            assert.equal(response.data.Result.Amount, 0)
         }).timeout(120000);
     });
 
