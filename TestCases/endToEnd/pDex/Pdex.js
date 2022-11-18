@@ -26,7 +26,7 @@ describe("[Class] Pdex", () => {
             logger.info({ balancePRVBefore: sender.balancePRVBefore })
             logger.info({ balanceZILBefore: sender.balanceZILBefore })
 
-            amountTrade = await GenAction.randomNumber(10000)
+            amountTrade = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
@@ -95,7 +95,7 @@ describe("[Class] Pdex", () => {
             logger.info({ balancePRVBefore: sender.balancePRVBefore })
             logger.info({ balanceZILBefore: sender.balanceZILBefore })
 
-            amountTrade = await GenAction.randomNumber(10000)
+            amountTrade = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
@@ -163,7 +163,7 @@ describe("[Class] Pdex", () => {
             await sender.initSdkInstance();
             let balanceAll = await sender.useSdk.getBalanceAll()
 
-            amountTrade = await GenAction.randomNumber(10000)
+            amountTrade = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
@@ -251,7 +251,7 @@ describe("[Class] Pdex", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
-            amountTrade = await GenAction.randomNumber(10000)
+            amountTrade = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
@@ -306,7 +306,7 @@ describe("[Class] Pdex", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
-            amountTrade = await GenAction.randomNumber(10000)
+            amountTrade = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
@@ -369,7 +369,7 @@ describe("[Class] Pdex", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
-            amountTrade = await GenAction.randomNumber(10000)
+            amountTrade = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
@@ -430,7 +430,7 @@ describe("[Class] Pdex", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
-            amountTrade = await GenAction.randomNumber(10000)
+            amountTrade = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
@@ -468,7 +468,7 @@ describe("[Class] Pdex", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
-            amountTrade = await GenAction.randomNumber(10000)
+            amountTrade = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
@@ -517,7 +517,7 @@ describe("[Class] Pdex", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
-            amountTrade = await GenAction.randomNumber(10000)
+            amountTrade = await GenAction.randomNumber(1000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
