@@ -5,7 +5,7 @@ const getTokenListSchemas = {
     "definitions": {
         "Welcome2": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "array",
@@ -204,7 +204,7 @@ const getLitsPoolSchemas = {
     "definitions": {
         "Welcome1": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "array",
@@ -224,7 +224,7 @@ const getLitsPoolSchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "PoolID": {
                     "type": "string"
@@ -297,7 +297,7 @@ const getLitsPairSchemas = {
     "definitions": {
         "Welcome6": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "array",
@@ -317,7 +317,7 @@ const getLitsPairSchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "PairID": {
                     "type": "string"
@@ -358,7 +358,7 @@ const getTradeHistorySchemas = {
     "definitions": {
         "Welcome1": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "array",
@@ -378,7 +378,7 @@ const getTradeHistorySchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "RequestTx": {
                     "type": "string"
@@ -507,7 +507,7 @@ const getEstimatetradeSchemas = {
     "definitions": {
         "Welcome4": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "$ref": "#/definitions/Result"
@@ -524,7 +524,7 @@ const getEstimatetradeSchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "FeePRV": {
                     "$ref": "#/definitions/Fee"
@@ -541,7 +541,7 @@ const getEstimatetradeSchemas = {
         },
         "Fee": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "SellAmount": {
                     "type": "integer"
@@ -592,7 +592,7 @@ const getGetKeyInfoSchemas = {
     "definitions": {
         "Welcome6": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "$ref": "#/definitions/Result"
@@ -609,7 +609,7 @@ const getGetKeyInfoSchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "id": {
                     "type": "string"
@@ -663,7 +663,7 @@ const getGetKeyInfoSchemas = {
         },
         "Index": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Start": {
                     "type": "integer"
@@ -696,7 +696,7 @@ const getCheckKeyImageSchemas = {
     "definitions": {
         "Welcome9": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "array",
@@ -724,7 +724,7 @@ const getTokenInfoSchemas = {
     "definitions": {
         "Welcome2": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "array",
@@ -744,7 +744,7 @@ const getTokenInfoSchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "TokenID": {
                     "type": "string"
@@ -911,7 +911,7 @@ const getPendingOrderSchemas = {
     "definitions": {
         "Welcome1": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "$ref": "#/definitions/Result"
@@ -928,7 +928,7 @@ const getPendingOrderSchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Buy": {
                     "type": "array",
@@ -951,7 +951,7 @@ const getPendingOrderSchemas = {
         },
         "Buy": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "TxRequest": {
                     "type": "string"
@@ -992,7 +992,7 @@ const getPendingLimitSchemas = {
     "definitions": {
         "Welcome1": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "array",
@@ -1012,7 +1012,7 @@ const getPendingLimitSchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "RequestTx": {
                     "type": "string"
@@ -1137,7 +1137,7 @@ const getOrderTradeHistorySchemas = {
     "definitions": {
         "Welcome9": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "array",
@@ -1157,7 +1157,7 @@ const getOrderTradeHistorySchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "RequestTx": {
                     "type": "string"
@@ -1282,7 +1282,7 @@ const getPoolShareSchemas = {
     "definitions": {
         "Welcome2": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "array",
@@ -1302,7 +1302,7 @@ const getPoolShareSchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "PoolID": {
                     "type": "string"
@@ -1354,7 +1354,7 @@ const getPoolShareSchemas = {
         },
         "OrderRewards": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "title": "OrderRewards"
         }
     }
@@ -1367,7 +1367,7 @@ const getPoolDetailSchemas = {
     "definitions": {
         "Welcome7": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "array",
@@ -1387,7 +1387,7 @@ const getPoolDetailSchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "PoolID": {
                     "type": "string"
@@ -1460,7 +1460,7 @@ const getContributeHistorySchemas = {
     "definitions": {
         "Welcome8": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "array",
@@ -1480,7 +1480,7 @@ const getContributeHistorySchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "RequestTxs": {
                     "type": "array",
@@ -1575,7 +1575,7 @@ const getWithdrawHistorySchemas = {
     "definitions": {
         "Welcome2": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "array",
@@ -1595,7 +1595,7 @@ const getWithdrawHistorySchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "PoolID": {
                     "type": "string"
@@ -1655,7 +1655,7 @@ const getWithdrawFeeHistorySchemas = {
     "definitions": {
         "Welcome5": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "array",
@@ -1675,7 +1675,7 @@ const getWithdrawFeeHistorySchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "PoolID": {
                     "type": "string"
@@ -1722,7 +1722,7 @@ const getTxBySenderSchemas = {
     "definitions": {
         "Welcome3": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "array",
@@ -1742,7 +1742,7 @@ const getTxBySenderSchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "TxDetail": {
                     "$ref": "#/definitions/TxDetail"
@@ -1759,7 +1759,7 @@ const getTxBySenderSchemas = {
         },
         "TxDetail": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "BlockHash": {
                     "type": "string"
@@ -1917,7 +1917,7 @@ const getTxBySenderSchemas = {
         },
         "ProofDetail": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "InputCoins": {
                     "anyOf": [{
@@ -1952,7 +1952,7 @@ const getTxBySenderSchemas = {
         },
         "PutCoin": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Version": {
                     "type": "integer"
@@ -2006,7 +2006,7 @@ const getTxByPubKeySchemas = {
     "definitions": {
         "Welcome10": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "array",
@@ -2026,7 +2026,7 @@ const getTxByPubKeySchemas = {
         },
         "Result": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "TxDetail": {
                     "$ref": "#/definitions/TxDetail"
@@ -2043,7 +2043,7 @@ const getTxByPubKeySchemas = {
         },
         "TxDetail": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "BlockHash": {
                     "type": "string"
@@ -2201,7 +2201,7 @@ const getTxByPubKeySchemas = {
         },
         "ProofDetail": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "InputCoins": {
                     "anyOf": [{
@@ -2236,7 +2236,7 @@ const getTxByPubKeySchemas = {
         },
         "PutCoin": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Version": {
                     "type": "integer"
@@ -2290,7 +2290,7 @@ const submitOtaKeySchemas = {
     "definitions": {
         "Welcome1": {
             "type": "object",
-            "additionalProperties": false,
+            "additionalProperties": true,
             "properties": {
                 "Result": {
                     "type": "string",

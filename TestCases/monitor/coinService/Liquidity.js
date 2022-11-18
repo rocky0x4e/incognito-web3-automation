@@ -2,6 +2,8 @@ const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas");
 let chai = require("chai");
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
+const AddingContent = require("../../../lib/Utils/AddingContent");
+
 
 describe("[Class] Liquidity", () => {
     const NFT_ID = "5756fc0f1661b2b66bc670683ae0f1ef08441c62d91bd22720fa30093ceacaae";
@@ -16,6 +18,7 @@ describe("[Class] Liquidity", () => {
         it("TC001_CallAPI", async() => {
             let response = await coinServiceApi.poolShare(NFT_ID);
 
+            await AddingContent.addContent(response.data)
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getPoolShareSchemas, response.data);
 
             chai.expect(response.data.Result).to.have.lengthOf.above(1);
@@ -44,7 +47,6 @@ describe("[Class] Liquidity", () => {
             }
         });
     });
-
     describe("TC003_ContributeHistory", async() => {
         it("TC001_CallAPI", async() => {
             let response = await coinServiceApi.contributeHistory({ nftID: NFT_ID });
