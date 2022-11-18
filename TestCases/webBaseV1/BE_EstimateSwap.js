@@ -617,14 +617,14 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    describe('TC015_UNI_UST(PLG)_AAVE(PLG)_PLG', async() => {
+    describe('TC015_UNI_UNI(PLG)_AAVE(PLG)_PLG', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
             let appName = 'uniswap'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
-            let sellToken = await selectToken('ust', 'plg')
+            let sellToken = await selectToken('uni', 'plg')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('aave', 'plg')
@@ -641,12 +641,12 @@ describe('[Class] EstimateTrade', async() => {
                 slippage,
                 toToken: buyToken
             })
-
-            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
             await addingContent.addContent(
                 'data',
                 response.data
             )
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+
 
             if (response.data.Result.Networks.plg[0].AppName == appName) {
                 chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
@@ -856,14 +856,14 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    describe('TC020_UNI_UST(PLG)_AAVE(PLG)_INC', async() => {
+    describe('TC020_UNI_UNI(PLG)_AAVE(PLG)_INC', async() => {
         it('STEP_Estiamte_Swap_Fee', async() => {
 
             let networkTarget = 'plg'
             let appName = 'uniswap'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
                 //call api
-            let sellToken = await selectToken('ust', 'plg')
+            let sellToken = await selectToken('uni', 'plg')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
             let buyToken = await selectToken('aave', 'plg')
@@ -880,12 +880,12 @@ describe('[Class] EstimateTrade', async() => {
                 slippage,
                 toToken: buyToken
             })
-
-            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
             await addingContent.addContent(
                 'data',
                 response.data
             )
+            await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
+
 
             if (response.data.Result.Networks.plg[0].AppName == appName) {
                 chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
