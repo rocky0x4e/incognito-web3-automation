@@ -1,7 +1,9 @@
 const { TOKEN, POOL } = require('../../../lib/Incognito/Constants')
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
 const GenAction = require("../../../lib/Utils/GenAction");
+const AddingContent = require("../../../lib/Utils/AddingContent");
 let chai = require("chai");
+let assert = require("chai").assert;
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const { ACCOUNTS, NODES } = require('../../TestBase');
 const logger = getLogger("Pdex")
@@ -24,7 +26,7 @@ describe("[Class] Pdex", () => {
             logger.info({ balancePRVBefore: sender.balancePRVBefore })
             logger.info({ balanceZILBefore: sender.balanceZILBefore })
 
-            amountTrade = await GenAction.randomNumber(100000)
+            amountTrade = await GenAction.randomNumber(10000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
@@ -93,7 +95,7 @@ describe("[Class] Pdex", () => {
             logger.info({ balancePRVBefore: sender.balancePRVBefore })
             logger.info({ balanceZILBefore: sender.balanceZILBefore })
 
-            amountTrade = await GenAction.randomNumber(100000)
+            amountTrade = await GenAction.randomNumber(10000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
@@ -249,7 +251,7 @@ describe("[Class] Pdex", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
-            amountTrade = await GenAction.randomNumber(100000)
+            amountTrade = await GenAction.randomNumber(10000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
@@ -466,7 +468,7 @@ describe("[Class] Pdex", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
-            amountTrade = await GenAction.randomNumber(100000)
+            amountTrade = await GenAction.randomNumber(10000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
@@ -490,7 +492,6 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            console.log('hoanh tx', tx);
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await NODES.Incognito.rpc.waitForTxSwapHaveStatus(tx)
 
@@ -516,7 +517,7 @@ describe("[Class] Pdex", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
-            amountTrade = await GenAction.randomNumber(100000)
+            amountTrade = await GenAction.randomNumber(10000)
         }).timeout(60000);
 
         it("STEP_CoinServiceEstimateTrade", async() => {
@@ -545,20 +546,32 @@ describe("[Class] Pdex", () => {
 
         }).timeout(120000);
 
-        it("STEP_TradeWithTokenFeeInCorrect", async() => {
+        it("STEP_TradeWithTokenFeeNull", async() => {
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
                 tokenBuy: buyTokenID,
                 amount: amountTrade,
                 tradePath: estimateTradeObject.Result.FeeToken.Route,
                 tradingFee: estimateTradeObject.Result.FeeToken.Fee,
-                feeToken: "",
+                feeToken: null,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            console.log('hoanh tx', tx);
-            chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-feetoken" failed: Required. Found undefined (type of undefined)`)
 
+            assert.include(tx, `Validating "createAndSendOrderRequestTx-feetoken" failed: Required. Found null (type of object)`, await AddingContent.addContent(tx))
+        }).timeout(120000);
 
+        it("STEP_TradeWithTokenFeeNotBelongSellToken", async() => {
+            tx = await sender.useSdk.swap({
+                tokenSell: sellTokenID,
+                tokenBuy: buyTokenID,
+                amount: amountTrade,
+                tradePath: estimateTradeObject.Result.FeeToken.Route,
+                tradingFee: estimateTradeObject.Result.FeeToken.Fee,
+                feeToken: TOKEN.BTC,
+                minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
+            })
+
+            assert.include(tx, `Validating "createAndSendOrderRequestTx-feetoken" failed: Required. Found null (type of object)`, await AddingContent.addContent(tx))
         }).timeout(120000);
 
 

@@ -1,5 +1,6 @@
 let chai = require('chai');
 const { WebServiceApi } = require('../../lib/Incognito/WebServiceApi');
+const AddingContent = require('../../lib/Utils/AddingContent');
 const { BackendApi } = require('../../lib/Incognito/BackendApi');
 const { CoinServiceApi } = require('../../lib/Incognito/CoinServiceApi');
 const { PortalServiceApi } = require('../../lib/Incognito/PortalServiceApi');
@@ -40,6 +41,7 @@ describe('[Class]Unshield', async() => {
                 privacyTokenAddress: tokenID,
             })
 
+            await AddingContent.addContent(response.data)
             beShieldAddress = response.data.Result.Address
             appFeeAddress = response.data.Result.FeeAddress
             appLevel1 = response.data.Result.TokenFees.Level1
@@ -59,6 +61,7 @@ describe('[Class]Unshield', async() => {
                 currencyType
             })
 
+            await AddingContent.addContent(response.data)
             webShieldAddress = response.data.Result.Address
             webFeeAddress = response.data.Result.FeeAddress
             webLevel1 = response.data.Result.TokenFees.Level1
@@ -96,6 +99,7 @@ describe('[Class]Unshield', async() => {
                 privacyTokenAddress: tokenID,
             })
 
+            await AddingContent.addContent(response.data)
             beShieldAddress = response.data.Result.Address
             appFeeAddress = response.data.Result.FeeAddress
             appTokenFee = response.data.Result.TokenFees
@@ -115,6 +119,7 @@ describe('[Class]Unshield', async() => {
                 currencyType
             })
 
+            await AddingContent.addContent(response.data)
             webShieldAddress = response.data.Result.Address
             webFeeAddress = response.data.Result.FeeAddress
             webTokenFee = response.data.Result.TokenFees
