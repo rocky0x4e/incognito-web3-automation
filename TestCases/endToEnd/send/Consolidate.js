@@ -1,4 +1,5 @@
 const { TOKEN } = require('../../../lib/Incognito/Constants')
+const AddingContent = require('../../../lib/Utils/AddingContent')
 let chai = require("chai");
 const { ACCOUNTS, NODES } = require('../../TestBase');
 
@@ -19,14 +20,19 @@ describe("[Class] Consolidate", () => {
         it("STEP_Consolidate", async() => {
             listTx = await sender.useSdk.consolidate({ tokenID: TOKEN.PRV })
 
+            AddingContent.addContent("listTx", listTx)
+
             for (const tx of listTx) {
                 await NODES.Incognito.getTransactionByHashRpc(tx)
             }
-            await sender.useSdk.waitForUtxoChange({
-                tokenID: TOKEN.PRV,
-                countNumber: 20,
-            })
-        }).timeout(120000);
+            if (listTx.length > 0) {
+                await sender.useSdk.waitForUtxoChange({
+                    tokenID: TOKEN.PRV,
+                    countNumber: 15,
+                })
+            }
+
+        }).timeout(160000);
 
         it("STEP_VerifyNumberUtxo", async() => {
             let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: TOKEN.PRV })
@@ -35,32 +41,38 @@ describe("[Class] Consolidate", () => {
         }).timeout(60000);
     });
 
-    describe("TC001_ConsolidateToken", async() => {
+    describe("TC002_ConsolidateToken", async() => {
 
+        let tokenID = TOKEN.USDT_UT
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
-            let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balanceToken = balanceAll[TOKEN.ZIL]
+            let balanceAll = await sender.useSdk.getBalanceAll()
+            sender.balanceToken = balanceAll[tokenID]
 
-            let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: TOKEN.ZIL })
+            let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: tokenID })
+            console.log('hoanh  getNumberUtxo', getNumberUtxo);
         }).timeout(60000);
 
         it("STEP_Consolidate", async() => {
-            listTx = await sender.useSdk.consolidate({ tokenID: TOKEN.ZIL })
+            listTx = await sender.useSdk.consolidate({ tokenID: tokenID })
+
+            AddingContent.addContent("listTx", listTx)
 
             for (const tx of listTx) {
                 await NODES.Incognito.getTransactionByHashRpc(tx)
             }
 
-            await sender.useSdk.waitForUtxoChange({
-                tokenID: TOKEN.ZIL,
-                countNumber: 20,
-            })
-        }).timeout(120000);
+            if (listTx.length > 0) {
+                await sender.useSdk.waitForUtxoChange({
+                    tokenID: tokenID,
+                    countNumber: 15,
+                })
+            }
+        }).timeout(160000);
 
         it("STEP_VerifyNumberUtxo", async() => {
-            let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: TOKEN.ZIL })
+            let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: tokenID })
 
             chai.expect(getNumberUtxo).to.be.below(2);
         }).timeout(60000);
