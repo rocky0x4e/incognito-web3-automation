@@ -43,7 +43,8 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
-            await AddingContent.addContent('tx', tx)
+            AddingContent.addContent('tx', tx)
+
 
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
@@ -148,6 +149,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
+            AddingContent.addContent('tx', tx)
             logger.info({ tx })
 
             await NODES.Incognito.getTransactionByHashRpc(tx)
@@ -249,6 +251,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
+            AddingContent.addContent('tx', tx)
 
             chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Required. Found undefined (type of undefined)`)
 
@@ -263,6 +266,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
+            AddingContent.addContent('tx', tx)
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Required. Found null (type of object)`)
 
@@ -277,6 +281,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
+            AddingContent.addContent('tx', tx)
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Must be string. Found 123 (type of number)`)
 
@@ -291,6 +296,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
+            AddingContent.addContent('tx', tx)
 
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
@@ -328,6 +334,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
+            AddingContent.addContent('tx', tx)
 
             chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-tokenIDToSell" failed: Required. Found undefined (type of undefined)`)
 
@@ -342,6 +349,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
+            AddingContent.addContent('tx', tx)
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToSell" failed: Required. Found null (type of object)`)
 
@@ -356,6 +364,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
+            AddingContent.addContent('tx', tx)
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToSell" failed: Must be string. Found 123 (type of number)`)
 
@@ -370,6 +379,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
+            AddingContent.addContent('tx', tx)
 
 
             chai.expect(tx).to.contain(`Error while preparing inputs Not enough coin to spend`)
@@ -385,6 +395,8 @@ describe("[Class] Order", () => {
 
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
+            let listUtxo = await sender.useSdk.getNumberUtxo({ tokenID: TOKEN.PRV })
+            console.log('hoanh listUtxo', listUtxo);
 
             amountBuy = await GenAction.randomNumber(1000)
             amountSell = await GenAction.randomNumber(1000)
@@ -398,6 +410,7 @@ describe("[Class] Order", () => {
                 sellAmount: null,
                 buyAmount: amountBuy,
             })
+            AddingContent.addContent('tx', tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "null": invalid syntax`)
 
         }).timeout(140000);
@@ -410,6 +423,7 @@ describe("[Class] Order", () => {
                 sellAmount: 0,
                 buyAmount: amountBuy,
             })
+            AddingContent.addContent('tx', tx)
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject not sansity tx transaction's sansity ${tx} is error`)
             chai.expect(response.data.ErrMsg).to.contain(`SellAmount cannot be 0`)
@@ -423,6 +437,7 @@ describe("[Class] Order", () => {
                 sellAmount: 'abc',
                 buyAmount: amountBuy,
             })
+            AddingContent.addContent('tx', tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
 
         }).timeout(140000);
@@ -449,6 +464,8 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: null,
             })
+
+            AddingContent.addContent('tx', tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "null": invalid syntax`)
 
         }).timeout(140000);
@@ -461,6 +478,8 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: 0,
             })
+            AddingContent.addContent('tx', tx)
+
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject not sansity tx transaction's sansity ${tx} is error`)
             chai.expect(response.data.ErrMsg).to.contain(`MinAcceptableAmount cannot be 0`)
@@ -476,6 +495,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: 'abc',
             })
+            AddingContent.addContent('tx', tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
 
         }).timeout(140000);
@@ -504,6 +524,7 @@ describe("[Class] Order", () => {
                 sellAmount: sender.balanceTokenSell + 10000,
                 buyAmount: amountBuy,
             })
+            AddingContent.addContent('tx', tx)
             chai.expect(tx).to.contain(`WEB_JS_ERROR: Error while preparing inputs`)
         }).timeout(140000);
     });
@@ -532,6 +553,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
+            AddingContent.addContent('tx', tx)
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject invalid metadata with blockchain validate metadata of tx ${tx}`)
             chai.expect(response.data.ErrMsg).to.contain(`error Not found poolPairID`)
@@ -566,6 +588,7 @@ describe("[Class] Order", () => {
                 orderID: pendingOrderObject.RequestTx,
                 nftID: null
             })
+            AddingContent.addContent('tx', tx)
             chai.expect(tx).to.contain(`Validating "createAndSendWithdrawOrderRequestTx-nftID" failed: Required. Found null (type of object)`)
 
         }).timeout(140000);
@@ -600,7 +623,7 @@ describe("[Class] Order", () => {
                 orderID: "abc-desf",
                 nftID: pendingOrderObject.NFTID
             })
-
+            AddingContent.addContent('tx', tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({ tokenID: TOKEN.PRV })
             await GenAction.sleep(20000)
@@ -774,7 +797,7 @@ describe("[Class] Order", () => {
                 orderID: pendingOrderObject2.RequestTx,
                 nftID: pendingOrderObject1.NFTID
             })
-
+            AddingContent.addContent('tx', tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({ tokenID: TOKEN.PRV })
             await GenAction.sleep(20000)

@@ -3,7 +3,7 @@ const AddingContent = require('../../../lib/Utils/AddingContent')
 let chai = require("chai");
 const { ACCOUNTS, NODES } = require('../../TestBase');
 
-let sender = ACCOUNTS.Incognito.get(2)
+let sender = ACCOUNTS.Incognito.get(3)
 
 describe("[Class] Consolidate", () => {
     describe("TC001_ConsolidatePRV", async() => {
@@ -11,7 +11,7 @@ describe("[Class] Consolidate", () => {
         it("STEP_InitData", async() => {
             await sender.initSdkInstance();
 
-            let balanceAll = await sender.useCli.getBalanceAll()
+            let balanceAll = await sender.useSdk.getBalanceAll()
             sender.balancePRVBefore = balanceAll[TOKEN.PRV]
 
             let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: TOKEN.PRV })
