@@ -124,7 +124,7 @@ describe("[Class] Papp", () => {
     describe.only("TC001_TradeUniswapReDeposit", async () => {
         let ammountSell = 0
         let estimateFeeObject
-        let tx = '9130404f614c76d470523f348340977ad2ce08f7620e0ab2860f579d8bf0310a'
+        let tx
         let sellTokenID = TOKEN.USDT_UT
         let buyTokenID = TOKEN.USDC_UT
         let networks = 'plg'
@@ -154,7 +154,7 @@ describe("[Class] Papp", () => {
             AddingContent.addContent('estimateFeeObject', estimateFeeObject)
         }).timeout(config.timeoutApi);
 
-        it.skip("STEP_SwapTx", async () => {
+        it("STEP_SwapTx", async () => {
             if (!estimateFeeObject) return true
             let param = {
                 sellTokenID,
