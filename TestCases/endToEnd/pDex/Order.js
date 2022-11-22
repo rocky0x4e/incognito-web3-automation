@@ -49,7 +49,7 @@ describe("[Class] Order", () => {
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: tokenSellID,
-                countNumber: 7,
+                countNumber: 15,
             })
         }).timeout(140000);
 

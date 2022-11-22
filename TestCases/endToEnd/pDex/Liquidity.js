@@ -76,7 +76,7 @@ describe("[Class] Liquidity", () => {
             }
             await sender.useSdk.waitForUtxoChange({
                 tokenID: token1ID,
-                countNumber: 10,
+                countNumber: 15,
             })
         }).timeout(config.timeoutTx);
 
@@ -100,7 +100,7 @@ describe("[Class] Liquidity", () => {
             if (listTx.length == 0) return true
             await sender.useSdk.waitForUtxoChange({
                 tokenID: token1ID,
-                countNumber: 10,
+                countNumber: 15,
             })
 
             let balanceAll = await sender.useCli.getBalanceAll()

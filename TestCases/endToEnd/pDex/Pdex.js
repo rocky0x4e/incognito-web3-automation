@@ -82,7 +82,7 @@ describe("[Class] Pdex", () => {
         }).timeout(60000);
     });
 
-    describe.skip("TC002_TradeTokenToPRV", async() => {
+    describe("TC002_TradeTokenToPRV", async() => {
         let amountTrade = 0
         let estimateTradeObject
         let tx
@@ -121,8 +121,6 @@ describe("[Class] Pdex", () => {
                 feeToken: TOKEN.ZIL,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
-
             AddingContent.addContent(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
