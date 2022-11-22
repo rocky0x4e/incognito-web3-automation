@@ -1,5 +1,6 @@
 const { TOKEN } = require('../../../lib/Incognito/Constants')
 const GenAction = require("../../../lib/Utils/GenAction");
+const config = require("../../../config.json");
 let chai = require("chai");
 const AddingContent = require("../../../lib/Utils/AddingContent");
 const { ACCOUNTS, NODES } = require('../../TestBase');
@@ -17,16 +18,17 @@ describe("[Class] Send", () => {
             await sender.initSdkInstance();
             await receiver.initSdkInstance();
 
-            let balanceAll = await sender.useSdk.getBalanceAll()
-            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
-            AddingContent.addContent({ balancePRVBefore: sender.balancePRVBefore })
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balanceAllBefore = balanceAll
+            AddingContent.addContent("sender.balanceAllBefore", sender.balanceAllBefore)
 
-            balanceAll = await receiver.useSdk.getBalanceAll()
-            receiver.balancePRVBefore = balanceAll[TOKEN.PRV]
-            AddingContent.addContent({ balancePRVBefore: receiver.balancePRVBefore })
+            balanceAll = await receiver.useCli.getBalanceAll()
+            receiver.balanceAllBefore = balanceAll
+            AddingContent.addContent("receiver.balanceAllBefore", receiver.balanceAllBefore)
 
-            amountSend = await GenAction.randomNumber(1000)
-        }).timeout(60000);
+            amountSend = await GenAction.randomNumber(10000)
+            AddingContent.addContent("amountSend", amountSend)
+        }).timeout(config.timeoutApi);
 
         it("STEP_Send", async() => {
             tx = await sender.useSdk.sendPRV({
@@ -39,21 +41,21 @@ describe("[Class] Send", () => {
                 tokenID: TOKEN.PRV,
                 countNumber: 15,
             })
-        }).timeout(160000);
+        }).timeout(config.timeoutTx);
 
         it("STEP_VerifyBalance", async() => {
             let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balancePRVAfter = balanceAll[TOKEN.PRV]
-            AddingContent.addContent({ balancePRVAfter: sender.balancePRVAfter })
+            sender.balanceAllAfter = balanceAll
+            AddingContent.addContent("sender.balanceAllAfter", sender.balanceAllAfter)
 
             balanceAll = await receiver.useCli.getBalanceAll()
-            receiver.balancePRVAfter = balanceAll[TOKEN.PRV]
-            AddingContent.addContent({ balancePRVAfter: receiver.balancePRVAfter })
+            receiver.balanceAllAfter = balanceAll
+            AddingContent.addContent("receiver.balanceAllAfter", receiver.balanceAllAfter)
 
-            chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - amountSend - 100);
-            chai.expect(receiver.balancePRVAfter).to.equal(receiver.balancePRVBefore + amountSend);
+            chai.expect(sender.balanceAllAfter[TOKEN.PRV]).to.equal(sender.balanceAllBefore[TOKEN.PRV] - amountSend - 100);
+            chai.expect(receiver.balanceAllAfter[TOKEN.PRV]).to.equal(receiver.balanceAllBefore[TOKEN.PRV] + amountSend);
 
-        }).timeout(60000);
+        }).timeout(config.timeoutApi);
     });
 
     describe("TC002_SendToken", async() => {
@@ -65,16 +67,17 @@ describe("[Class] Send", () => {
             await sender.initSdkInstance();
             await receiver.initSdkInstance();
 
-            let balanceAll = await sender.useSdk.getBalanceAll()
-            sender.balanceTokenBefore = balanceAll[tokenID]
-            AddingContent.addContent({ balanceTokenBefore: sender.balanceTokenBefore })
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balanceAllBefore = balanceAll
+            AddingContent.addContent("sender.balanceAllBefore", sender.balanceAllBefore)
 
-            balanceAll = await receiver.useSdk.getBalanceAll()
-            receiver.balanceTokenBefore = balanceAll[tokenID]
-            AddingContent.addContent({ balanceTokenBefore: receiver.balanceTokenBefore })
+            balanceAll = await receiver.useCli.getBalanceAll()
+            receiver.balanceAllBefore = balanceAll
+            AddingContent.addContent("receiver.balanceAllBefore", receiver.balanceAllBefore)
 
-            amountSend = await GenAction.randomNumber(1000)
-        }).timeout(60000);
+            amountSend = await GenAction.randomNumber(10000)
+            AddingContent.addContent("amountSend", amountSend)
+        }).timeout(config.timeoutApi);
 
         it("STEP_Send", async() => {
             tx = await sender.useSdk.sendToken({
@@ -89,20 +92,20 @@ describe("[Class] Send", () => {
                 tokenID: tokenID,
                 countNumber: 15,
             })
-        }).timeout(160000);
+        }).timeout(config.timeoutTx);
 
         it("STEP_VerifyBalance", async() => {
             let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balanceTokenAfter = balanceAll[tokenID]
-            AddingContent.addContent({ balancePRVAfter: sender.balancePRVAfter })
+            sender.balanceAllAfter = balanceAll
+            AddingContent.addContent("sender.balanceAllAfter", sender.balanceAllAfter)
 
             balanceAll = await receiver.useCli.getBalanceAll()
-            receiver.balanceTokenAfter = balanceAll[tokenID]
-            AddingContent.addContent({ balancePRVAfter: receiver.balancePRVAfter })
+            receiver.balanceAllAfter = balanceAll
+            AddingContent.addContent("receiver.balanceAllAfter", receiver.balanceAllAfter)
 
-            chai.expect(sender.balanceTokenAfter).to.equal(sender.balanceTokenBefore - amountSend);
-            chai.expect(receiver.balanceTokenAfter).to.equal(receiver.balanceTokenBefore + amountSend);
+            chai.expect(sender.balanceAllAfter[tokenID]).to.equal(sender.balanceAllBefore[tokenID] - amountSend);
+            chai.expect(receiver.balanceAllAfter[tokenID]).to.equal(receiver.balanceAllBefore[tokenID] + amountSend);
 
-        }).timeout(60000);
+        }).timeout(config.timeoutApi);
     });
 })

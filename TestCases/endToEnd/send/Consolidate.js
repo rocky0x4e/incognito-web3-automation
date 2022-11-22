@@ -2,6 +2,7 @@ const { TOKEN } = require('../../../lib/Incognito/Constants')
 const AddingContent = require('../../../lib/Utils/AddingContent')
 let chai = require("chai");
 const { ACCOUNTS, NODES } = require('../../TestBase');
+const config = require("../../../config.json");
 
 let sender = ACCOUNTS.Incognito.get(3)
 
@@ -15,7 +16,7 @@ describe("[Class] Consolidate", () => {
             sender.balancePRVBefore = balanceAll[TOKEN.PRV]
 
             let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: TOKEN.PRV })
-        }).timeout(60000);
+        }).timeout(config.timeoutApi);
 
         it("STEP_Consolidate", async() => {
             listTx = await sender.useSdk.consolidate({ tokenID: TOKEN.PRV })
@@ -32,13 +33,13 @@ describe("[Class] Consolidate", () => {
                 })
             }
 
-        }).timeout(160000);
+        }).timeout(config.timeoutTx);
 
         it("STEP_VerifyNumberUtxo", async() => {
             let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: TOKEN.PRV })
 
             chai.expect(getNumberUtxo).to.be.below(2);
-        }).timeout(60000);
+        }).timeout(config.timeoutApi);
     });
 
     describe("TC002_ConsolidateToken", async() => {
@@ -52,7 +53,7 @@ describe("[Class] Consolidate", () => {
 
             let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: tokenID })
             console.log('hoanh  getNumberUtxo', getNumberUtxo);
-        }).timeout(60000);
+        }).timeout(config.timeoutApi);
 
         it("STEP_Consolidate", async() => {
             listTx = await sender.useSdk.consolidate({ tokenID: tokenID })
@@ -69,12 +70,12 @@ describe("[Class] Consolidate", () => {
                     countNumber: 15,
                 })
             }
-        }).timeout(160000);
+        }).timeout(config.timeoutTx);
 
         it("STEP_VerifyNumberUtxo", async() => {
             let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: tokenID })
 
             chai.expect(getNumberUtxo).to.be.below(2);
-        }).timeout(60000);
+        }).timeout(config.timeoutApi);
     });
 });
