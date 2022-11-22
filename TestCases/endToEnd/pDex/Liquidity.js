@@ -11,7 +11,7 @@ let coinServiceApi = new CoinServiceApi()
 let sender = ACCOUNTS.Incognito.get(2)
 
 describe("[Class] Liquidity", () => {
-    describe("TC001_AddExistLiquidity", async() => {
+    describe("TC001_AddExistLiquidity", async () => {
 
         const logger = getLogger("Pdex")
 
@@ -27,18 +27,17 @@ describe("[Class] Liquidity", () => {
         let token2ID = TOKEN.USDT_UT
         let poolPairID = POOL.PRV_USDT
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
             await sender.useSdk.clearCacheBalance()
 
             //getBalance
             let balanceAll = await sender.useSdk.getBalanceAll()
+            sender.balanceAllBefore = balanceAll
+            AddingContent.addContent('sender.balanceAllBefore ', sender.balanceAllBefore)
 
             sender.balancePRVBefore = balanceAll[token1ID]
             sender.balanceUSDTBefore = balanceAll[token2ID]
-
-            AddingContent.addContent('sender.balancePRVBefore', sender.balancePRVBefore)
-            AddingContent.addContent('sender.balanceUSDTBefore', sender.balanceUSDTBefore)
 
             //selectNFT
             let nftData = await sender.useSdk.getNftData()
@@ -54,7 +53,7 @@ describe("[Class] Liquidity", () => {
             amount2 = await GenAction.randomNumber(10000)
         }).timeout(config.timeoutApi);
 
-        it("STEP_CreateTxContributeLiquidity", async() => {
+        it("STEP_CreateTxContributeLiquidity", async () => {
             //get AMP
             let poolInfo = await sender.useSdk.getListPoolsDetail(poolPairID)
             let amp = poolInfo[0].amp
@@ -81,7 +80,7 @@ describe("[Class] Liquidity", () => {
         }).timeout(config.timeoutTx);
 
 
-        it("STEP_CheckTxStatus", async() => {
+        it("STEP_CheckTxStatus", async () => {
             for (const tx of listTx) {
                 let response = await NODES.Incognito.rpc.pdexv3_getContributionStatus(tx)
 
@@ -96,7 +95,7 @@ describe("[Class] Liquidity", () => {
         }).timeout(config.timeoutApi);
 
 
-        it("STEP_VerifyBalance", async() => {
+        it("STEP_VerifyBalance", async () => {
             if (listTx.length == 0) return true
             await sender.useSdk.waitForUtxoChange({
                 tokenID: token1ID,
@@ -104,22 +103,22 @@ describe("[Class] Liquidity", () => {
             })
 
             let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balancePRVAfter = balanceAll[token1ID]
-            sender.balanceUSDTAfter = balanceAll[token2ID]
+            sender.balanceAllAfter = balanceAll
+            AddingContent.addContent('sender.balanceAllAfter ', sender.balanceAllAfter)
 
-            chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - actualAmount0Add - 200);
-            chai.expect(sender.balanceUSDTAfter).to.be.least(sender.balanceUSDTBefore - actualAmount1Add);
+            chai.expect(sender.balanceAllAfter[TOKEN.PRV]).to.equal(sender.balanceAllBefore[TOKEN.PRV] - actualAmount0Add - 200);
+            chai.expect(sender.balanceAllAfter[token2ID]).to.be.least(sender.balanceAllBefore[token2ID] - actualAmount1Add);
 
         }).timeout(config.timeoutTx);
     });
 
-    describe("TC002_RemoveExistLiquidity", async() => {
+    describe("TC002_RemoveExistLiquidity", async () => {
         let poolShare
         let actualAmount0Remove
         let actualAmount1Remove
         let tx
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
             await sender.useSdk.clearCacheBalance()
 
@@ -131,7 +130,7 @@ describe("[Class] Liquidity", () => {
 
         }).timeout(config.timeoutApi);
 
-        it("STEP_FindMyPoolShare", async() => {
+        it("STEP_FindMyPoolShare", async () => {
             let nftData = await sender.useSdk.getNftData()
             AddingContent.addContent('nftData', nftData)
 
@@ -150,7 +149,7 @@ describe("[Class] Liquidity", () => {
 
         }).timeout(config.timeoutApi);
 
-        it("STEP_CreateTxRemoveLiquidity", async() => {
+        it("STEP_CreateTxRemoveLiquidity", async () => {
             AddingContent.addContent('poolShare', poolShare)
 
             //create tx
@@ -173,7 +172,7 @@ describe("[Class] Liquidity", () => {
             })
         }).timeout(config.timeoutTx);
 
-        it("STEP_CheckTxStatus", async() => {
+        it("STEP_CheckTxStatus", async () => {
             if (!poolShare) return true
             let response = await NODES.Incognito.rpc.pdexv3_getWithdrawLiquidityStatus(tx)
 
@@ -185,7 +184,7 @@ describe("[Class] Liquidity", () => {
             chai.expect(response.data.Result.Token1ID).to.equal(poolShare.tokenId2)
         }).timeout(config.timeoutApi);
 
-        it("STEP_VerifyBalance", async() => {
+        it("STEP_VerifyBalance", async () => {
             if (!poolShare) return true
 
             let balanceAll = await sender.useCli.getBalanceAll()
@@ -197,11 +196,11 @@ describe("[Class] Liquidity", () => {
         }).timeout(config.timeoutApi);
     });
 
-    describe("TC003_WithdrawRewardLiquidity", async() => {
+    describe("TC003_WithdrawRewardLiquidity", async () => {
         let tx
         let poolHaveReward
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
             await sender.useSdk.clearCacheBalance()
 
@@ -212,7 +211,7 @@ describe("[Class] Liquidity", () => {
             AddingContent.addContent("sender.balanceAllBefore", sender.balanceAllBefore)
         }).timeout(config.timeoutApi);
 
-        it("STEP_FindLiqudityHaveReward", async() => {
+        it("STEP_FindLiqudityHaveReward", async () => {
 
             let nftData = await sender.useSdk.getNftData()
             AddingContent.addContent('nftData', nftData)
@@ -231,7 +230,7 @@ describe("[Class] Liquidity", () => {
             }
         }).timeout(config.timeoutApi);
 
-        it("STEP_CreateTxRemoveLiquidity", async() => {
+        it("STEP_CreateTxRemoveLiquidity", async () => {
 
             AddingContent.addContent('poolHaveReward', poolHaveReward)
             if (!poolHaveReward) return true
@@ -262,7 +261,7 @@ describe("[Class] Liquidity", () => {
             })
         }).timeout(config.timeoutTx);
 
-        it("STEP_CheckTxStatus", async() => {
+        it("STEP_CheckTxStatus", async () => {
             if (!poolHaveReward) return true
             let response
 
@@ -288,11 +287,11 @@ describe("[Class] Liquidity", () => {
             }
         }).timeout(config.timeoutApi);
 
-        it("STEP_VerifyBalance", async() => {
+        it("STEP_VerifyBalance", async () => {
             if (!poolHaveReward) return true
 
             await sender.useSdk.waitForUtxoChange({
-                tokenID: token1ID,
+                tokenID: TOKEN.PRV,
                 countNumber: 15,
             })
 
@@ -305,6 +304,6 @@ describe("[Class] Liquidity", () => {
 
             chai.expect(sender.balanceAllAfter[TOKEN.PRV]).to.equal(sender.balanceAllBefore[TOKEN.PRV] + totalReward - 100);
 
-        }).timeout(config.timeoutApi);
+        }).timeout(config.timeoutTx);
     });
 });

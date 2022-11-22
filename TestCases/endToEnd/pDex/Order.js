@@ -5,6 +5,7 @@ let chai = require("chai");
 let assert = require("chai").assert
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const AddingContent = require("../../../lib/Utils/AddingContent");
+const config = require("../../../config.json");
 const { ACCOUNTS, NODES } = require('../../TestBase');
 const { expect } = require('chai');
 const logger = getLogger("Pdex")
@@ -33,7 +34,7 @@ describe("[Class] Order", () => {
 
             amountBuy = await GenAction.randomNumber(1000)
             amountSell = await GenAction.randomNumber(1000)
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_AddOrder", async() => {
             tx = await sender.useSdk.addOrder({
@@ -51,14 +52,14 @@ describe("[Class] Order", () => {
                 tokenID: tokenSellID,
                 countNumber: 15,
             })
-        }).timeout(140000);
+        }).timeout(config.timeoutTx);
 
         it("STEP_CheckOrderStatus", async() => {
             let response = await NODES.Incognito.rpc.pdexv3_getAddOrderStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(1);
             chai.expect(response.data.Result.OrderID).to.equal(tx);
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_CheckPdexState", async() => {
             let response = await NODES.Incognito.rpc.pdexv3_getState()
@@ -79,7 +80,7 @@ describe("[Class] Order", () => {
                 chai.expect.fail('Cannot find order book');
             }
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_VerifyBalanceAfterAdd", async() => {
             let balanceAll = await sender.useSdk.getBalanceAll()
@@ -87,7 +88,7 @@ describe("[Class] Order", () => {
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - amountSell - 100);
 
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_CancelOrder", async() => {
             tx = await sender.useSdk.cancelOrder({
@@ -104,7 +105,7 @@ describe("[Class] Order", () => {
                 tokenID: TOKEN.PRV,
             })
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_CheckCancelOrderStatus", async() => {
             let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
@@ -113,7 +114,7 @@ describe("[Class] Order", () => {
             chai.expect(response.data.Result.TokenID).to.equal(tokenSellID);
             chai.expect(response.data.Result.Amount).to.equal(amountSell);
 
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_VerifyBalanceAfterCancel", async() => {
             let balanceAll = await sender.useSdk.getBalanceAll()
@@ -121,7 +122,7 @@ describe("[Class] Order", () => {
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - 100 - 100);
 
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
     });
 
     describe.skip("TC002_AddOrderBuyPRV", async() => {
@@ -139,7 +140,7 @@ describe("[Class] Order", () => {
 
             amountBuy = await GenAction.randomNumber(1000)
             amountSell = await GenAction.randomNumber(1000)
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_AddOrder", async() => {
             tx = await sender.useSdk.addOrder({
@@ -156,14 +157,14 @@ describe("[Class] Order", () => {
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
             })
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_CheckOrderStatus", async() => {
             let response = await NODES.Incognito.rpc.pdexv3_getAddOrderStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(1);
             chai.expect(response.data.Result.OrderID).to.equal(tx);
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_CheckPdexState", async() => {
             let response = await NODES.Incognito.rpc.pdexv3_getState()
@@ -184,7 +185,7 @@ describe("[Class] Order", () => {
                 chai.expect.fail('Cannot find order book');
             }
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_VerifyBalanceAfterAdd", async() => {
             let balanceAll = await sender.useSdk.getBalanceAll()
@@ -192,7 +193,7 @@ describe("[Class] Order", () => {
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - amountSell);
 
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_CancelOrder", async() => {
             tx = await sender.useSdk.cancelOrder({
@@ -209,7 +210,7 @@ describe("[Class] Order", () => {
                 tokenID: TOKEN.PRV,
             })
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_CheckCancelOrderStatus", async() => {
             let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
@@ -218,7 +219,7 @@ describe("[Class] Order", () => {
             chai.expect(response.data.Result.TokenID).to.equal(TOKEN.ZIL);
             chai.expect(response.data.Result.Amount).to.equal(amountSell);
 
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_VerifyBalanceAfterCancel", async() => {
             let balanceAll = await sender.useSdk.getBalanceAll()
@@ -226,7 +227,7 @@ describe("[Class] Order", () => {
 
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore);
 
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
     });
 
     describe("TC003_AddOrderWithIncorrectTokenBuy", async() => {
@@ -240,7 +241,7 @@ describe("[Class] Order", () => {
 
             amountBuy = await GenAction.randomNumber(1000)
             amountSell = await GenAction.randomNumber(1000)
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_AddOrderWithTokenBuyIsOtherToken", async() => {
 
@@ -255,7 +256,7 @@ describe("[Class] Order", () => {
 
             chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Required. Found undefined (type of undefined)`)
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_AddOrderWithTokenBuyIsNull", async() => {
 
@@ -270,7 +271,7 @@ describe("[Class] Order", () => {
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Required. Found null (type of object)`)
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_AddOrderWithTokenBuyIsNumber", async() => {
 
@@ -285,7 +286,7 @@ describe("[Class] Order", () => {
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Must be string. Found 123 (type of number)`)
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_AddOrderWithTokenBuyNotExist", async() => {
 
@@ -307,7 +308,7 @@ describe("[Class] Order", () => {
             chai.expect(response.data.Result.Status).to.equal(0)
             chai.expect(response.data.Result.OrderID).to.equal("")
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
 
     });
@@ -323,7 +324,7 @@ describe("[Class] Order", () => {
 
             amountBuy = await GenAction.randomNumber(1000)
             amountSell = await GenAction.randomNumber(1000)
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_AddOrderWithTokenSellIsOtherToken", async() => {
 
@@ -338,7 +339,7 @@ describe("[Class] Order", () => {
 
             chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-tokenIDToSell" failed: Required. Found undefined (type of undefined)`)
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_AddOrderWithTokenSellIsNull", async() => {
 
@@ -353,7 +354,7 @@ describe("[Class] Order", () => {
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToSell" failed: Required. Found null (type of object)`)
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_AddOrderWithTokenSellIsNumber", async() => {
 
@@ -368,7 +369,7 @@ describe("[Class] Order", () => {
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToSell" failed: Must be string. Found 123 (type of number)`)
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_AddOrderWithTokenSellNotExist", async() => {
 
@@ -384,7 +385,7 @@ describe("[Class] Order", () => {
 
             chai.expect(tx).to.contain(`Error while preparing inputs Not enough coin to spend`)
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
     });
 
     describe("TC005_AddOrderWithInvalidSellAmount", async() => {
@@ -400,7 +401,7 @@ describe("[Class] Order", () => {
 
             amountBuy = await GenAction.randomNumber(1000)
             amountSell = await GenAction.randomNumber(1000)
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_AddOrderSellAmountNull", async() => {
             tx = await sender.useSdk.addOrder({
@@ -413,7 +414,7 @@ describe("[Class] Order", () => {
             AddingContent.addContent('tx', tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "null": invalid syntax`)
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_AddOrderSellAmountEqual0", async() => {
             tx = await sender.useSdk.addOrder({
@@ -427,7 +428,7 @@ describe("[Class] Order", () => {
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject not sansity tx transaction's sansity ${tx} is error`)
             chai.expect(response.data.ErrMsg).to.contain(`SellAmount cannot be 0`)
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_AddOrderSellAmountIsString", async() => {
             tx = await sender.useSdk.addOrder({
@@ -440,7 +441,7 @@ describe("[Class] Order", () => {
             AddingContent.addContent('tx', tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
     });
 
     describe("TC006_AddOrderWithInvalidBuyAmount", async() => {
@@ -454,7 +455,7 @@ describe("[Class] Order", () => {
 
             amountBuy = await GenAction.randomNumber(1000)
             amountSell = await GenAction.randomNumber(1000)
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_AddOrderBuyAmountNull", async() => {
             tx = await sender.useSdk.addOrder({
@@ -468,7 +469,7 @@ describe("[Class] Order", () => {
             AddingContent.addContent('tx', tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "null": invalid syntax`)
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_AddOrderBuyAmountEqual0", async() => {
             tx = await sender.useSdk.addOrder({
@@ -485,7 +486,7 @@ describe("[Class] Order", () => {
             chai.expect(response.data.ErrMsg).to.contain(`MinAcceptableAmount cannot be 0`)
 
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
 
         it("STEP_AddOrderBuyAmountIsString", async() => {
             tx = await sender.useSdk.addOrder({
@@ -498,7 +499,7 @@ describe("[Class] Order", () => {
             AddingContent.addContent('tx', tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
     });
 
     describe("TC008_AddOrderThanMoreBalance", async() => {
@@ -513,7 +514,7 @@ describe("[Class] Order", () => {
             sender.balanceTokenSell = balanceAll[tokenSellID]
 
             amountBuy = await GenAction.randomNumber(1000)
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_AddOrderThanMoreBalance", async() => {
 
@@ -526,7 +527,7 @@ describe("[Class] Order", () => {
             })
             AddingContent.addContent('tx', tx)
             chai.expect(tx).to.contain(`WEB_JS_ERROR: Error while preparing inputs`)
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
     });
 
     describe("TC009_AddOrderNotExistPoolID", async() => {
@@ -543,7 +544,7 @@ describe("[Class] Order", () => {
 
             amountBuy = await GenAction.randomNumber(1000)
             amountSell = await GenAction.randomNumber(1000)
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_AddOrderAndVerify", async() => {
             tx = await sender.useSdk.addOrder({
@@ -557,7 +558,7 @@ describe("[Class] Order", () => {
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject invalid metadata with blockchain validate metadata of tx ${tx}`)
             chai.expect(response.data.ErrMsg).to.contain(`error Not found poolPairID`)
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
     });
 
     describe("TC010_CancelOrderWithNftInvalid", async() => {
@@ -577,7 +578,7 @@ describe("[Class] Order", () => {
                     }
                 }
             }
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_CancelOrderWithNftIdNull", async() => {
             if (!pendingOrderObject) return null
@@ -591,7 +592,7 @@ describe("[Class] Order", () => {
             AddingContent.addContent('tx', tx)
             chai.expect(tx).to.contain(`Validating "createAndSendWithdrawOrderRequestTx-nftID" failed: Required. Found null (type of object)`)
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
     });
 
     describe("TC011_CancelOrderIdNotExist", async() => {
@@ -611,7 +612,7 @@ describe("[Class] Order", () => {
                     }
                 }
             }
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_CancelOrderAndVerify", async() => {
 
@@ -634,7 +635,7 @@ describe("[Class] Order", () => {
             chai.expect(response.data.Result.Amount).to.equal(0)
 
 
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
     });
 
     describe("TC012_CancelOrderWithPoolIDIncorrect", async() => {
@@ -656,7 +657,7 @@ describe("[Class] Order", () => {
                     }
                 }
             }
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_CancelOrderAndVerify", async() => {
 
@@ -672,7 +673,7 @@ describe("[Class] Order", () => {
 
             let response = await coinServiceApi.gettxstatus({ tx })
             assert.include(response.data.ErrMsg, `Reject Double Spend With Current Blockchain -1039: Reject invalid metadata with blockchain validate metadata of tx ${tx} with blockchain error Not found poolPairID abc-desf`, await AddingContent.addContent(response.data))
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
     });
 
     describe("TC013_CancelOrderWithIncorrectToken1ID", async() => {
@@ -695,7 +696,7 @@ describe("[Class] Order", () => {
                     }
                 }
             }
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_CancelOrderAndVerify", async() => {
             if (!pendingOrderObject) return null
@@ -717,7 +718,7 @@ describe("[Class] Order", () => {
             assert.equal(response.data.Result.Status, 0, await AddingContent.addContent(response.data))
             assert.equal(response.data.Result.TokenID, "0000000000000000000000000000000000000000000000000000000000000000")
             assert.equal(response.data.Result.Amount, 0)
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
     });
 
     describe("TC014_CancelOrderWithIncorrectToken2ID", async() => {
@@ -739,7 +740,7 @@ describe("[Class] Order", () => {
                     }
                 }
             }
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_CancelOrderAndVerify", async() => {
             if (!pendingOrderObject) return null
@@ -761,7 +762,7 @@ describe("[Class] Order", () => {
             assert.equal(response.data.Result.Status, 0, await AddingContent.addContent(response.data))
             assert.equal(response.data.Result.TokenID, "0000000000000000000000000000000000000000000000000000000000000000")
             assert.equal(response.data.Result.Amount, 0)
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
     });
 
     describe("TC015_CancelOrderIDNotBelongWithOrder", async() => {
@@ -785,7 +786,7 @@ describe("[Class] Order", () => {
                     }
                 }
             }
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_CancelOrderAndVerify", async() => {
             if (!pendingOrderObject1 || !pendingOrderObject2) return null
@@ -806,7 +807,7 @@ describe("[Class] Order", () => {
             assert.equal(response.data.Result.Status, 0, await AddingContent.addContent(response.data))
             assert.equal(response.data.Result.TokenID, "0000000000000000000000000000000000000000000000000000000000000000")
             assert.equal(response.data.Result.Amount, 0)
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
     });
 
     describe("TC016_CancelPoolIDNotBelongWithOrder", async() => {
@@ -828,7 +829,7 @@ describe("[Class] Order", () => {
                     }
                 }
             }
-        }).timeout(60000);
+         }).timeout(config.timeoutApi);
 
         it("STEP_CancelOrderAndVerify", async() => {
             if (!pendingOrderObject1 || !pendingOrderObject2) return null
@@ -849,7 +850,7 @@ describe("[Class] Order", () => {
             assert.equal(response.data.Result.Status, 0, await AddingContent.addContent(response.data))
             assert.equal(response.data.Result.TokenID, "0000000000000000000000000000000000000000000000000000000000000000")
             assert.equal(response.data.Result.Amount, 0)
-        }).timeout(140000);
+         }).timeout(config.timeoutTx);
     });
 
 
