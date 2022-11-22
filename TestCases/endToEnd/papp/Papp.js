@@ -25,7 +25,7 @@ let webServiceApi = new WebServiceApi()
 let sender = ACCOUNTS.Incognito.get(2)
 
 describe("[Class] Papp", () => {
-    describe("TC001_TradePancakeReDeposit", async () => {
+    describe.skip("TC001_TradePancakeReDeposit", async () => {
         let ammountSell = 0
         let estimateFeeObject
         let tx
@@ -121,7 +121,7 @@ describe("[Class] Papp", () => {
 
     });
 
-    describe.only("TC001_TradeUniswapReDeposit", async () => {
+    describe("TC001_TradeUniswapReDeposit", async () => {
         let ammountSell = 0
         let estimateFeeObject
         let tx
@@ -189,7 +189,15 @@ describe("[Class] Papp", () => {
 
             while (true) {
                 response = await webServiceApi.swapStatus({ listTx: [tx] })
-                if (response && response.data.Result && response.data.Result[tx].network_result[0].swap_tx_status) {
+                if (response &&
+                    response.data.Result &&
+                    response.data.Result[tx] &&
+                    response.data.Result[tx].network_result &&
+                    response.data.Result[tx].network_result[0] &&
+                    response.data.Result[tx].network_result[0].swap_tx_status) {
+
+                    AddingContent.addContent("response.data", response.data)
+
                     let network_result = response.data.Result[tx].network_result[0]
                     assert.equal(network_result.is_redeposit, true)
                     assert.equal(network_result.network, networks)
@@ -209,7 +217,7 @@ describe("[Class] Papp", () => {
                 }
             }
 
-        }).timeout(720000);
+        }).timeout(840000);
 
         it("STEP_VerifyBalance", async () => {
             if (!estimateFeeObject) return true

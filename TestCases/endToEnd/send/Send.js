@@ -10,11 +10,11 @@ let receiver = ACCOUNTS.Incognito.get(3)
 
 
 describe("[Class] Send", () => {
-    describe("TC001_SendPRV", async() => {
+    describe("TC001_SendPRV", async () => {
         let amountSend = 0
         let tx
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
             await receiver.initSdkInstance();
 
@@ -30,7 +30,7 @@ describe("[Class] Send", () => {
             AddingContent.addContent("amountSend", amountSend)
         }).timeout(config.timeoutApi);
 
-        it("STEP_Send", async() => {
+        it("STEP_Send", async () => {
             tx = await sender.useSdk.sendPRV({
                 receiver,
                 amount: amountSend
@@ -43,7 +43,7 @@ describe("[Class] Send", () => {
             })
         }).timeout(config.timeoutTx);
 
-        it("STEP_VerifyBalance", async() => {
+        it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balanceAllAfter = balanceAll
             AddingContent.addContent("sender.balanceAllAfter", sender.balanceAllAfter)
@@ -55,15 +55,15 @@ describe("[Class] Send", () => {
             chai.expect(sender.balanceAllAfter[TOKEN.PRV]).to.equal(sender.balanceAllBefore[TOKEN.PRV] - amountSend - 100);
             chai.expect(receiver.balanceAllAfter[TOKEN.PRV]).to.equal(receiver.balanceAllBefore[TOKEN.PRV] + amountSend);
 
-        }).timeout(config.timeoutApi);
+        }).timeout(config.timeoutTx);
     });
 
-    describe("TC002_SendToken", async() => {
+    describe("TC002_SendToken", async () => {
         let amountSend = 0
         let tx
         let tokenID = TOKEN.WBNB
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
             await receiver.initSdkInstance();
 
@@ -79,7 +79,7 @@ describe("[Class] Send", () => {
             AddingContent.addContent("amountSend", amountSend)
         }).timeout(config.timeoutApi);
 
-        it("STEP_Send", async() => {
+        it("STEP_Send", async () => {
             tx = await sender.useSdk.sendToken({
                 token: tokenID,
                 receiver,
@@ -94,7 +94,7 @@ describe("[Class] Send", () => {
             })
         }).timeout(config.timeoutTx);
 
-        it("STEP_VerifyBalance", async() => {
+        it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balanceAllAfter = balanceAll
             AddingContent.addContent("sender.balanceAllAfter", sender.balanceAllAfter)
@@ -106,6 +106,6 @@ describe("[Class] Send", () => {
             chai.expect(sender.balanceAllAfter[tokenID]).to.equal(sender.balanceAllBefore[tokenID] - amountSend);
             chai.expect(receiver.balanceAllAfter[tokenID]).to.equal(receiver.balanceAllBefore[tokenID] + amountSend);
 
-        }).timeout(config.timeoutApi);
+        }).timeout(config.timeoutTx);
     });
 })

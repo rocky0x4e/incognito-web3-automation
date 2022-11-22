@@ -193,7 +193,7 @@ describe("[Class] Liquidity", () => {
             chai.expect(sender.balanceAllAfter[poolShare.tokenId1]).to.equal(sender.balanceAllBefore[poolShare.tokenId1] + actualAmount0Remove - 100);
             chai.expect(sender.balanceAllAfter[poolShare.tokenId2]).to.be.least(sender.balanceAllBefore[poolShare.tokenId2] + actualAmount1Remove);
 
-        }).timeout(config.timeoutApi);
+        }).timeout(config.timeoutTx);
     });
 
     describe("TC003_WithdrawRewardLiquidity", async () => {
