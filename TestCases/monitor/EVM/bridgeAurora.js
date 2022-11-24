@@ -87,7 +87,7 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
         it(`[2.1] Get balance before deposit`, async () => {
             accountInfoBefore.extTokenBal = await web3.eth.getBalance(extAccount.address)
             console.log('accountInfoBefore.extTokenBal: ', accountInfoBefore.extTokenBal)
-            tmpWalletBal = await web3.eth.getBalance(extAccount.address)
+            tmpWalletBal = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             console.log('tmpWalletBal: ', tmpWalletBal)
         })
         it(`[2.2] Deposit token`, async () => {
@@ -108,8 +108,8 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
             chai.assert.isTrue(resReceipt.status)
 
             accountInfoAfter.extTokenBal = await web3.eth.getBalance(extAccount.address)
-            console.log('accountInfoBefore.extTokenBal: ', accountInfoBefore.extTokenBal)
-            tmpWalletBal = await web3.eth.getBalance(extAccount.address)
+            console.log('accountInfoAfter.extTokenBal: ', accountInfoAfter.extTokenBal)
+            tmpWalletBal = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             console.log('tmpWalletBal new: ', tmpWalletBal)
         })
     })
@@ -118,7 +118,7 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
         it('[3.1] Check balance Fee Master Wallet', async () => {
             let balFeeMaster = await web3.eth.getBalance(masterFeeWallet)
             if (balFeeMaster < MIN_BAL_FEE_MASTER_WALLET) {
-                slack.send('Need send more fee to Mater Fee Wallet ' + masterFeeWallet)
+                // slack.send('Need send more fee to Mater Fee Wallet ' + masterFeeWallet)
             }
         })
         it('[3.2] Call API backend to get new shielding ', async () => {
