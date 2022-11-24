@@ -22,7 +22,6 @@ var ENV = {
                 PRV_ZIL: "pool id 2"
             },
         },
-        Web3: [{ url: "https://kovan.infura.io/v3/" }],
         EthereumFullnode: [{ url: "" }],
         BSCFullnode: [{ url: "https://data-seed-prebsc-1-s1.binance.org:8545" }],
         PLGFullnode: [{ url: "https://polygon-mumbai.g.alchemy.com/v2/V8SP0S8Q-sT35ca4VKH3Iwyvh8K8wTRn" }],
@@ -30,7 +29,12 @@ var ENV = {
         AuroraFullnode: [{ url: "https://testnet.aurora.dev" }],
         AvaxFullnode: [{ url: "https://api.avax-test.network/ext/C/rpc" }]
     },
-    Testdata: {},
+    Testdata: {
+        Keys: {
+            Incognito: [],
+            EVM: []
+        }
+    },
     DEVICE_ID: 'E5879478-BAC2-4F61-9666-ED10FE1CFF11',
     DEVICE_TOKEN: "d86fLH6M89Q:APA91bGIlqIBpUczDapIP0lIPYXuBS996k8K15PV6jbNTWO53lLZontF0b8gd2NWrdpg5A-imdVd_rOcGmvH-fkMaLuXFHJA3ksdRioMUg_pTObKvbCBWUN-n45oR4SVsbX30-h07P98",
     loadTestBed(name) {
