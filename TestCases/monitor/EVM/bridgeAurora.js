@@ -1,49 +1,49 @@
-const Constants = require('../../../lib/Incognito/Constants');
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const backendApischemas = require("../../../schemas/backendApi_schemas");
 const { BackendApi } = require('../../../lib/Incognito/BackendApi')
-const { IncAccount } = require('../../../lib/Incognito/Account/Account');
-const { IncNode } = require('../../../lib/Incognito/IncNode');
-// const { CoinServiceApi } = require('../../../lib/Incognito/CoinServiceApi');
 const { ENV } = require('../../../global');
-// const addingContent = require('../../../testbase/addingContent');
 const { wait } = require('../../../lib/Utils/Timer');
-let fs = require('fs');
-let Tx = require('ethereumjs-tx').Transaction;
-let Common = require('ethereumjs-common').default;
+const { makeSlackAlert } = require('../../../lib/Utils/InstantAlert')
+const { getLogger } = require("../../../lib/Utils/LoggingManager");
+const logger = getLogger("AURORA_EVM")
 
-
-let chai = require('chai');
 let Web3 = require('web3');
-let slackNotify = require('slack-notify');
-const MY_SLACK_WEBHOOK_URL = 'https://hooks.slack.com/services/T048YD16HQT/B049B6J7RMX/xxxxxx';
+let chai = require('chai');
+const { ACCOUNTS, NODES } = require('../../TestBase');
 
-
-const networkInfo = {
-    networkName: 'aurora testnet',
-    chainId: 1313161555,
-    currencyType: 30,
-    decentralized: 9
+const networkBridgeInfo = {
+    'networkDetail': {
+        "chainParams": {
+            'name': 'aurora Testnet',
+            'networkId': 1313161555,
+            'chainId': 1313161555
+        },
+        'chain': 'goerli',
+        'hardfork': 'petersburg'
+    },
+    'configGasTx': {
+        'gasPrice': 90,
+        'gasLimit': 21000
+    },
+    'configInc': {
+        'currencyType': 30,
+        'decentralized': 9
+    }
 }
 
+const MasterShieldFeeWallet = '0xfebefa80332863d292c768dfed0a3f5bee74e632'
+const MasterUnshieldFeeWallet = '0x2228ad9ec671a1aee2786c04c695a580a3653853'
+const MIN_BAL_FEE_MASTER_WALLET = 0.05 * 1e18
+let signPublicKeyEncode = 'f78fcecf2b0e2b3267d5a1845c314b76f3787f86981c7abcc5b04abc49ae434a';
+
+
 describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
-    const extPrivateKey = 'xxxxx'
-    const privateKey = `xxxxxxx`
-    const tokenID = Constants.TOKEN.ETHAURORA
-    const tokenUnifiedID = Constants.TOKEN.UnifiedETH
-    const fullnodeEVM = ENV.AuroraFullnode[0].url
-
-    let node = await new IncNode()
-    let account = await new IncAccount(privateKey).attachTo(node)
-    let backendApi = await new BackendApi(ENV.Backend)
-
-    let web3 = await new Web3(new Web3.providers.HttpProvider(fullnodeEVM))
-    let extAccount = await web3.eth.accounts.privateKeyToAccount(extPrivateKey)
-    let slack = await slackNotify(MY_SLACK_WEBHOOK_URL)
-    const masterFeeWallet = '0xfebefa80332863d292c768dfed0a3f5bee74e632'
-    let SignPublicKeyEncode = 'f78fcecf2b0e2b3267d5a1845c314b76f3787f86981c7abcc5b04abc49ae434a';
-    const MIN_BAL_FEE_MASTER_WALLET = 0.05 * 1e18
-
+    const tokenID = ENV.Testbed.Tokens.ETH_AURORA
+    let web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.AuroraFullnode.url))
+    let account = ACCOUNTS.Incognito.get(0)
+    let backendApi = new BackendApi()
+    let extAccount = ACCOUNTS.Evm.get(0).setProvider(ENV.Testbed.AuroraFullnode.url)
+    let slack = makeSlackAlert("AURORA_Shielding")
 
     const accountInfoBefore = {
         incTokenBal: 0,
@@ -55,145 +55,157 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
     }
 
     const shieldInfo = {
-        shieldAmt: 0.01, // eth_aurora
+        shieldAmt: 0.01,
         shieldBackendId: null,
         shieldPrvFee: 0,
         shieldTokenFee: 0,
         tmpWalletAddress: null,
-        countWating: 8,
-        txDeposit: null
+        timeout: 900,
+        txDeposit: null,
+        blockTime: 20,
+        pTokenDecimal: 9
     }
 
-
-    describe('SHIELDING ETH_AURORA', async () => {
+    describe('SHIELDING AURORA', async () => {
         it('Init data', async () => {
-            accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
-            await console.log('accountInfoBefore: ', accountInfoBefore.incTokenBal)
-        })
+            accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenID)
+            logger.info(`accountInfoBefore :  ${accountInfoBefore.incTokenBal}`)
+        }).timeout(60000);
     })
 
     describe(`STEP_1 get shielding address and estimate shield fee`, async () => {
         it('Call API backend..', async () => {
-            let res = await backendApi.auroraGenerate(1, account.paymentK, tokenID, SignPublicKeyEncode)
+            let res = await backendApi.auroraGenerate({
+                walletAddress: account.paymentK,
+                tokenId: tokenID
+            })
             await validateSchemaCommand.validateSchema(backendApischemas.generateShieldAddressSchemas, res.data)
             shieldInfo.tmpWalletAddress = res.data.Result.Address
             shieldInfo.shieldTokenFee = res.data.Result.EstimateFee
-            console.log('tmp wallet address : ' + shieldInfo.tmpWalletAddress)
-            console.log('estimate shielding fee : ' + shieldInfo.shieldTokenFee)
-        })
+            logger.info(`BE estimate shield res :   ${JSON.stringify(res.data)}`)
+
+        }).timeout(60000);
     })
 
     describe(`STEP_2 Deposit token`, async () => {
         it(`[2.1] Get balance before deposit`, async () => {
-            accountInfoBefore.extTokenBal = await web3.eth.getBalance(extAccount.address)
-            console.log('accountInfoBefore.extTokenBal: ', accountInfoBefore.extTokenBal)
-            tmpWalletBal = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
-            console.log('tmpWalletBal: ', tmpWalletBal)
-        })
-        it(`[2.2] Deposit token`, async () => {
-            console.log('sender %s -- receiver %s ', extAccount.address, shieldInfo.tmpWalletAddress)
-            let depositAmt = web3.utils.toWei((shieldInfo.shieldAmt + shieldInfo.shieldTokenFee).toString(), 'ether')
+            accountInfoBefore.extTokenBal = await extAccount.getBalance()
+            logger.info(`accountInfoBefore.extTokenBal: ${accountInfoBefore.extTokenBal}`)
+            tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
+            logger.info(`BE Wallet balance :  ${tmpWalletBal1}`)
+        }).timeout(60000);
 
-            let resDeposit = await sendNativeAuroraToken(
-                extAccount.address,
-                shieldInfo.tmpWalletAddress,
-                extPrivateKey,
-                depositAmt,
-                fullnodeEVM
-            )
-            await wait(25)
+        it(`[2.2] Deposit token`, async () => {
+            logger.info(`sender ${extAccount.address} -- receiver ${shieldInfo.tmpWalletAddress}`)
+
+            let resDeposit = await extAccount.sendNativeToken({
+                to: shieldInfo.tmpWalletAddress,
+                amount: web3.utils.toWei((shieldInfo.shieldAmt + shieldInfo.shieldTokenFee).toString(), 'ether'),
+                gas: networkBridgeInfo.configGasTx.gasPrice,
+                gasLimit: networkBridgeInfo.configGasTx.gasLimit,
+                chainName: networkBridgeInfo.networkDetail.chain,
+                chainDetail: networkBridgeInfo.networkDetail.chainParams,
+                hardfork: networkBridgeInfo.networkDetail.hardfork
+            })
+            await wait(15)
 
             shieldInfo.txDeposit = resDeposit.transactionHash
+            logger.info(`Deposit transaction hash : ${resDeposit.transactionHash}`)
             let resReceipt = await web3.eth.getTransactionReceipt(shieldInfo.txDeposit)
             chai.assert.isTrue(resReceipt.status)
 
-            accountInfoAfter.extTokenBal = await web3.eth.getBalance(extAccount.address)
-            console.log('accountInfoAfter.extTokenBal: ', accountInfoAfter.extTokenBal)
-            tmpWalletBal = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
-            console.log('tmpWalletBal new: ', tmpWalletBal)
-        })
+            accountInfoAfter.extTokenBal = await extAccount.getBalance()
+            logger.info(`accountInfoAfter.extTokenBal: ${accountInfoAfter.extTokenBal}`)
+
+            tmpWalletBal2 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
+            logger.info(`BE Wallet balance : ${tmpWalletBal2}`)
+            chai.assert.isTrue(tmpWalletBal2 > tmpWalletBal1)
+        }).timeout(60000);
     })
 
     describe(`STEP_3 Verify record shield backend`, async () => {
-        it('[3.1] Check balance Fee Master Wallet', async () => {
-            let balFeeMaster = await web3.eth.getBalance(masterFeeWallet)
+        it('[3.1] Check balance Shield Fee Master Wallet', async () => {
+            let balFeeMaster = await web3.eth.getBalance(MasterShieldFeeWallet)
             if (balFeeMaster < MIN_BAL_FEE_MASTER_WALLET) {
-                // slack.send('Need send more fee to Mater Fee Wallet ' + masterFeeWallet)
+                slack.setInfo(`Need send more fee to Mater Fee Wallet  ${MasterShieldFeeWallet}`).send()
             }
-        })
+            await chai.assert.isTrue(balFeeMaster > MIN_BAL_FEE_MASTER_WALLET)
+        }).timeout(60000);
+
         it('[3.2] Call API backend to get new shielding ', async () => {
-            let resBefore = await backendApi.historyByTokenAccount(account.paymentK, tokenUnifiedID, SignPublicKeyEncode)
+            let resBefore = await backendApi.historyByTokenAccount({
+                WalletAddress: account.paymentK,
+                PrivacyTokenAddress: tokenID
+            })
             await validateSchemaCommand.validateSchema(backendApischemas.historyTokenAccountSchemas, resBefore.data)
+            shieldInfo.shieldBackendId = await account.waitForNewShieldRecord({
+                tokenId: tokenID,
+                interval: shieldInfo.blockTime * 4,
+                timedOut: shieldInfo.timeout
+            })
+            logger.info(`New ShieldID : ${shieldInfo.shieldBackendId}`)
 
-            shieldInfo.shieldBackendId = await pickNewRecordBackend(
-                account.paymentK,
-                tokenUnifiedID,
-                SignPublicKeyEncode,
-                shieldInfo.countWating
-            )
-
-            console.log('newShieldID : ', shieldInfo.shieldBackendId)
             if (shieldInfo.shieldBackendId === 0) {
-                slack.send(`Seem to be stuck in the backend -- not listened to tx deposit yet `)
+                slack.setInfo(`Seem to be stuck in the backend -- not listened to tx deposit yet`).send()
             }
             await chai.assert.notEqual(shieldInfo.shieldBackendId, 0, 'Backend seems to be not creating new shield')
-        })
+        }).timeout(900000);
+
         it('[3.3] Verify shielding detail', async () => {
-            let resDetail = await backendApi.historyDetail(shieldInfo.shieldBackendId, networkInfo.currencyType, SignPublicKeyEncode, networkInfo.decentralized)
+            let resDetail = await backendApi.historyDetail({
+                historyID: shieldInfo.shieldBackendId,
+                CurrencyType: networkBridgeInfo.configInc.currencyType,
+                Decentralized: networkBridgeInfo.configInc.decentralized
+            })
             await validateSchemaCommand.validateSchema(backendApischemas.historyTokenAccountDetailSchemas, resDetail.data)
 
-            let counter = 0
+            let timeOut = shieldInfo.timeout
             while (resDetail.data.Result.Status != 12) {
-                let tmp = await backendApi.historyDetail(shieldInfo.shieldBackendId, networkInfo.currencyType, SignPublicKeyEncode, networkInfo.decentralized)
-                console.log('Shield status = ' + tmp.data.Result.Status + ' ---- ' + tmp.data.Result.StatusMessage + ' --- ' + tmp.data.Result.StatusDetail)
+                let tmp = await backendApi.historyDetail({
+                    historyID: shieldInfo.shieldBackendId,
+                    CurrencyType: networkBridgeInfo.configInc.currencyType,
+                    Decentralized: networkBridgeInfo.configInc.decentralized
+                })
+                logger.info(`Shield status =  ${tmp.data.Result.Status}  ----  ${tmp.data.Result.StatusMessage}  ---  ${tmp.data.Result.StatusDetail}`)
                 resDetail.data.Result.Status = tmp.data.Result.Status
                 if (resDetail.data.Result.Status === 12) {
-                    console.log('Shielding successfull')
+                    logger.info(`'Shielding successfull`)
                     break
                 }
-                else if (counter === shieldInfo.countWating) {
-                    await slack.send('Shielding over 10 minutes but not mint tokens yet -- shield Id = ' + shieldInfo.shieldBackendId + ' in status = ' + resDetail.data.Result.Status + ' --- ' + tmp.data.Result.StatusDetail)
+                else if (timeOut <= 0) {
+                    slack.setInfo(`Shielding over 10 minutes but not mint tokens yet -- shield Id = ${shieldInfo.shieldBackendId}  in status = ${resDetail.data.Result.Status}  ---  ${tmp.data.Result.StatusDetail}`).send()
                     break
                 }
                 else if (resDetail.data.Result.Status === 16 || resDetail.data.Result.Status === 13 || resDetail.data.Result.Status === 14 || resDetail.data.Result.Status === 15 || resDetail.data.Result.Status === 5 || resDetail.data.Result.Status === 8) {
-                    await slack.send('Shield seem to be stuck in the backend -- shield Id = ' + shieldInfo.shieldBackendId + ' in status = ' + resDetail.data.Result.Status + ' --- ' + tmp.data.Result.StatusDetail)
+                    slack.setInfo(`Shield seem to be stuck in the backend -- shield Id = ${shieldInfo.shieldBackendId}  in status = ${resDetail.data.Result.Status}  ---  ${tmp.data.Result.StatusDetail}`).send()
                     break
                 }
-                await slack.send('send slack for fun -- shield Id = ' + shieldInfo.shieldBackendId + ' in status = ' + resDetail.data.Result.Status + ' --- ' + tmp.data.Result.StatusDetail)
-                await wait(120)
-                await counter++
+                // slack.setInfo(`In processing -- shield Id = ${shieldInfo.shieldBackendId}  in status = ${resDetail.data.Result.Status}  ---  ${tmp.data.Result.StatusDetail}`).send()
+                await wait(shieldInfo.blockTime * 5)
+                timeOut -= (shieldInfo.blockTime * 5)
             }
-        })
+            await chai.assert.equal(resDetail.data.Result.Status, 12)
+        }).timeout(1200000);
     })
     describe(`STEP_4 Verify balance in Incognito`, async () => {
         it('Verify balance affter shield', async () => {
-            await wait(40)
-            accountInfoAfter.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
-            console.log('accountInfoAfter: ', accountInfoAfter.incTokenBal)
+            await wait(shieldInfo.blockTime * 3)
+            accountInfoAfter.incTokenBal = await account.useCli.getBalance(tokenID)
+            logger.info(`Token balance after shield: ${accountInfoAfter.incTokenBal}`)
             chai.assert.isTrue(accountInfoAfter.incTokenBal - accountInfoBefore.incTokenBal > 0, 'mint token unsuceessfull')
-        })
+        }).timeout(100000);
     })
 });
 
 
+describe(`[======  AURORA BRIDGE -- UNSHIELDING ====== ]`, async () => {
+    const tokenID = ENV.Testbed.Tokens.ETH_AURORA
+    let web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.AuroraFullnode.url))
 
-describe(`[======  AURORA BRIDGE - UNSHIELD ======]`, async () => {
-    const extPrivateKey = 'xxxxxxx'
-    const privateKey = `xxxxxxxxx`
-    let SignPublicKeyEncode = 'f78fcecf2b0e2b3267d5a1845c314b76f3787f86981c7abcc5b04abc49ae434a'
-
-    const tokenID = Constants.TOKEN.ETHAURORA
-    const tokenUnifiedID = Constants.TOKEN.UnifiedETH
-    const fullnodeEVM = ENV.AuroraFullnode[0].url
-
-    let node = await new IncNode()
-    let account = await new IncAccount(privateKey).attachTo(node)
-    let backendApi = await new BackendApi(ENV.Backend)
-
-    let slack = await slackNotify(MY_SLACK_WEBHOOK_URL)
-    let web3 = await new Web3(new Web3.providers.HttpProvider(fullnodeEVM))
-    let extAccount = await web3.eth.accounts.privateKeyToAccount(extPrivateKey)
-
+    let account = ACCOUNTS.Incognito.get(0)
+    let extAccount = ACCOUNTS.Evm.get(0).setProvider(ENV.Testbed.AuroraFullnode.url)
+    let backendApi = new BackendApi()
+    let slack = makeSlackAlert("AURORA_UnShielding")
 
     const accountInfoBefore = {
         incTokenBal: 0,
@@ -211,195 +223,149 @@ describe(`[======  AURORA BRIDGE - UNSHIELD ======]`, async () => {
         feeAccount: null,
         unshieldExtTx: null,
         unshieldIncTx: null,
-        rawData: null,
-        countWating: 5
+        timeout: 900,
+        blockTime: 20,
+        pTokenDecimal: 9,
+        burningType: 353
     }
 
-    describe('UNSHIELDING ETH_AURORA', async () => {
+    describe('UNSHIELDING AURORA', async () => {
         it('Init data', async () => {
-            accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
-            await console.log('accountInfoBefore: ', accountInfoBefore.incTokenBal)
-            accountInfoBefore.extTokenBal = await web3.eth.getBalance(extAccount.address)
-            await console.log('accountInfoBefore.extTokenBal: ', accountInfoBefore.extTokenBal)
-        })
+            accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenID)
+            logger.info(`token balance on INC: ${accountInfoBefore.incTokenBal}`)
+            accountInfoBefore.extTokenBal = await extAccount.getBalance()
+            logger.info(`token balance on external network :  ${accountInfoBefore.extTokenBal}`)
+        }).timeout(60000);
     })
 
     describe('STEP_1 Estimate Unshield Fee', async () => {
-        it('Call API get estimate Fee and backendUnshielId', async () => {
-            resEst = await backendApi.auroraUnshieldEstFee(
-                unshieldInfo.unshieldAmt,
-                2,
-                extAccount.address,
-                tokenID,
-                tokenUnifiedID,
-                account.paymentK,
-                9,
-                SignPublicKeyEncode
-            )
+        it('Call API get estimate Fee and backend UnshielId', async () => {
+            resEst = await backendApi.auroraUnshieldEstFee({
+                unshieldAmount: unshieldInfo.unshieldAmt,
+                extRemoteAddr: extAccount.address,
+                tokenId: tokenID,
+                unifiedTokenId: tokenID,
+                IncPaymentAddr: account.paymentK,
+                decimalPToken: unshieldInfo.pTokenDecimal
+            })
             unshieldInfo.backendId = resEst.data.Result.ID
             unshieldInfo.unshieldTokenFee = resEst.data.Result.TokenFees.Level1
             unshieldInfo.feeAccount = resEst.data.Result.FeeAddress
-            console.log('Response Estimate Unshield data :', resEst.data)
-        })
+
+            logger.info(`ResEstimate: ${JSON.stringify(resEst.data)}`)
+        }).timeout(60000);
     })
 
     describe(`STEP_2 Burn token`, async () => {
         it(`[2.1] Create unshield transaction by SDK `, async () => {
             await account.initSdkInstance();
 
-            unshieldInfo.unshieldIncTx = await account.useSdk.unshieldUnifiedEvm(
-                unshieldInfo.backendId,
-                tokenID,
-                tokenUnifiedID,
-                unshieldInfo.feeAccount,
-                unshieldInfo.unshieldAmt,
-                unshieldInfo.unshieldTokenFee,
-                9,
-                extAccount.address,
-                100,
-                2
-            )
-            console.log('tx unshield : ' + unshieldInfo.unshieldIncTx)
-            await wait(20)
-            let resTxHashDetail = await account.useRpc.getTxByHash(unshieldInfo.unshieldIncTx)
-            console.log('resTxHashDetail : ' + resTxHashDetail)
+            unshieldInfo.unshieldIncTx = await account.useSdk.unshieldEvm({
+                unshieldBackendId: unshieldInfo.backendId,
+                tokenId: tokenID,
+                receiver: unshieldInfo.feeAccount,
+                amount: unshieldInfo.unshieldAmt,
+                amountFee: unshieldInfo.unshieldTokenFee,
+                decimalPtoken: unshieldInfo.pTokenDecimal,
+                remoteAddress: extAccount.address,
+                burningType: unshieldInfo.burningType
+            })
+            logger.info(`Unshield INC tx :  ${unshieldInfo.unshieldIncTx}`)
+            await wait(unshieldInfo.blockTime)
+            let resTx = await NODES.Incognito.getTransactionByHashRpc(unshieldInfo.unshieldIncTx)
+        }).timeout(100000);
 
-        })
         it(`[2.2] Submit unshield tx to backend`, async () => {
-            let resSubmitTx = await backendApi.submutTxAuroraUnshield(
-                networkInfo.currencyType, // currencyType = eth aurora
-                2,
-                unshieldInfo.unshieldAmt,
-                9,
-                extAccount.address,
-                tokenID,
-                unshieldInfo.unshieldIncTx,
-                account.paymentK,
-                unshieldInfo.backendId,
-                1,
-                1,
-                SignPublicKeyEncode)
-            console.log('Res submit tx to backend : ', resSubmitTx.data)
+            let resSubmitTx = await backendApi.submutTxAuroraUnshield({
+                currencyType: networkBridgeInfo.configInc.currencyType,
+                unshieldAmount: unshieldInfo.unshieldAmt,
+                decimalPToken: unshieldInfo.pTokenDecimal,
+                extRemoteAddr: extAccount.address,
+                tokenID: tokenID,
+                rawTxId: unshieldInfo.unshieldIncTx,
+                IncPaymentAddr: account.paymentK,
+                id: unshieldInfo.backendId,
+                userFeeSelection: 1,
+                userFeeLevel: 1
+            })
+            logger.info(`Res submit tx to backend : ${JSON.stringify(resSubmitTx.data)}`)
             await chai.assert.isTrue(resSubmitTx.data.Result, 'submit tx not success')
-        })
+        }).timeout(60000);
     })
 
     describe(`STEP_3 Verify record unshield backend`, async () => {
-        it('[3.1] Verify unshielding detail', async () => {
-            let resDetail = await backendApi.historyDetail(unshieldInfo.backendId, networkInfo.currencyType, SignPublicKeyEncode, networkInfo.decentralized)
-            console.log(resDetail.data)
+        it('[3.1] Check balance Unhield Fee Master Wallet', async () => {
+            let balFeeMaster = await web3.eth.getBalance(MasterUnshieldFeeWallet)
+            if (balFeeMaster < MIN_BAL_FEE_MASTER_WALLET) {
+                slack.setInfo(`Need send more fee to Mater Fee Wallet  ${MasterUnshieldFeeWallet}`).send()
+            }
+            await chai.assert.isTrue(balFeeMaster > MIN_BAL_FEE_MASTER_WALLET)
+        }).timeout(60000);
+
+        it('[3.2] Verify unshielding detail', async () => {
+            let resDetail = await backendApi.historyDetail({
+                historyID: unshieldInfo.backendId,
+                CurrencyType: networkBridgeInfo.configInc.currencyType,
+                Decentralized: networkBridgeInfo.configInc.decentralized
+            })
+            logger.info(`BE unshielding detail : ${JSON.stringify(resDetail.data)}`)
+
             await validateSchemaCommand.validateSchema(backendApischemas.historyTokenAccountDetailSchemas, resDetail.data)
-            let counter = 0
+            let timeOut = unshieldInfo.timeout
             while (resDetail.data.Result.Status != 25) {
-                let tmp = await backendApi.historyDetail(unshieldInfo.backendId, networkInfo.currencyType, SignPublicKeyEncode, networkInfo.decentralized)
-                console.log('Unshield status = ' + tmp.data.Result.Status + ' ---- ' + tmp.data.Result.StatusMessage + ' --- ' + tmp.data.Result.StatusDetail)
+                let tmp = await backendApi.historyDetail({
+                    historyID: unshieldInfo.backendId,
+                    CurrencyType: networkBridgeInfo.configInc.currencyType,
+                    Decentralized: networkBridgeInfo.configInc.decentralized
+                })
+                logger.info(`Unshield status = ${tmp.data.Result.Status} ---- ${tmp.data.Result.StatusMessage}  --- ${tmp.data.Result.StatusDetail}`)
                 resDetail.data.Result.Status = tmp.data.Result.Status
                 if (resDetail.data.Result.Status === 25) {
-                    console.log('Unshielding successfull')
+                    logger.info(`Unshielding successfull`)
                     unshieldInfo.unshieldExtTx = tmp.data.Result.OutChainTx.substring(tmp.data.Result.OutChainTx.indexOf(`0x`))
                     break
                 }
-                else if (counter === unshieldInfo.countWating) {
-                    await slack.send('Unshield over 10 minutes but not completed yet -- unshield Id = ' + unshieldInfo.backendId + ' in status = ' + resDetail.data.Result.Status + ' --- ' + tmp.data.Result.StatusDetail)
+                else if (timeOut <= 0) {
+                    slack.setInfo(`Unshield over 10 minutes but not completed yet -- unshield Id = ${unshieldInfo.backendId}  in status = ${resDetail.data.Result.Status} --- ${tmp.data.Result.StatusDetail}`).send()
                     break
                 }
                 else if (resDetail.data.Result.Status === 23 || resDetail.data.Result.Status === 26 || resDetail.data.Result.Status === 27 || resDetail.data.Result.Status === 28 || resDetail.data.Result.Status === 29 || resDetail.data.Result.Status === 33) {
-                    await slack.send('Unshield seem to be stuck in the backend -- unshield Id = ' + unshieldInfo.backendId + ' in status = ' + resDetail.data.Result.Status + ' --- ' + tmp.data.Result.StatusDetail)
+                    slack.setInfo(`Unshield seem to be stuck in the backend -- unshield Id = ${unshieldInfo.backendId}  in status = ${resDetail.data.Result.Status} --- ${tmp.data.Result.StatusDetail}`).send()
                     break
                 } else if (resDetail.data.Result.Status === 34) {
-                    await slack.send('NotEnoughVaultPleaseWait -- unshield Id = ' + unshieldInfo.backendId + ' in status = ' + resDetail.data.Result.Status + ' --- ' + tmp.data.Result.StatusDetail)
+                    slack.setInfo(`NotEnoughVaultPleaseWait -- unshield Id = ${unshieldInfo.backendId}  in status = ${resDetail.data.Result.Status} --- ${tmp.data.Result.StatusDetail}`).send()
                     break
                 }
                 unshieldInfo.unshieldExtTx = tmp.data.Result.OutChainTx.substring(tmp.data.Result.OutChainTx.indexOf(`0x`))
-                await slack.send('send slack for fun -- unshield Id = ' + unshieldInfo.backendId + ' in status = ' + resDetail.data.Result.Status + ' --- ' + tmp.data.Result.StatusDetail)
-                await wait(120)
-                await counter++
+                // slack.setInfo(`In Processing -- unshield Id = ${unshieldInfo.backendId}  in status = ${resDetail.data.Result.Status} --- ${tmp.data.Result.StatusDetail}`).send()
+                await wait(unshieldInfo.blockTime * 5)
+                timeOut -= (unshieldInfo.blockTime * 5)
             }
-        })
+            await chai.assert.equal(resDetail.data.Result.Status, 25)
+        }).timeout(1200000);
     })
 
     describe(`STEP_4 Verify balance in Incognito`, async () => {
         it('Verify balance affter unshield', async () => {
-            accountInfoAfter.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
-            console.log('accountInfoAfter: ', accountInfoAfter.incTokenBal)
+            await wait(unshieldInfo.blockTime * 2)
+            accountInfoAfter.incTokenBal = await account.useCli.getBalance(tokenID)
+            logger.info(`accountInfoAfter: ${accountInfoAfter.incTokenBal}`)
             chai.assert.notEqual(accountInfoBefore.incTokenBal, accountInfoAfter.incTokenBal, 'burn token unsuceessfull')
         })
-    })
+    }).timeout(120000);
 
     describe('STEP_5 Verify data on AURORA', async () => {
         it('Verify transaction', async () => {
-            await console.log('tx unshield on AURORA : ', unshieldInfo.unshieldExtTx)
+            logger.info(`tx unshield on AURORA :  ${unshieldInfo.unshieldExtTx}`)
             let res = await web3.eth.getTransactionReceipt(unshieldInfo.unshieldExtTx)
             chai.assert.isTrue(res.status)
         })
         it('Verify update balance', async () => {
             accountInfoAfter.extTokenBal = await web3.eth.getBalance(extAccount.address)
-            console.log('receiver balance : ', accountInfoAfter.extTokenBal)
+            logger.info(`receiver balance : ${accountInfoAfter.extTokenBal}`)
             chai.assert.notEqual(accountInfoBefore.extTokenBal, accountInfoAfter.extTokenBal, `the receiver has not received yet`)
         })
-    })
+    }).timeout(120000);
 })
 
-
-
-
-async function pickNewRecordBackend(
-    WalletAddress,
-    PrivacyTokenAddress,
-    SignPublicKeyEncode = 'f78fcecf2b0e2b3267d5a1845c314b76f3787f86981c7abcc5b04abc49ae434a',
-    countWating
-) {
-    let backendApi = await new BackendApi(ENV.Backend)
-    let id = 0
-    const resBefore = await backendApi.historyByTokenAccount(WalletAddress, PrivacyTokenAddress, SignPublicKeyEncode)
-    console.log(resBefore.data)
-    await validateSchemaCommand.validateSchema(backendApischemas.historyTokenAccountSchemas, resBefore.data)
-
-    for (let i = 0; i < countWating; i++) {
-        let resAfter = await backendApi.historyByTokenAccount(WalletAddress, PrivacyTokenAddress, SignPublicKeyEncode)
-        console.log('resAfter.data.Result.length = ' + resAfter.data.Result.length + ' ---- ' + 'resBefore.data.Result.length = ' + resBefore.data.Result.length)
-        console.log('[Round %d] Waiting backend listen tx .... ', i + 1)
-        if (resAfter.data.Result.length > resBefore.data.Result.length) {
-            const idList = []
-            for (const iterator of resAfter.data.Result) {
-                idList.push(iterator.ID)
-            }
-            id = idList.sort(function (a, b) { return b - a });
-            return id[0]
-        }
-        await wait(120)
-    }
-    return id
-}
-
-async function sendNativeAuroraToken(fromAddress, toAddress, pk, amountToSend, networkNode) {
-    let web3 = await new Web3(new Web3.providers.HttpProvider(networkNode))
-    let privateKey = await Buffer.from(pk.slice(2), 'hex')
-    let count = await web3.eth.getTransactionCount(fromAddress)
-
-    let chainAuroraTestnet = await Common.forCustomChain(
-        'goerli',
-        {
-            'name': 'aurora testnet',
-            'networkId': 1313161555,
-            'chainId': 1313161555
-        },
-        'petersburg'
-    )
-
-    let rawTransaction = {
-        "gasPrice": web3.utils.toHex(web3.utils.toWei('90', 'gwei')),
-        "gasLimit": web3.utils.toHex(220000),
-        "to": toAddress,
-        "value": web3.utils.toHex(amountToSend),
-        "nonce": web3.utils.toHex(count)
-    }
-
-    let transaction = new Tx(rawTransaction, { common: chainAuroraTestnet })
-    transaction.sign(privateKey)
-
-    let result = await web3.eth.sendSignedTransaction('0x' + transaction.serialize().toString('hex'))
-    console.log(result)
-    return result
-}
 
