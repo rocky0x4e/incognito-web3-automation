@@ -10,6 +10,19 @@
             },
             "112t8rnXoEWG5H8x1odKxSj6sbLXowTBsVVkAxNWr5WnsbSTDkRiVrSdPy8QfMujntKRYBqywKMJCyhMpdr93T3XiUD5QJR1QFtTpYKpjBEx"
         ],
-        "EVM": ["", "", "", ""]
+        "EVM": [
+            {
+                "address": "0xabc"
+            },
+            {
+                "privateKey": "0xqwe"
+            },
+            {
+                "privateKey": "0xqwe"
+            },
+            {
+                "address": "0xabc"
+            }
+        ]
     }
 }
