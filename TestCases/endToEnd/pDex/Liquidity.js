@@ -182,7 +182,13 @@ describe("[Class] Liquidity", () => {
             chai.expect(response.data.Result.Status).to.equal(1)
             chai.expect(response.data.Result.Token0ID).to.equal(poolShare.tokenId1)
             chai.expect(response.data.Result.Token1ID).to.equal(poolShare.tokenId2)
-        }).timeout(config.timeoutApi);
+
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: TOKEN.PRV,
+                countNumber: 10,
+            })
+
+        }).timeout(config.timeoutTx);
 
         it("STEP_VerifyBalance", async () => {
             if (!poolShare) return true
@@ -282,10 +288,15 @@ describe("[Class] Liquidity", () => {
                             }
                         }
                     }
+
+                    await sender.useSdk.waitForUtxoChange({
+                        tokenID: TOKEN.PRV,
+                        countNumber: 10,
+                    })
                     break;
                 }
             }
-        }).timeout(config.timeoutApi);
+        }).timeout(config.timeoutTx);
 
         it("STEP_VerifyBalance", async () => {
             if (!poolHaveReward) return true
