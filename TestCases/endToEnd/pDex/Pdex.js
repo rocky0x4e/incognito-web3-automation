@@ -1,21 +1,25 @@
 const { TOKEN, POOL } = require('../../../lib/Incognito/Constants')
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
 const GenAction = require("../../../lib/Utils/GenAction");
+const AddingContent = require("../../../lib/Utils/AddingContent");
+const config = require("../../../config.json");
 let chai = require("chai");
+let assert = require("chai").assert;
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const { ACCOUNTS, NODES } = require('../../TestBase');
+const { addCodeArg } = require('ajv/dist/compile/codegen/code');
 const logger = getLogger("Pdex")
 
 let coinServiceApi = new CoinServiceApi();
 let sender = ACCOUNTS.Incognito.get(2)
 
 describe("[Class] Pdex", () => {
-    describe.skip("TC001_TradePRVToToken", async() => {
+    describe.skip("TC001_TradePRVToToken", async () => {
         let amountTrade = 0
         let estimateTradeObject
         let tx
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVBefore = balanceAll[TOKEN.PRV]
@@ -24,10 +28,10 @@ describe("[Class] Pdex", () => {
             logger.info({ balancePRVBefore: sender.balancePRVBefore })
             logger.info({ balanceZILBefore: sender.balanceZILBefore })
 
-            amountTrade = await GenAction.randomNumber(100000)
-        }).timeout(60000);
+            amountTrade = await GenAction.randomNumber(1000)
+        }).timeout(config.timeoutApi);
 
-        it("STEP_CoinServiceEstimateTrade", async() => {
+        it("STEP_CoinServiceEstimateTrade", async () => {
             let estimateTrade = await coinServiceApi.estimateTrade({
                 tokenSell: TOKEN.PRV,
                 tokenBuy: TOKEN.ZIL,
@@ -37,7 +41,7 @@ describe("[Class] Pdex", () => {
 
         });
 
-        it("STEP_Trade", async() => {
+        it("STEP_Trade", async () => {
             tx = await sender.useSdk.swap({
                 tokenSell: TOKEN.PRV,
                 tokenBuy: TOKEN.ZIL,
@@ -48,14 +52,15 @@ describe("[Class] Pdex", () => {
                 minAcceptableAmount: estimateTradeObject.Result.FeePRV.MaxGet,
             })
 
+            AddingContent.addContent(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.ZIL,
                 countNumber: 20,
             })
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
 
-        it("STEP_CheckTradeSuccess", async() => {
+        it("STEP_CheckTradeSuccess", async () => {
             let response = await NODES.Incognito.rpc.pdexv3_getTradeStatus(tx)
             logger.info({ response })
 
@@ -63,9 +68,9 @@ describe("[Class] Pdex", () => {
             chai.expect(response.data.Result.BuyAmount).to.above(1)
             chai.expect(response.data.Result.TokenToBuy).to.equal(TOKEN.ZIL)
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
 
-        it("STEP_VerifyBalance", async() => {
+        it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
             sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
@@ -75,15 +80,15 @@ describe("[Class] Pdex", () => {
             chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - amountTrade - 100 - estimateTradeObject.Result.FeePRV.Fee);
             chai.expect(sender.balanceZILAfter).to.be.least(sender.balanceZILBefore + estimateTradeObject.Result.FeePRV.MaxGet);
 
-        }).timeout(60000);
+        }).timeout(config.timeoutApi);
     });
 
-    describe.skip("TC002_TradeTokenToPRV", async() => {
+    describe.skip("TC002_TradeTokenToPRV", async () => {
         let amountTrade = 0
         let estimateTradeObject
         let tx
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
             let balanceAll = await sender.useCli.getBalanceAll()
 
@@ -93,10 +98,10 @@ describe("[Class] Pdex", () => {
             logger.info({ balancePRVBefore: sender.balancePRVBefore })
             logger.info({ balanceZILBefore: sender.balanceZILBefore })
 
-            amountTrade = await GenAction.randomNumber(100000)
-        }).timeout(60000);
+            amountTrade = await GenAction.randomNumber(1000)
+        }).timeout(config.timeoutApi);
 
-        it("STEP_CoinServiceEstimateTrade", async() => {
+        it("STEP_CoinServiceEstimateTrade", async () => {
             let estimateTrade = await coinServiceApi.estimateTrade({
                 tokenSell: TOKEN.ZIL,
                 tokenBuy: TOKEN.PRV,
@@ -106,7 +111,7 @@ describe("[Class] Pdex", () => {
 
         });
 
-        it("STEP_Trade", async() => {
+        it("STEP_Trade", async () => {
 
             tx = await sender.useSdk.swap({
                 tokenSell: TOKEN.ZIL,
@@ -117,15 +122,15 @@ describe("[Class] Pdex", () => {
                 feeToken: TOKEN.ZIL,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-
+            AddingContent.addContent(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
                 countNumber: 20,
             })
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
 
-        it("STEP_CheckTradeSuccess", async() => {
+        it("STEP_CheckTradeSuccess", async () => {
             let response = await NODES.Incognito.rpc.pdexv3_getTradeStatus(tx)
             logger.info({ response })
 
@@ -133,9 +138,9 @@ describe("[Class] Pdex", () => {
             chai.expect(response.data.Result.BuyAmount).to.above(1)
             chai.expect(response.data.Result.TokenToBuy).to.equal(TOKEN.PRV)
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
 
-        it("STEP_VerifyBalance", async() => {
+        it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balancePRVAfter = balanceAll[TOKEN.PRV]
             sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
@@ -145,26 +150,25 @@ describe("[Class] Pdex", () => {
             chai.expect(sender.balancePRVAfter).to.least(sender.balancePRVBefore - 100 + estimateTradeObject.Result.FeePRV.MaxGet);
             chai.expect(sender.balanceZILAfter).to.be.equal(sender.balanceZILBefore - amountTrade - estimateTradeObject.Result.FeeToken.Fee);
 
-        }).timeout(60000);
+        }).timeout(config.timeoutApi);
     });
 
-    describe("TC003_TradeWithInvalidRoute", async() => {
-        let sellTokenID = TOKEN.ZIL
+    describe("TC003_TradeWithInvalidRoute", async () => {
+        let sellTokenID = TOKEN.USDT_UT
         let buyTokenID = TOKEN.PRV
         let poolID = POOL.MATIC_USDT
         let amountTrade = 0
         let estimateTradeObject
         let tx
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
 
             await sender.initSdkInstance();
-            let balanceAll = await sender.useSdk.getBalanceAll()
 
-            amountTrade = await GenAction.randomNumber(10000)
-        }).timeout(60000);
+            amountTrade = await GenAction.randomNumber(1000)
+        }).timeout(config.timeoutApi);
 
-        it("STEP_CoinServiceEstimateTrade", async() => {
+        it("STEP_CoinServiceEstimateTrade", async () => {
             let response = await coinServiceApi.estimateTrade({
                 tokenSell: sellTokenID,
                 tokenBuy: buyTokenID,
@@ -173,7 +177,7 @@ describe("[Class] Pdex", () => {
             estimateTradeObject = response.data
         });
 
-        it("STEP_TradeWithRouteNotArray", async() => {
+        it("STEP_TradeWithRouteNotArray", async () => {
 
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
@@ -184,11 +188,12 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
+            AddingContent.addContent(tx)
             chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-tradePath" failed: Required. Found undefined (type of undefined)`)
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
 
-        it("STEP_TradeWithRouteInvalidData", async() => {
+        it("STEP_TradeWithRouteInvalidData", async () => {
 
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
@@ -199,12 +204,13 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
+            AddingContent.addContent(tx)
             chai.expect(tx).to.contain(`create-tx error - error parsing parameters - error parsing metadata`)
             chai.expect(tx).to.contain(`cannot unmarshal number into Go struct field .TradePath of type string`)
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
 
-        it("STEP_TradeWithRouteNull", async() => {
+        it("STEP_TradeWithRouteNull", async () => {
 
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
@@ -216,12 +222,13 @@ describe("[Class] Pdex", () => {
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
 
+            AddingContent.addContent(tx)
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject not sansity tx transaction's sansity ${tx} is error -3000: Invalid sanity data for privacy Token Invalid trade request - path empty`)
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
 
-        it("STEP_TradeWithRouteInCorrect", async() => {
+        it("STEP_TradeWithRouteInCorrect", async () => {
 
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
@@ -232,27 +239,28 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
+            AddingContent.addContent(tx)
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject invalid metadata with blockchain validate metadata of tx ${tx} with blockchain error Not found poolPairID`)
 
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
     });
 
-    describe("TC004_TradeWithInvalidSellAmount", async() => {
-        let sellTokenID = TOKEN.ZIL
+    describe("TC004_TradeWithInvalidSellAmount", async () => {
+        let sellTokenID = TOKEN.USDT_UT
         let buyTokenID = TOKEN.PRV
         let amountTrade = 0
         let estimateTradeObject
         let tx
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
 
-            amountTrade = await GenAction.randomNumber(100000)
-        }).timeout(60000);
+            amountTrade = await GenAction.randomNumber(1000)
+        }).timeout(config.timeoutApi);
 
-        it("STEP_CoinServiceEstimateTrade", async() => {
+        it("STEP_CoinServiceEstimateTrade", async () => {
             let response = await coinServiceApi.estimateTrade({
                 tokenSell: sellTokenID,
                 tokenBuy: buyTokenID,
@@ -261,7 +269,7 @@ describe("[Class] Pdex", () => {
             estimateTradeObject = response.data
         });
 
-        it("STEP_TradeAmountIsString", async() => {
+        it("STEP_TradeAmountIsString", async () => {
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
                 tokenBuy: buyTokenID,
@@ -271,11 +279,12 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
+            AddingContent.addContent(tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
 
-        it("STEP_TradeAmountAboveBalance", async() => {
+        it("STEP_TradeAmountAboveBalance", async () => {
             let balanceAll = await sender.useSdk.getBalanceAll()
             let balanceTokenSell = balanceAll[sellTokenID]
             let amountTrade = balanceTokenSell + 1000
@@ -289,25 +298,26 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
+            AddingContent.addContent(tx)
             chai.expect(tx).to.contain(`Error while preparing inputs Not enough coin to spend ${amountTrade + estimateTradeObject.Result.FeeToken.Fee}`)
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
     });
 
-    describe("TC005_TradeWithInvalidMinAcceptableAmount", async() => {
-        let sellTokenID = TOKEN.ZIL
+    describe("TC005_TradeWithInvalidMinAcceptableAmount", async () => {
+        let sellTokenID = TOKEN.USDT_UT
         let buyTokenID = TOKEN.PRV
         let amountTrade = 0
         let estimateTradeObject
         let tx
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
 
-            amountTrade = await GenAction.randomNumber(10000)
-        }).timeout(60000);
+            amountTrade = await GenAction.randomNumber(1000)
+        }).timeout(config.timeoutApi);
 
-        it("STEP_CoinServiceEstimateTrade", async() => {
+        it("STEP_CoinServiceEstimateTrade", async () => {
             let response = await coinServiceApi.estimateTrade({
                 tokenSell: sellTokenID,
                 tokenBuy: buyTokenID,
@@ -316,7 +326,7 @@ describe("[Class] Pdex", () => {
             estimateTradeObject = response.data
         });
 
-        it("STEP_TradeWithMinAcceptableAmountIsTring", async() => {
+        it("STEP_TradeWithMinAcceptableAmountIsTring", async () => {
 
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
@@ -329,9 +339,9 @@ describe("[Class] Pdex", () => {
             })
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
 
-        it("STEP_TradeOverMinAcceptableAmount", async() => {
+        it("STEP_TradeOverMinAcceptableAmount", async () => {
 
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
@@ -342,35 +352,36 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet + 100000,
             })
+            AddingContent.addContent(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await NODES.Incognito.rpc.waitForTxSwapHaveStatus(tx)
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
 
-        it("STEP_CheckTradeFail", async() => {
+        it("STEP_CheckTradeFail", async () => {
             let response = await NODES.Incognito.rpc.pdexv3_getTradeStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(0)
             chai.expect(response.data.Result.BuyAmount).to.equal(0)
             chai.expect(response.data.Result.TokenToBuy).to.equal('0000000000000000000000000000000000000000000000000000000000000000')
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
     });
 
-    describe("TC006_TradeWithInvalidTradingFee", async() => {
-        let sellTokenID = TOKEN.ZIL
+    describe("TC006_TradeWithInvalidTradingFee", async () => {
+        let sellTokenID = TOKEN.USDT_UT
         let buyTokenID = TOKEN.PRV
         let amountTrade = 0
         let estimateTradeObject
         let tx
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
 
-            amountTrade = await GenAction.randomNumber(10000)
-        }).timeout(60000);
+            amountTrade = await GenAction.randomNumber(1000)
+        }).timeout(config.timeoutApi);
 
-        it("STEP_CoinServiceEstimateTrade", async() => {
+        it("STEP_CoinServiceEstimateTrade", async () => {
             let response = await coinServiceApi.estimateTrade({
                 tokenSell: sellTokenID,
                 tokenBuy: buyTokenID,
@@ -380,7 +391,7 @@ describe("[Class] Pdex", () => {
 
         });
 
-        it("STEP_TradeWithFeeIsTring", async() => {
+        it("STEP_TradeWithFeeIsTring", async () => {
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
                 tokenBuy: buyTokenID,
@@ -390,10 +401,11 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
+            AddingContent.addContent(tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
 
-        it("STEP_TradeWithFeeEqual0", async() => {
+        it("STEP_TradeWithFeeEqual0", async () => {
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
                 tokenBuy: buyTokenID,
@@ -403,35 +415,36 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
+            AddingContent.addContent(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await NODES.Incognito.rpc.waitForTxSwapHaveStatus(tx)
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
 
-        it("STEP_CheckTradeFail", async() => {
+        it("STEP_CheckTradeFail", async () => {
             let response = await NODES.Incognito.rpc.pdexv3_getTradeStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(0)
             chai.expect(response.data.Result.BuyAmount).to.equal(0)
             chai.expect(response.data.Result.TokenToBuy).to.equal('0000000000000000000000000000000000000000000000000000000000000000')
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
     });
 
-    describe("TC007_TradeWithInvalidTokenSell", async() => {
-        let sellTokenID = TOKEN.ZIL
+    describe("TC007_TradeWithInvalidTokenSell", async () => {
+        let sellTokenID = TOKEN.USDT_UT
         let buyTokenID = TOKEN.PRV
         let amountTrade = 0
         let estimateTradeObject
         let tx
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
 
-            amountTrade = await GenAction.randomNumber(10000)
-        }).timeout(60000);
+            amountTrade = await GenAction.randomNumber(1000)
+        }).timeout(config.timeoutApi);
 
-        it("STEP_CoinServiceEstimateTrade", async() => {
+        it("STEP_CoinServiceEstimateTrade", async () => {
             let response = await coinServiceApi.estimateTrade({
                 tokenSell: sellTokenID,
                 tokenBuy: buyTokenID,
@@ -441,7 +454,7 @@ describe("[Class] Pdex", () => {
 
         });
 
-        it("STEP_TradeWithSellTokenAbc", async() => {
+        it("STEP_TradeWithSellTokenAbc", async () => {
             tx = await sender.useSdk.swap({
                 tokenSell: "abc",
                 tokenBuy: buyTokenID,
@@ -451,25 +464,26 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
+            AddingContent.addContent(tx)
 
             //TODO
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
     });
 
-    describe("TC008_TradeWithInvalidTokenBuy", async() => {
-        let sellTokenID = TOKEN.ZIL
+    describe("TC008_TradeWithInvalidTokenBuy", async () => {
+        let sellTokenID = TOKEN.USDT_UT
         let buyTokenID = TOKEN.PRV
         let amountTrade = 0
         let estimateTradeObject
         let tx
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
 
-            amountTrade = await GenAction.randomNumber(100000)
-        }).timeout(60000);
+            amountTrade = await GenAction.randomNumber(1000)
+        }).timeout(config.timeoutApi);
 
-        it("STEP_CoinServiceEstimateTrade", async() => {
+        it("STEP_CoinServiceEstimateTrade", async () => {
             let response = await coinServiceApi.estimateTrade({
                 tokenSell: sellTokenID,
                 tokenBuy: buyTokenID,
@@ -479,7 +493,7 @@ describe("[Class] Pdex", () => {
 
         });
 
-        it("STEP_TradeWithBuyTokenNotValid", async() => {
+        it("STEP_TradeWithBuyTokenNotValid", async () => {
 
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
@@ -490,36 +504,36 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            console.log('hoanh tx', tx);
+            AddingContent.addContent(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await NODES.Incognito.rpc.waitForTxSwapHaveStatus(tx)
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
 
-        it("STEP_CheckTradeFail", async() => {
+        it("STEP_CheckTradeFail", async () => {
             let response = await NODES.Incognito.rpc.pdexv3_getTradeStatus(tx)
 
             chai.expect(response.data.Result.Status).to.equal(0)
             chai.expect(response.data.Result.BuyAmount).to.equal(0)
             chai.expect(response.data.Result.TokenToBuy).to.equal('0000000000000000000000000000000000000000000000000000000000000000')
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
     });
 
-    describe.only("TC009_TradeWithInvalidTokenFee", async() => {
-        let sellTokenID = TOKEN.ZIL
+    describe("TC009_TradeWithInvalidTokenFee", async () => {
+        let sellTokenID = TOKEN.USDT_UT
         let buyTokenID = TOKEN.PRV
         let amountTrade = 0
         let estimateTradeObject
         let tx
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
 
-            amountTrade = await GenAction.randomNumber(100000)
-        }).timeout(60000);
+            amountTrade = await GenAction.randomNumber(1000)
+        }).timeout(config.timeoutApi);
 
-        it("STEP_CoinServiceEstimateTrade", async() => {
+        it("STEP_CoinServiceEstimateTrade", async () => {
             let response = await coinServiceApi.estimateTrade({
                 tokenSell: sellTokenID,
                 tokenBuy: buyTokenID,
@@ -529,7 +543,7 @@ describe("[Class] Pdex", () => {
 
         });
 
-        it("STEP_TradeWithTokenFeeIsNumber", async() => {
+        it("STEP_TradeWithTokenFeeIsNumber", async () => {
 
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
@@ -540,26 +554,41 @@ describe("[Class] Pdex", () => {
                 feeToken: 123,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
+            AddingContent.addContent(tx)
             chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-feetoken" failed: Must be string. Found 123 (type of number)`)
 
 
-        }).timeout(120000);
+        }).timeout(config.timeoutTx);
 
-        it("STEP_TradeWithTokenFeeInCorrect", async() => {
+        it("STEP_TradeWithTokenFeeNull", async () => {
             tx = await sender.useSdk.swap({
                 tokenSell: sellTokenID,
                 tokenBuy: buyTokenID,
                 amount: amountTrade,
                 tradePath: estimateTradeObject.Result.FeeToken.Route,
                 tradingFee: estimateTradeObject.Result.FeeToken.Fee,
-                feeToken: "",
+                feeToken: null,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            console.log('hoanh tx', tx);
-            chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-feetoken" failed: Required. Found undefined (type of undefined)`)
+            AddingContent.addContent(tx)
 
+            assert.include(tx, `Validating "createAndSendOrderRequestTx-feetoken" failed: Required. Found null (type of object)`)
+        }).timeout(config.timeoutTx);
 
-        }).timeout(120000);
+        it("STEP_TradeWithTokenFeeNotBelongSellToken", async () => {
+            tx = await sender.useSdk.swap({
+                tokenSell: sellTokenID,
+                tokenBuy: buyTokenID,
+                amount: amountTrade,
+                tradePath: estimateTradeObject.Result.FeeToken.Route,
+                tradingFee: estimateTradeObject.Result.FeeToken.Fee,
+                feeToken: TOKEN.BTC,
+                minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
+            })
+            AddingContent.addContent(tx)
+
+            assert.include(tx, `Validating "createAndSendOrderRequestTx-feetoken" failed: Required. Found null (type of object)`)
+        }).timeout(config.timeoutTx);
 
 
     });

@@ -114,9 +114,6 @@ describe("[Class] EstimateTrade", async() => {
             chai.assert.equal(response.data.Result.Networks.bsc[0].AmountIn, amount);
             chai.assert.equal(response.data.Result.Networks.bsc[0].AmountInRaw, "");
             chai.assert.equal(response.data.Result.Networks.bsc[0].Fee[0].tokenid, fromToken);
-            let Paths = response.data.Result.Networks.bsc[0].Paths;
-            chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase());
-            chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase());
             chai.assert.notEqual(response.data.Result.Networks.bsc[0].Calldata, "");
             chai.assert.equal(response.Error, null);
         });
@@ -173,10 +170,6 @@ describe("[Class] EstimateTrade", async() => {
             chai.assert.equal(response.data.Result.Networks.bsc[0].AmountIn, amount);
             chai.assert.equal(response.data.Result.Networks.bsc[0].AmountInRaw, "");
             chai.assert.equal(response.data.Result.Networks.bsc[0].Fee[0].tokenid, fromToken);
-
-            let Paths = response.data.Result.Networks.bsc[0].Paths;
-            chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase());
-            chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase());
             chai.assert.notEqual(response.data.Result.Networks.bsc[0].Calldata, "");
             chai.assert.equal(response.Error, null);
         });
@@ -209,10 +202,6 @@ describe("[Class] EstimateTrade", async() => {
             chai.assert.equal(response.data.Result.Networks.bsc[0].AmountIn, amount);
             chai.assert.equal(response.data.Result.Networks.bsc[0].AmountInRaw, "");
             chai.assert.equal(response.data.Result.Networks.bsc[0].Fee[0].tokenid, fromToken);
-
-            let Paths = response.data.Result.Networks.bsc[0].Paths;
-            chai.assert.equal(Paths[0].toLowerCase(), sellTokenContract.toLowerCase());
-            chai.assert.equal(Paths[Paths.length - 1].toLowerCase(), buyTokenContract.toLowerCase());
             chai.assert.notEqual(response.data.Result.Networks.bsc[0].Calldata, "");
             chai.assert.equal(response.Error, null);
         });
