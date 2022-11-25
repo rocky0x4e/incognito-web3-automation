@@ -11,25 +11,10 @@ let Web3 = require('web3');
 let chai = require('chai');
 const { ACCOUNTS, NODES } = require('../../TestBase');
 
-const networkBridgeInfo = {
-    'networkDetail': {
-        "chainParams": {
-            'name': 'aurora Testnet',
-            'networkId': 1313161555,
-            'chainId': 1313161555
-        },
-        'chain': 'goerli',
-        'hardfork': 'petersburg'
-    },
-    'configGasTx': {
-        'gasPrice': 90,
-        'gasLimit': 21000
-    },
-    'configInc': {
-        'currencyType': 30,
-        'decentralized': 9
-    }
-}
+
+const networkBridgeInfo = ENV.Testbed.AuroraFullnode.networkDetail
+const gasFee = ENV.Testbed.AuroraFullnode.configGasTx
+const configBackendToken = ENV.Testbed.AuroraFullnode.configIncBE
 
 const MasterShieldFeeWallet = '0xfebefa80332863d292c768dfed0a3f5bee74e632'
 const MasterUnshieldFeeWallet = '0x2228ad9ec671a1aee2786c04c695a580a3653853'
@@ -55,19 +40,20 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
     }
 
     const shieldInfo = {
-        shieldAmt: 0.01,
+        shieldAmt: 0.015,
         shieldBackendId: null,
         shieldPrvFee: 0,
         shieldTokenFee: 0,
         tmpWalletAddress: null,
-        timeout: 900,
+        timeout: 600,
         txDeposit: null,
         blockTime: 20,
         pTokenDecimal: 9
     }
 
-    describe('SHIELDING AURORA', async () => {
+    describe('SHIELDING ETH_AURORA', async () => {
         it('Init data', async () => {
+            logger.info(`Token ID: ${tokenID}`)
             accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenID)
             logger.info(`accountInfoBefore :  ${accountInfoBefore.incTokenBal}`)
         }).timeout(60000);
@@ -81,7 +67,7 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
             })
             await validateSchemaCommand.validateSchema(backendApischemas.generateShieldAddressSchemas, res.data)
             shieldInfo.tmpWalletAddress = res.data.Result.Address
-            shieldInfo.shieldTokenFee = res.data.Result.EstimateFee
+            shieldInfo.shieldTokenFee = (res.data.Result.TokenFee == 0) ? res.data.Result.EstimateFee : res.data.Result.TokenFee
             logger.info(`BE estimate shield res :   ${JSON.stringify(res.data)}`)
 
         }).timeout(60000);
@@ -100,12 +86,12 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
 
             let resDeposit = await extAccount.sendNativeToken({
                 to: shieldInfo.tmpWalletAddress,
-                amount: web3.utils.toWei((shieldInfo.shieldAmt + shieldInfo.shieldTokenFee).toString(), 'ether'),
-                gas: networkBridgeInfo.configGasTx.gasPrice,
-                gasLimit: networkBridgeInfo.configGasTx.gasLimit,
-                chainName: networkBridgeInfo.networkDetail.chain,
-                chainDetail: networkBridgeInfo.networkDetail.chainParams,
-                hardfork: networkBridgeInfo.networkDetail.hardfork
+                amount: web3.utils.toWei((shieldInfo.shieldAmt).toString(), 'ether'),
+                gas: gasFee.gasPrice,
+                gasLimit: gasFee.gasLimit,
+                chainName: networkBridgeInfo.chain,
+                chainDetail: networkBridgeInfo.chainParams,
+                hardfork: networkBridgeInfo.hardfork
             })
             await wait(15)
 
@@ -138,6 +124,7 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
                 PrivacyTokenAddress: tokenID
             })
             await validateSchemaCommand.validateSchema(backendApischemas.historyTokenAccountSchemas, resBefore.data)
+
             shieldInfo.shieldBackendId = await account.waitForNewShieldRecord({
                 tokenId: tokenID,
                 interval: shieldInfo.blockTime * 4,
@@ -154,8 +141,8 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
         it('[3.3] Verify shielding detail', async () => {
             let resDetail = await backendApi.historyDetail({
                 historyID: shieldInfo.shieldBackendId,
-                CurrencyType: networkBridgeInfo.configInc.currencyType,
-                Decentralized: networkBridgeInfo.configInc.decentralized
+                CurrencyType: configBackendToken.currencyType,  // native token
+                Decentralized: configBackendToken.decentralized
             })
             await validateSchemaCommand.validateSchema(backendApischemas.historyTokenAccountDetailSchemas, resDetail.data)
 
@@ -163,13 +150,14 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
             while (resDetail.data.Result.Status != 12) {
                 let tmp = await backendApi.historyDetail({
                     historyID: shieldInfo.shieldBackendId,
-                    CurrencyType: networkBridgeInfo.configInc.currencyType,
-                    Decentralized: networkBridgeInfo.configInc.decentralized
+                    CurrencyType: configBackendToken.currencyType, // native token
+                    Decentralized: configBackendToken.decentralized
                 })
                 logger.info(`Shield status =  ${tmp.data.Result.Status}  ----  ${tmp.data.Result.StatusMessage}  ---  ${tmp.data.Result.StatusDetail}`)
                 resDetail.data.Result.Status = tmp.data.Result.Status
                 if (resDetail.data.Result.Status === 12) {
-                    logger.info(`'Shielding successfull`)
+                    shieldInfo.shieldTokenFee = Number(resDetail.data.Result.TokenFee / 1e18)
+                    logger.info(`Shielding successfull`)
                     break
                 }
                 else if (timeOut <= 0) {
@@ -192,7 +180,7 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
             await wait(shieldInfo.blockTime * 3)
             accountInfoAfter.incTokenBal = await account.useCli.getBalance(tokenID)
             logger.info(`Token balance after shield: ${accountInfoAfter.incTokenBal}`)
-            chai.assert.isTrue(accountInfoAfter.incTokenBal - accountInfoBefore.incTokenBal > 0, 'mint token unsuceessfull')
+            chai.assert.equal(accountInfoAfter.incTokenBal, accountInfoBefore.incTokenBal + Number((shieldInfo.shieldAmt - shieldInfo.shieldTokenFee) * Number('1e' + shieldInfo.pTokenDecimal)), 'mint token unsuceessfull')
         }).timeout(100000);
     })
 });
@@ -201,7 +189,6 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
 describe(`[======  AURORA BRIDGE -- UNSHIELDING ====== ]`, async () => {
     const tokenID = ENV.Testbed.Tokens.ETH_AURORA
     let web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.AuroraFullnode.url))
-
     let account = ACCOUNTS.Incognito.get(0)
     let extAccount = ACCOUNTS.Evm.get(0).setProvider(ENV.Testbed.AuroraFullnode.url)
     let backendApi = new BackendApi()
@@ -216,7 +203,7 @@ describe(`[======  AURORA BRIDGE -- UNSHIELDING ====== ]`, async () => {
         extTokenBal: 0
     }
     const unshieldInfo = {
-        unshieldAmt: 0.01,
+        unshieldAmt: 0,
         unshieldPrvFee: 0,
         unshieldTokenFee: 0,
         backendId: null,
@@ -229,8 +216,9 @@ describe(`[======  AURORA BRIDGE -- UNSHIELDING ====== ]`, async () => {
         burningType: 353
     }
 
-    describe('UNSHIELDING AURORA', async () => {
+    describe('UNSHIELDING ETH AURORA', async () => {
         it('Init data', async () => {
+            logger.info(`Token ID: ${tokenID}`)
             accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenID)
             logger.info(`token balance on INC: ${accountInfoBefore.incTokenBal}`)
             accountInfoBefore.extTokenBal = await extAccount.getBalance()
@@ -241,17 +229,18 @@ describe(`[======  AURORA BRIDGE -- UNSHIELDING ====== ]`, async () => {
     describe('STEP_1 Estimate Unshield Fee', async () => {
         it('Call API get estimate Fee and backend UnshielId', async () => {
             resEst = await backendApi.auroraUnshieldEstFee({
-                unshieldAmount: unshieldInfo.unshieldAmt,
+                unshieldAmount: Number(accountInfoBefore.incTokenBal / Number('1e' + unshieldInfo.pTokenDecimal)),
                 extRemoteAddr: extAccount.address,
                 tokenId: tokenID,
-                unifiedTokenId: tokenID,
+                unifiedTokenId: '',
                 IncPaymentAddr: account.paymentK,
                 decimalPToken: unshieldInfo.pTokenDecimal
             })
             unshieldInfo.backendId = resEst.data.Result.ID
             unshieldInfo.unshieldTokenFee = resEst.data.Result.TokenFees.Level1
+            logger.info(`Fee token unshield:  ${unshieldInfo.unshieldTokenFee}`)
             unshieldInfo.feeAccount = resEst.data.Result.FeeAddress
-
+            unshieldInfo.unshieldAmt = accountInfoBefore.incTokenBal - unshieldInfo.unshieldTokenFee
             logger.info(`ResEstimate: ${JSON.stringify(resEst.data)}`)
         }).timeout(60000);
     })
@@ -277,7 +266,7 @@ describe(`[======  AURORA BRIDGE -- UNSHIELDING ====== ]`, async () => {
 
         it(`[2.2] Submit unshield tx to backend`, async () => {
             let resSubmitTx = await backendApi.submutTxAuroraUnshield({
-                currencyType: networkBridgeInfo.configInc.currencyType,
+                currencyType: configBackendToken.currencyType,  // native token
                 unshieldAmount: unshieldInfo.unshieldAmt,
                 decimalPToken: unshieldInfo.pTokenDecimal,
                 extRemoteAddr: extAccount.address,
@@ -305,8 +294,8 @@ describe(`[======  AURORA BRIDGE -- UNSHIELDING ====== ]`, async () => {
         it('[3.2] Verify unshielding detail', async () => {
             let resDetail = await backendApi.historyDetail({
                 historyID: unshieldInfo.backendId,
-                CurrencyType: networkBridgeInfo.configInc.currencyType,
-                Decentralized: networkBridgeInfo.configInc.decentralized
+                CurrencyType: configBackendToken.currencyType,  // native token
+                Decentralized: configBackendToken.decentralized
             })
             logger.info(`BE unshielding detail : ${JSON.stringify(resDetail.data)}`)
 
@@ -315,8 +304,8 @@ describe(`[======  AURORA BRIDGE -- UNSHIELDING ====== ]`, async () => {
             while (resDetail.data.Result.Status != 25) {
                 let tmp = await backendApi.historyDetail({
                     historyID: unshieldInfo.backendId,
-                    CurrencyType: networkBridgeInfo.configInc.currencyType,
-                    Decentralized: networkBridgeInfo.configInc.decentralized
+                    CurrencyType: configBackendToken.currencyType, //native token
+                    Decentralized: configBackendToken.decentralized
                 })
                 logger.info(`Unshield status = ${tmp.data.Result.Status} ---- ${tmp.data.Result.StatusMessage}  --- ${tmp.data.Result.StatusDetail}`)
                 resDetail.data.Result.Status = tmp.data.Result.Status
@@ -363,9 +352,8 @@ describe(`[======  AURORA BRIDGE -- UNSHIELDING ====== ]`, async () => {
         it('Verify update balance', async () => {
             accountInfoAfter.extTokenBal = await web3.eth.getBalance(extAccount.address)
             logger.info(`receiver balance : ${accountInfoAfter.extTokenBal}`)
-            chai.assert.notEqual(accountInfoBefore.extTokenBal, accountInfoAfter.extTokenBal, `the receiver has not received yet`)
+            chai.assert.equal(accountInfoAfter.extTokenBal, Number(accountInfoBefore.extTokenBal) + Number(unshieldInfo.unshieldAmt * 1e9), `the receiver has not received yet`)
         })
     }).timeout(120000);
 })
-
 
