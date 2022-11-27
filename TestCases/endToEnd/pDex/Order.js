@@ -4,7 +4,7 @@ const GenAction = require("../../../lib/Utils/GenAction");
 let chai = require("chai");
 let assert = require("chai").assert
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
-const AddingContent = require("../../../lib/Utils/AddingContent");
+const addDebug = require('../../../lib/Utils/AddingContent').addDebug;
 const config = require("../../../config.json");
 const { ACCOUNTS, NODES } = require('../../TestBase');
 const { expect } = require('chai');
@@ -44,7 +44,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
 
 
             await NODES.Incognito.getTransactionByHashRpc(tx)
@@ -150,7 +150,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
             logger.info({ tx })
 
             await NODES.Incognito.getTransactionByHashRpc(tx)
@@ -252,7 +252,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
 
             chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Required. Found undefined (type of undefined)`)
 
@@ -267,7 +267,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Required. Found null (type of object)`)
 
@@ -282,7 +282,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToBuy" failed: Must be string. Found 123 (type of number)`)
 
@@ -297,7 +297,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
 
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
@@ -335,7 +335,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
 
             chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-tokenIDToSell" failed: Required. Found undefined (type of undefined)`)
 
@@ -350,7 +350,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToSell" failed: Required. Found null (type of object)`)
 
@@ -365,7 +365,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
 
             chai.expect(tx).to.contain(`Error: Validating "createAndSendOrderRequestTx-tokenIDToSell" failed: Must be string. Found 123 (type of number)`)
 
@@ -380,7 +380,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
 
 
             chai.expect(tx).to.contain(`Error while preparing inputs Not enough coin to spend`)
@@ -411,7 +411,7 @@ describe("[Class] Order", () => {
                 sellAmount: null,
                 buyAmount: amountBuy,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "null": invalid syntax`)
 
         }).timeout(config.timeoutTx);
@@ -424,7 +424,7 @@ describe("[Class] Order", () => {
                 sellAmount: 0,
                 buyAmount: amountBuy,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject not sansity tx transaction's sansity ${tx} is error`)
             chai.expect(response.data.ErrMsg).to.contain(`SellAmount cannot be 0`)
@@ -438,7 +438,7 @@ describe("[Class] Order", () => {
                 sellAmount: 'abc',
                 buyAmount: amountBuy,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
 
         }).timeout(config.timeoutTx);
@@ -466,7 +466,7 @@ describe("[Class] Order", () => {
                 buyAmount: null,
             })
 
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "null": invalid syntax`)
 
         }).timeout(config.timeoutTx);
@@ -479,7 +479,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: 0,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
 
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject not sansity tx transaction's sansity ${tx} is error`)
@@ -496,7 +496,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: 'abc',
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
 
         }).timeout(config.timeoutTx);
@@ -525,7 +525,7 @@ describe("[Class] Order", () => {
                 sellAmount: sender.balanceTokenSell + 10000,
                 buyAmount: amountBuy,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
             chai.expect(tx).to.contain(`WEB_JS_ERROR: Error while preparing inputs`)
         }).timeout(config.timeoutTx);
     });
@@ -554,7 +554,7 @@ describe("[Class] Order", () => {
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject invalid metadata with blockchain validate metadata of tx ${tx}`)
             chai.expect(response.data.ErrMsg).to.contain(`error Not found poolPairID`)
@@ -589,7 +589,7 @@ describe("[Class] Order", () => {
                 orderID: pendingOrderObject.RequestTx,
                 nftID: null
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
             chai.expect(tx).to.contain(`Validating "createAndSendWithdrawOrderRequestTx-nftID" failed: Required. Found null (type of object)`)
 
         }).timeout(config.timeoutTx);
@@ -624,7 +624,7 @@ describe("[Class] Order", () => {
                 orderID: "abc-desf",
                 nftID: pendingOrderObject.NFTID
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({ tokenID: TOKEN.PRV })
             await GenAction.sleep(20000)
@@ -669,10 +669,10 @@ describe("[Class] Order", () => {
                 orderID: pendingOrderObject.RequestTx,
                 nftID: pendingOrderObject.NFTID
             })
-            await AddingContent.addContent(tx)
+            await addDebug(tx)
 
             let response = await coinServiceApi.gettxstatus({ tx })
-            assert.include(response.data.ErrMsg, `Reject Double Spend With Current Blockchain -1039: Reject invalid metadata with blockchain validate metadata of tx ${tx} with blockchain error Not found poolPairID abc-desf`, await AddingContent.addContent(response.data))
+            assert.include(response.data.ErrMsg, `Reject Double Spend With Current Blockchain -1039: Reject invalid metadata with blockchain validate metadata of tx ${tx} with blockchain error Not found poolPairID abc-desf`, await addDebug(response.data))
         }).timeout(config.timeoutTx);
     });
 
@@ -708,14 +708,14 @@ describe("[Class] Order", () => {
                 orderID: pendingOrderObject.RequestTx,
                 nftID: pendingOrderObject.NFTID
             })
-            await AddingContent.addContent("tx", tx)
+            await addDebug("tx", tx)
 
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({ tokenID: TOKEN.PRV })
             await GenAction.sleep(20000)
 
             let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
-            assert.equal(response.data.Result.Status, 0, await AddingContent.addContent(response.data))
+            assert.equal(response.data.Result.Status, 0, await addDebug(response.data))
             assert.equal(response.data.Result.TokenID, "0000000000000000000000000000000000000000000000000000000000000000")
             assert.equal(response.data.Result.Amount, 0)
         }).timeout(config.timeoutTx);
@@ -752,14 +752,14 @@ describe("[Class] Order", () => {
                 orderID: pendingOrderObject.RequestTx,
                 nftID: pendingOrderObject.NFTID
             })
-            await AddingContent.addContent("tx", tx)
+            await addDebug("tx", tx)
 
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({ tokenID: TOKEN.PRV })
             await GenAction.sleep(20000)
 
             let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
-            assert.equal(response.data.Result.Status, 0, await AddingContent.addContent(response.data))
+            assert.equal(response.data.Result.Status, 0, await addDebug(response.data))
             assert.equal(response.data.Result.TokenID, "0000000000000000000000000000000000000000000000000000000000000000")
             assert.equal(response.data.Result.Amount, 0)
         }).timeout(config.timeoutTx);
@@ -798,13 +798,13 @@ describe("[Class] Order", () => {
                 orderID: pendingOrderObject2.RequestTx,
                 nftID: pendingOrderObject1.NFTID
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({ tokenID: TOKEN.PRV })
             await GenAction.sleep(20000)
 
             let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
-            assert.equal(response.data.Result.Status, 0, await AddingContent.addContent(response.data))
+            assert.equal(response.data.Result.Status, 0, await addDebug(response.data))
             assert.equal(response.data.Result.TokenID, "0000000000000000000000000000000000000000000000000000000000000000")
             assert.equal(response.data.Result.Amount, 0)
         }).timeout(config.timeoutTx);
@@ -841,13 +841,13 @@ describe("[Class] Order", () => {
                 orderID: pendingOrderObject1.RequestTx,
                 nftID: pendingOrderObject1.NFTID
             })
-            await AddingContent.addContent(tx)
+            await addDebug(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({ tokenID: TOKEN.PRV })
             await GenAction.sleep(20000)
 
             let response = await NODES.Incognito.rpc.pdexv3_getWithdrawOrderStatus(tx)
-            assert.equal(response.data.Result.Status, 0, await AddingContent.addContent(response.data))
+            assert.equal(response.data.Result.Status, 0, await addDebug(response.data))
             assert.equal(response.data.Result.TokenID, "0000000000000000000000000000000000000000000000000000000000000000")
             assert.equal(response.data.Result.Amount, 0)
         }).timeout(config.timeoutTx);

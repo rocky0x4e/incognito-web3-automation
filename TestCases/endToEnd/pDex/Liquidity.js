@@ -1,6 +1,6 @@
 const { TOKEN, POOL } = require('../../../lib/Incognito/Constants')
 const GenAction = require("../../../lib/Utils/GenAction");
-const AddingContent = require("../../../lib/Utils/AddingContent");
+const addDebug = require('../../../lib/Utils/AddingContent').addDebug;
 let chai = require("chai");
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const { CoinServiceApi } = require('../../../lib/Incognito/CoinServiceApi');
@@ -34,7 +34,7 @@ describe("[Class] Liquidity", () => {
             //getBalance
             let balanceAll = await sender.useSdk.getBalanceAll()
             sender.balanceAllBefore = balanceAll
-            AddingContent.addContent('sender.balanceAllBefore ', sender.balanceAllBefore)
+            addDebug('sender.balanceAllBefore ', sender.balanceAllBefore)
 
             sender.balancePRVBefore = balanceAll[token1ID]
             sender.balanceUSDTBefore = balanceAll[token2ID]
@@ -68,7 +68,7 @@ describe("[Class] Liquidity", () => {
                 amp,
                 nftID
             })
-            AddingContent.addContent('listTx', listTx)
+            addDebug('listTx', listTx)
 
             for (const tx of listTx) {
                 await NODES.Incognito.getTransactionByHashRpc(tx)
@@ -104,7 +104,7 @@ describe("[Class] Liquidity", () => {
 
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balanceAllAfter = balanceAll
-            AddingContent.addContent('sender.balanceAllAfter ', sender.balanceAllAfter)
+            addDebug('sender.balanceAllAfter ', sender.balanceAllAfter)
 
             chai.expect(sender.balanceAllAfter[TOKEN.PRV]).to.equal(sender.balanceAllBefore[TOKEN.PRV] - actualAmount0Add - 200);
             chai.expect(sender.balanceAllAfter[token2ID]).to.be.least(sender.balanceAllBefore[token2ID] - actualAmount1Add);
@@ -126,13 +126,13 @@ describe("[Class] Liquidity", () => {
             let balanceAll = await sender.useSdk.getBalanceAll()
             sender.balanceAllBefore = balanceAll
 
-            AddingContent.addContent("sender.balanceAllBefore", sender.balanceAllBefore)
+            addDebug("sender.balanceAllBefore", sender.balanceAllBefore)
 
         }).timeout(config.timeoutApi);
 
         it("STEP_FindMyPoolShare", async () => {
             let nftData = await sender.useSdk.getNftData()
-            AddingContent.addContent('nftData', nftData)
+            addDebug('nftData', nftData)
 
             //find my poolShare
             let listPoolShare = await sender.useSdk.getListShare()
@@ -150,7 +150,7 @@ describe("[Class] Liquidity", () => {
         }).timeout(config.timeoutApi);
 
         it("STEP_CreateTxRemoveLiquidity", async () => {
-            AddingContent.addContent('poolShare', poolShare)
+            addDebug('poolShare', poolShare)
 
             //create tx
             if (!poolShare) return true
@@ -163,7 +163,7 @@ describe("[Class] Liquidity", () => {
                 amount1: 1,
                 amount2: 1,
             })
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
 
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
@@ -214,13 +214,13 @@ describe("[Class] Liquidity", () => {
             let balanceAll = await sender.useSdk.getBalanceAll()
             sender.balanceAllBefore = balanceAll
 
-            AddingContent.addContent("sender.balanceAllBefore", sender.balanceAllBefore)
+            addDebug("sender.balanceAllBefore", sender.balanceAllBefore)
         }).timeout(config.timeoutApi);
 
         it("STEP_FindLiqudityHaveReward", async () => {
 
             let nftData = await sender.useSdk.getNftData()
-            AddingContent.addContent('nftData', nftData)
+            addDebug('nftData', nftData)
 
             //find my poolShare
             let listPoolShare = await sender.useSdk.getListShare()
@@ -238,7 +238,7 @@ describe("[Class] Liquidity", () => {
 
         it("STEP_CreateTxRemoveLiquidity", async () => {
 
-            AddingContent.addContent('poolHaveReward', poolHaveReward)
+            addDebug('poolHaveReward', poolHaveReward)
             if (!poolHaveReward) return true
             let withdrawTokenIDs = []
             if (poolHaveReward.rewards) {
@@ -258,7 +258,7 @@ describe("[Class] Liquidity", () => {
                 nftID: poolHaveReward.nftId,
             })
 
-            AddingContent.addContent('tx', tx)
+            addDebug('tx', tx)
 
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
@@ -275,7 +275,7 @@ describe("[Class] Liquidity", () => {
                 response = await NODES.Incognito.rpc.pdexv3_getWithdrawalLPFeeStatus(tx)
 
                 if (response && response.data && response.data.Result) {
-                    AddingContent.addContent('response.data', response.data)
+                    addDebug('response.data', response.data)
                     let receivers = response.data.Result.Receivers
                     for (const item of Object.keys(receivers)) {
                         for (const tokenID of Object.keys(poolHaveReward.rewards)) {

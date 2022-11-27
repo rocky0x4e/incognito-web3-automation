@@ -1,7 +1,7 @@
 const { TOKEN, POOL } = require('../../../lib/Incognito/Constants')
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
 const GenAction = require("../../../lib/Utils/GenAction");
-const AddingContent = require("../../../lib/Utils/AddingContent");
+const addDebug = require('../../../lib/Utils/AddingContent').addDebug;
 const config = require("../../../config.json");
 let chai = require("chai");
 let assert = require("chai").assert;
@@ -52,7 +52,7 @@ describe("[Class] Pdex", () => {
                 minAcceptableAmount: estimateTradeObject.Result.FeePRV.MaxGet,
             })
 
-            AddingContent.addContent(tx)
+            addDebug(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.ZIL,
@@ -122,7 +122,7 @@ describe("[Class] Pdex", () => {
                 feeToken: TOKEN.ZIL,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
                 tokenID: TOKEN.PRV,
@@ -188,7 +188,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-tradePath" failed: Required. Found undefined (type of undefined)`)
 
         }).timeout(config.timeoutTx);
@@ -204,7 +204,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             chai.expect(tx).to.contain(`create-tx error - error parsing parameters - error parsing metadata`)
             chai.expect(tx).to.contain(`cannot unmarshal number into Go struct field .TradePath of type string`)
 
@@ -222,7 +222,7 @@ describe("[Class] Pdex", () => {
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
 
-            AddingContent.addContent(tx)
+            addDebug(tx)
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject not sansity tx transaction's sansity ${tx} is error -3000: Invalid sanity data for privacy Token Invalid trade request - path empty`)
 
@@ -239,7 +239,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject invalid metadata with blockchain validate metadata of tx ${tx} with blockchain error Not found poolPairID`)
 
@@ -279,7 +279,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
 
         }).timeout(config.timeoutTx);
@@ -298,7 +298,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             chai.expect(tx).to.contain(`Error while preparing inputs Not enough coin to spend ${amountTrade + estimateTradeObject.Result.FeeToken.Fee}`)
 
         }).timeout(config.timeoutTx);
@@ -352,7 +352,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet + 100000,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await NODES.Incognito.rpc.waitForTxSwapHaveStatus(tx)
 
@@ -401,7 +401,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
         }).timeout(config.timeoutTx);
 
@@ -415,7 +415,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await NODES.Incognito.rpc.waitForTxSwapHaveStatus(tx)
 
@@ -464,7 +464,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
 
             //TODO
         }).timeout(config.timeoutTx);
@@ -504,7 +504,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await NODES.Incognito.rpc.waitForTxSwapHaveStatus(tx)
 
@@ -554,7 +554,7 @@ describe("[Class] Pdex", () => {
                 feeToken: 123,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-feetoken" failed: Must be string. Found 123 (type of number)`)
 
 
@@ -570,7 +570,7 @@ describe("[Class] Pdex", () => {
                 feeToken: null,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
 
             assert.include(tx, `Validating "createAndSendOrderRequestTx-feetoken" failed: Required. Found null (type of object)`)
         }).timeout(config.timeoutTx);
@@ -585,7 +585,7 @@ describe("[Class] Pdex", () => {
                 feeToken: TOKEN.BTC,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
 
             assert.include(tx, `Validating "createAndSendOrderRequestTx-feetoken" failed: Required. Found null (type of object)`)
         }).timeout(config.timeoutTx);

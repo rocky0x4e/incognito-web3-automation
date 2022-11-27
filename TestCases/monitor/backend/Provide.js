@@ -1,5 +1,5 @@
 const commonFunction = require("../../../constant/commonFunction");
-const addingContent = require("../../../lib/Utils/AddingContent");
+const addDebug = require('../../../lib/Utils/AddingContent').addDebug;
 let chai = require("chai");
 const { IncAccount } = require("../../../lib/Incognito/Account/Account");
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
@@ -38,13 +38,13 @@ describe("[Class] Provide", () => {
 
         it.skip("STEP_CheckBalanceCli", async () => {
             sender.balanceCLI = await sender.useCli.getBalanceAll();
-            await addingContent.addContent("sender.getBalanceAll", sender.balanceCLI);
+            await addDebug("sender.getBalanceAll", sender.balanceCLI);
             sender.oldBalance = sender.balanceCLI;
         }).timeout(180000);
 
         it.skip("STEP_CheckBalanceSdk", async () => {
             sender.balanceSdk = await sender.useSdk.getBalanceAll();
-            await addingContent.addContent("sender.balanceSdk", sender.balanceSdk);
+            await addDebug("sender.balanceSdk", sender.balanceSdk);
         }).timeout(100000);
 
         it("STEP Send Provide", async () => {
