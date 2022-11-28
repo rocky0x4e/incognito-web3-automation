@@ -317,7 +317,7 @@ describe("[Class] Liquidity", () => {
         }).timeout(config.timeoutTx);
     });
 
-    describe.only("TC004_AddExistLiquidityWithInvalidToken1", async () => {
+    describe("TC004_AddExistLiquidityWithInvalidToken1", async () => {
 
         const logger = getLogger("Pdex")
 
@@ -330,9 +330,8 @@ describe("[Class] Liquidity", () => {
         let listTx = []
         let nftID
         let token1ID = TOKEN.PRV
-        let token2ID = TOKEN.ZIL
-        // let poolPairID = POOL.PRV_USDT
-        let poolPairID = '0000000000000000000000000000000000000000000000000000000000000004-3ee31eba6376fc16cadb52c8765f20b6ebff92c0b1c5ab5fc78c8c25703bb19e-407b251bb4a262391cad3fda612f9b0fd5c282ed0624815450a0cfa53410c6ec'
+        let token2ID = TOKEN.WBNB
+        let poolPairID = POOL.PRV_USDT
 
         it("STEP_InitData", async () => {
             await sender.initSdkInstance();
@@ -359,8 +358,8 @@ describe("[Class] Liquidity", () => {
             }
 
             //randomNumber
-            amount1 = await GenAction.randomNumber(100000000)
-            amount2 = await GenAction.randomNumber(100000000)
+            amount1 = await GenAction.randomNumber(10000)
+            amount2 = await GenAction.randomNumber(10000)
         }).timeout(config.timeoutApi);
 
         it("STEP_CreateTxWithToken1Null", async () => {
