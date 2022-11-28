@@ -14,7 +14,7 @@ const { ACCOUNTS, NODES } = require('../../TestBase');
 const networkBridgeInfo = ENV.Testbed.EthereumFullnode.networkDetail
 const gasFee = ENV.Testbed.EthereumFullnode.configGasTx
 const configBackendToken = ENV.Testbed.EthereumFullnode.configIncBE
-const MIN_BAL_FEE_MASTER_WALLET = 0.05 * 1e18
+const MIN_BAL_FEE_MASTER_WALLET = ENV.Testbed.EthereumFullnode.configIncBE.minimumFeeTheshold
 
 
 describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, async () => {

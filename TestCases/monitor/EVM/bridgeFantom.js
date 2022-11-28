@@ -15,7 +15,7 @@ const { ACCOUNTS, NODES } = require('../../TestBase');
 const networkBridgeInfo = ENV.Testbed.FTMFullnode.networkDetail
 const gasFee = ENV.Testbed.FTMFullnode.configGasTx
 const configBackendToken = ENV.Testbed.FTMFullnode.configIncBE
-const MIN_BAL_FEE_MASTER_WALLET = 0.05 * 1e18
+const MIN_BAL_FEE_MASTER_WALLET = ENV.Testbed.FTMFullnode.configIncBE.minimumFeeTheshold
 
 
 describe(`[ ======  FANTOM BRIDGE - SHIELD ======  ]`, async () => {

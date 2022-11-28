@@ -14,7 +14,7 @@ const { ACCOUNTS, NODES } = require('../../TestBase');
 const networkBridgeInfo = ENV.Testbed.AvaxFullnode.networkDetail
 const gasFee = ENV.Testbed.AvaxFullnode.configGasTx
 const configBackendToken = ENV.Testbed.AvaxFullnode.configIncBE
-const MIN_BAL_FEE_MASTER_WALLET = 0.05 * 1e18
+const MIN_BAL_FEE_MASTER_WALLET = ENV.Testbed.AvaxFullnode.configIncBE.minimumFeeTheshold
 
 describe(`[ ======  AVAX BRIDGE - SHIELD ======  ]`, async () => {
     const tokenID = ENV.Testbed.Tokens.AVAX_AVAX

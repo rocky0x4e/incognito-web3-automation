@@ -14,7 +14,7 @@ const { ACCOUNTS, NODES } = require('../../TestBase');
 const networkBridgeInfo = ENV.Testbed.BSCFullnode.networkDetail
 const gasFee = ENV.Testbed.BSCFullnode.configGasTx
 const configBackendToken = ENV.Testbed.BSCFullnode.configIncBE
-const MIN_BAL_FEE_MASTER_WALLET = 0.05 * 1e18
+const MIN_BAL_FEE_MASTER_WALLET = ENV.Testbed.BSCFullnode.configIncBE.minimumFeeTheshold
 
 
 describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {

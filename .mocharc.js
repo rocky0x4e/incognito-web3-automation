@@ -6,7 +6,7 @@ module.exports = {
     timeout: 20000,
     // parallel: true,
     spec: [
-        // './TestCases/TestBase.js',
+        './TestCases/TestBase.js',
 
         './TestCases/monitor/backend/Login.js',
         './TestCases/monitor/backend/Papp.js',
@@ -23,4 +23,4 @@ module.exports = {
         (charts = true),
         (timestamp = 'longDate'),
     ],
-}
+};

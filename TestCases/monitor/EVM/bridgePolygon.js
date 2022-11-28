@@ -14,7 +14,7 @@ const { ACCOUNTS, NODES } = require('../../TestBase');
 const networkBridgeInfo = ENV.Testbed.PLGFullnode.networkDetail
 const gasFee = ENV.Testbed.PLGFullnode.configGasTx
 const configBackendToken = ENV.Testbed.PLGFullnode.configIncBE
-const MIN_BAL_FEE_MASTER_WALLET = 0.05 * 1e18
+const MIN_BAL_FEE_MASTER_WALLET = ENV.Testbed.PLGFullnode.configIncBE.minimumFeeTheshold
 
 
 describe(`[ ======  POLYGON BRIDGE - SHIELD ======  ]`, async () => {

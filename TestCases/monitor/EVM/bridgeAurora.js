@@ -14,7 +14,7 @@ const { ACCOUNTS, NODES } = require('../../TestBase');
 const networkBridgeInfo = ENV.Testbed.AuroraFullnode.networkDetail
 const gasFee = ENV.Testbed.AuroraFullnode.configGasTx
 const configBackendToken = ENV.Testbed.AuroraFullnode.configIncBE
-const MIN_BAL_FEE_MASTER_WALLET = 0.05 * 1e18
+const MIN_BAL_FEE_MASTER_WALLET = ENV.Testbed.AuroraFullnode.configIncBE.minimumFeeTheshold
 
 
 describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
