@@ -122,18 +122,12 @@ describe("[Class] Send", () => {
 
         it("STEP_InitData", async () => {
             await sender.initSdkInstance();
-            // await sender.useSdk.clearCacheBalance()
 
             await receiver.initSdkInstance();
-            // await receiver.useSdk.clearCacheBalance()
 
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balanceAllBefore = balanceAll
             addDebug("sender.balanceAllBefore", sender.balanceAllBefore)
-
-            balanceAll = await receiver.useCli.getBalanceAll()
-            receiver.balanceAllBefore = balanceAll
-            addDebug("receiver.balanceAllBefore", receiver.balanceAllBefore)
 
         }).timeout(config.timeoutApi);
 
@@ -145,6 +139,39 @@ describe("[Class] Send", () => {
             addDebug({ tx })
 
             assert.equal(tx, "WEB_JS_ERROR: Error while preparing inputs")
+        }).timeout(config.timeoutApi);
+    });
+
+    describe("TC004_SendPRVInvalidAddress", async () => {
+        let amountSend = 0
+        let tx
+
+        it("STEP_InitData", async () => {
+            await sender.initSdkInstance();
+
+            await receiver.initSdkInstance();
+
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balanceAllBefore = balanceAll
+            addDebug("sender.balanceAllBefore", sender.balanceAllBefore)
+
+            balanceAll = await receiver.useCli.getBalanceAll()
+            receiver.balanceAllBefore = balanceAll
+            addDebug("receiver.balanceAllBefore", receiver.balanceAllBefore)
+
+            amountSend = await GenAction.randomNumber(10000)
+            addDebug("amountSend", amountSend)
+
+        }).timeout(config.timeoutApi);
+
+        it("STEP_Send", async () => {
+            tx = await sender.useSdk.sendPRVToPaymentAddress({
+                address: "123",
+                amount: amountSend
+            })
+            addDebug({ tx })
+
+            assert.equal(tx, "Error: Validating \"Payment info paymentAddressStr\" failed: Invalid payment address. Found 123 (type of string)")
         }).timeout(config.timeoutApi);
     });
 
