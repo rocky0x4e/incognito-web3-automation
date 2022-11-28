@@ -11,7 +11,7 @@ let receiver = ACCOUNTS.Incognito.get(3)
 
 
 describe("[Class] Send", () => {
-    describe("TC001_SendPRV", async () => {
+    describe.only("TC001_SendPRV", async () => {
         let amountSend = 0
         let tx
 
@@ -174,6 +174,106 @@ describe("[Class] Send", () => {
             assert.equal(tx, "Error: Validating \"Payment info paymentAddressStr\" failed: Invalid payment address. Found 123 (type of string)")
         }).timeout(config.timeoutApi);
     });
+
+    describe("TC005_SendTokenInvalidAmount", async () => {
+        let amountSend = 0
+        let tx
+        let tokenID = TOKEN.WBNB
+
+        it("STEP_InitData", async () => {
+            await sender.initSdkInstance();
+
+            await receiver.initSdkInstance();
+
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balanceAllBefore = balanceAll
+            addDebug("sender.balanceAllBefore", sender.balanceAllBefore)
+
+        }).timeout(config.timeoutApi);
+
+        it("STEP_Send", async () => {
+
+            tx = await sender.useSdk.sendToken({
+                token: tokenID,
+                receiver,
+                amount: sender.balanceAllBefore[tokenID] + 10000000000000
+            })
+            addDebug({ tx })
+
+            assert.include(tx, "WEB_JS_ERROR: Error while preparing inputs Not enough coin to spend")
+        }).timeout(config.timeoutApi);
+    });
+
+    describe("TC006_SendPRVInvalidAddress", async () => {
+        let amountSend = 0
+        let tx
+        let tokenID = TOKEN.WBNB
+
+        it("STEP_InitData", async () => {
+            await sender.initSdkInstance();
+
+            await receiver.initSdkInstance();
+
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balanceAllBefore = balanceAll
+            addDebug("sender.balanceAllBefore", sender.balanceAllBefore)
+
+            balanceAll = await receiver.useCli.getBalanceAll()
+            receiver.balanceAllBefore = balanceAll
+            addDebug("receiver.balanceAllBefore", receiver.balanceAllBefore)
+
+            amountSend = await GenAction.randomNumber(10000)
+            addDebug("amountSend", amountSend)
+
+        }).timeout(config.timeoutApi);
+
+        it("STEP_Send", async () => {
+            tx = await sender.useSdk.sendTokenToPaymentAddress({
+                token: tokenID,
+                address: "123",
+                amount: amountSend
+            })
+            addDebug({ tx })
+
+            assert.equal(tx, "Error: Validating \"Payment info paymentAddressStr\" failed: Invalid payment address. Found 123 (type of string)")
+        }).timeout(config.timeoutApi);
+    });
+
+    describe("TC007_SendPRVInvalidToken", async () => {
+        let amountSend = 0
+        let tx
+        let tokenID = "abc"
+
+        it("STEP_InitData", async () => {
+            await sender.initSdkInstance();
+
+            await receiver.initSdkInstance();
+
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balanceAllBefore = balanceAll
+            addDebug("sender.balanceAllBefore", sender.balanceAllBefore)
+
+            balanceAll = await receiver.useCli.getBalanceAll()
+            receiver.balanceAllBefore = balanceAll
+            addDebug("receiver.balanceAllBefore", receiver.balanceAllBefore)
+
+            amountSend = await GenAction.randomNumber(10000)
+            addDebug("amountSend", amountSend)
+
+        }).timeout(config.timeoutApi);
+
+        it("STEP_Send", async () => {
+            tx = await sender.useSdk.sendToken({
+                token: tokenID,
+                receiver,
+                amount: amountSend,
+            })
+            addDebug({ tx })
+
+            assert.include(tx, "WEB_JS_ERROR: Error while preparing inputs Not enough coin to spend")
+        }).timeout(config.timeoutApi);
+    });
+
 
 
 })
