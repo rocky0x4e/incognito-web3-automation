@@ -9,7 +9,7 @@ const { ACCOUNTS, NODES } = require('../../TestBase');
 const config = require("../../../config.json");
 
 let coinServiceApi = new CoinServiceApi()
-let sender = ACCOUNTS.Incognito.get(2)
+let sender = ACCOUNTS.Incognito.get(3)
 
 describe("[Class] Liquidity", () => {
     describe("TC001_AddExistLiquidity", async () => {
@@ -317,7 +317,127 @@ describe("[Class] Liquidity", () => {
         }).timeout(config.timeoutTx);
     });
 
-    describe("TC004_AddExistLiquidityWithInvalidToken1", async () => {
+    describe.only("TC004_AddExistLiquidityWithInvalidToken1", async () => {
+
+        const logger = getLogger("Pdex")
+
+        let sender = ACCOUNTS.Incognito.get(3)
+
+        let amount1 = 0
+        let amount2 = 0
+        let actualAmount0Add
+        let actualAmount1Add
+        let listTx = []
+        let nftID
+        let token1ID = TOKEN.PRV
+        let token2ID = TOKEN.ZIL
+        // let poolPairID = POOL.PRV_USDT
+        let poolPairID = '0000000000000000000000000000000000000000000000000000000000000004-3ee31eba6376fc16cadb52c8765f20b6ebff92c0b1c5ab5fc78c8c25703bb19e-407b251bb4a262391cad3fda612f9b0fd5c282ed0624815450a0cfa53410c6ec'
+
+        it("STEP_InitData", async () => {
+            await sender.initSdkInstance();
+            await sender.useSdk.clearCacheBalance()
+
+            //getBalance
+            let balanceAll = await sender.useSdk.getBalanceAll()
+
+            for (const tokenID of Object.keys(balanceAll)) {
+                let symbol = await coinServiceApi.getTokenSymbol(tokenID)
+                console.log(`======> ${symbol} : ${balanceAll[tokenID]}`);
+            }
+
+            sender.balanceAllBefore = balanceAll
+            addDebug('sender.balanceAllBefore ', sender.balanceAllBefore)
+
+            //selectNFT
+            let nftData = await sender.useSdk.getNftData()
+            for (const nft of nftData) {
+                if (nft.realAmount == 1) {
+                    nftID = nft.nftToken
+                }
+                break
+            }
+
+            //randomNumber
+            amount1 = await GenAction.randomNumber(100000000)
+            amount2 = await GenAction.randomNumber(100000000)
+        }).timeout(config.timeoutApi);
+
+        it("STEP_CreateTxWithToken1Null", async () => {
+            //get AMP
+            let poolInfo = await sender.useSdk.getListPoolsDetail(poolPairID)
+            let amp = poolInfo[0].amp
+
+            //create tx
+            listTx = await sender.useSdk.contributeLiquidity({
+                tokenId1: null,
+                tokenId2: token2ID,
+                amount1,
+                amount2,
+                poolPairID: poolPairID,
+                amp,
+                nftID
+            })
+            addDebug('listTx', listTx)
+            assert.equal(listTx, 'Error: Validating "createContributeTxs-tokenId1" failed: Required. Found null (type of object)')
+        }).timeout(config.timeoutTx);
+
+        it("STEP_CreateTxWithToken1Invalid", async () => {
+            //get AMP
+            let poolInfo = await sender.useSdk.getListPoolsDetail(poolPairID)
+            let amp = poolInfo[0].amp
+
+            //create tx
+            listTx = await sender.useSdk.contributeLiquidity({
+                tokenId1: '123',
+                tokenId2: token2ID,
+                amount1,
+                amount2,
+                poolPairID: poolPairID,
+                amp,
+                nftID
+            })
+            addDebug('listTx', listTx)
+            assert.equal(listTx, `WEB_JS_ERROR: Error while preparing inputs Not enough coin to spend ${amount1}`)
+        }).timeout(config.timeoutTx);
+
+        it("STEP_CreateTxWithToken1NotMapWithPoolPairID", async () => {
+            //get AMP
+            let poolInfo = await sender.useSdk.getListPoolsDetail(poolPairID)
+            let amp = poolInfo[0].amp
+
+            //create tx
+            listTx = await sender.useSdk.contributeLiquidity({
+                tokenId1: TOKEN.WBNB,
+                tokenId2: token2ID,
+                amount1,
+                amount2,
+                poolPairID: poolPairID,
+                amp,
+                nftID
+            })
+
+            addDebug('listTx', listTx)
+            for (const tx of listTx) {
+                await NODES.Incognito.getTransactionByHashRpc(tx)
+            }
+            await sender.useSdk.waitForUtxoChange({
+                tokenID: token1ID,
+                countNumber: 15,
+            })
+
+            for (const tx of listTx) {
+                let response = await NODES.Incognito.rpc.pdexv3_getContributionStatus(tx)
+
+                chai.expect(response.data.Result.Status).to.equal(4)
+                chai.expect(response.data.Result.Token0ID).to.equal(token2ID)
+                chai.expect(response.data.Result.Token1ID).to.equal(TOKEN.WBNB)
+                chai.expect(response.data.Result.PoolPairID).to.equal(poolPairID)
+            }
+        }).timeout(config.timeoutTx * 2);
+    });
+
+    describe("TC005_AddExistLiquidityWithInvalidAmount1", async () => {
 
         const logger = getLogger("Pdex")
 
@@ -350,83 +470,70 @@ describe("[Class] Liquidity", () => {
                 }
                 break
             }
+            console.log('hoanh nftData', nftData);
 
             //randomNumber
             amount1 = await GenAction.randomNumber(10000)
             amount2 = await GenAction.randomNumber(10000)
         }).timeout(config.timeoutApi);
 
-        it("STEP_CreateTxWithtoken1Null", async () => {
+        it("STEP_CreateTxWithAmount1Null", async () => {
             //get AMP
             let poolInfo = await sender.useSdk.getListPoolsDetail(poolPairID)
             let amp = poolInfo[0].amp
 
             //create tx
             listTx = await sender.useSdk.contributeLiquidity({
-                tokenId1: null,
+                tokenId1: token1ID,
                 tokenId2: token2ID,
-                amount1,
+                amount1: null,
                 amount2,
                 poolPairID: poolPairID,
                 amp,
                 nftID
             })
             addDebug('listTx', listTx)
-            assert.equal(listTx, 'Error: Validating "createContributeTxs-tokenId1" failed: Required. Found null (type of object)')
+            assert.equal(listTx, 'Error: Validating "createContributeTxs-amount1" failed: Required. Found null (type of object)')
         }).timeout(config.timeoutTx);
 
-        it("STEP_CreateTxWithtoken1Invalid", async () => {
+        it("STEP_CreateTxWithAmount1InvalidFormat", async () => {
             //get AMP
             let poolInfo = await sender.useSdk.getListPoolsDetail(poolPairID)
             let amp = poolInfo[0].amp
 
             //create tx
             listTx = await sender.useSdk.contributeLiquidity({
-                tokenId1: '123',
+                tokenId1: token1ID,
                 tokenId2: token2ID,
-                amount1,
+                amount1: "abc",
                 amount2,
                 poolPairID: poolPairID,
                 amp,
                 nftID
             })
             addDebug('listTx', listTx)
-            assert.equal(listTx, `WEB_JS_ERROR: Error while preparing inputs Not enough coin to spend ${amount1}`)
+            assert.include(listTx, 'create-tx error - cannot parse params <nil> - cannot parse metadata')
+            assert.include(listTx, '- strconv.ParseUint: parsing "abc": invalid syntax')
         }).timeout(config.timeoutTx);
 
-        it("STEP_CreateTxWithtoken1NotMapWithPoolPairID", async () => {
+        it("STEP_CreateTxWithAmount1OverBalance", async () => {
             //get AMP
             let poolInfo = await sender.useSdk.getListPoolsDetail(poolPairID)
             let amp = poolInfo[0].amp
 
             //create tx
             listTx = await sender.useSdk.contributeLiquidity({
-                tokenId1: TOKEN.WBNB,
+                tokenId1: token1ID,
                 tokenId2: token2ID,
-                amount1,
+                amount1: sender.balanceAllBefore[token1ID] + 1000000 * 1e9,
                 amount2,
                 poolPairID: poolPairID,
                 amp,
                 nftID
             })
             addDebug('listTx', listTx)
-            for (const tx of listTx) {
-                await NODES.Incognito.getTransactionByHashRpc(tx)
-            }
-            await sender.useSdk.waitForUtxoChange({
-                tokenID: token1ID,
-                countNumber: 15,
-            })
-
-            for (const tx of listTx) {
-                let response = await NODES.Incognito.rpc.pdexv3_getContributionStatus(tx)
-
-                chai.expect(response.data.Result.Status).to.equal(4)
-                chai.expect(response.data.Result.Token0ID).to.equal(token2ID)
-                chai.expect(response.data.Result.Token1ID).to.equal(TOKEN.WBNB)
-                chai.expect(response.data.Result.PoolPairID).to.equal(poolPairID)
-            }
-        }).timeout(config.timeoutTx * 2);
+            assert.include(listTx, 'WEB_JS_ERROR: Error while preparing inputs')
+        }).timeout(config.timeoutTx);
 
 
     });
