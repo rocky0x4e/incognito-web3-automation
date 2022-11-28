@@ -241,7 +241,7 @@ describe("[Class] Papp", () => {
                 }
             }
 
-        }).timeout(84000);
+        }).timeout(840000);
 
         it("STEP_VerifyBalance", async () => {
             if (!estimateFeeObject) return true
