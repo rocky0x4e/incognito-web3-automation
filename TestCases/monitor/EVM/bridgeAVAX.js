@@ -11,16 +11,10 @@ let Web3 = require('web3');
 let chai = require('chai');
 const { ACCOUNTS, NODES } = require('../../TestBase');
 
-
 const networkBridgeInfo = ENV.Testbed.AvaxFullnode.networkDetail
 const gasFee = ENV.Testbed.AvaxFullnode.configGasTx
 const configBackendToken = ENV.Testbed.AvaxFullnode.configIncBE
-
-const MasterShieldFeeWallet = '0xfebefa80332863d292c768dfed0a3f5bee74e632'
-const MasterUnshieldFeeWallet = '0x2228ad9ec671a1aee2786c04c695a580a3653853'
 const MIN_BAL_FEE_MASTER_WALLET = 0.05 * 1e18
-let signPublicKeyEncode = 'f78fcecf2b0e2b3267d5a1845c314b76f3787f86981c7abcc5b04abc49ae434a';
-
 
 describe(`[ ======  AVAX BRIDGE - SHIELD ======  ]`, async () => {
     const tokenID = ENV.Testbed.Tokens.AVAX_AVAX
@@ -77,11 +71,12 @@ describe(`[ ======  AVAX BRIDGE - SHIELD ======  ]`, async () => {
         it(`[2.1] Get balance before deposit`, async () => {
             accountInfoBefore.extTokenBal = await extAccount.getBalance()
             logger.info(`accountInfoBefore.extTokenBal: ${accountInfoBefore.extTokenBal}`)
-            tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
+            let tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`BE Wallet balance :  ${tmpWalletBal1}`)
         }).timeout(60000);
 
         it(`[2.2] Deposit token`, async () => {
+            let tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`sender ${extAccount.address} -- receiver ${shieldInfo.tmpWalletAddress}`)
 
             let resDeposit = await extAccount.sendNativeToken({
@@ -103,7 +98,7 @@ describe(`[ ======  AVAX BRIDGE - SHIELD ======  ]`, async () => {
             accountInfoAfter.extTokenBal = await extAccount.getBalance()
             logger.info(`accountInfoAfter.extTokenBal: ${accountInfoAfter.extTokenBal}`)
 
-            tmpWalletBal2 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
+            let tmpWalletBal2 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`BE Wallet balance : ${tmpWalletBal2}`)
             chai.assert.isTrue(tmpWalletBal2 > tmpWalletBal1)
         }).timeout(60000);
@@ -111,9 +106,10 @@ describe(`[ ======  AVAX BRIDGE - SHIELD ======  ]`, async () => {
 
     describe(`STEP_3 Verify record shield backend`, async () => {
         it('[3.1] Check balance Shield Fee Master Wallet', async () => {
-            let balFeeMaster = await web3.eth.getBalance(MasterShieldFeeWallet)
+            let balFeeMaster = await web3.eth.getBalance(configBackendToken.shieldFeeWallet)
+            
             if (balFeeMaster < MIN_BAL_FEE_MASTER_WALLET) {
-                slack.setInfo(`Need send more fee to Mater Fee Wallet  ${MasterShieldFeeWallet}`).send()
+                slack.setInfo(`Need send more fee to Mater Shield Fee Wallet  ${configBackendToken.shieldFeeWallet}`).send()
             }
             await chai.assert.isTrue(balFeeMaster > MIN_BAL_FEE_MASTER_WALLET)
         }).timeout(60000);
@@ -124,7 +120,7 @@ describe(`[ ======  AVAX BRIDGE - SHIELD ======  ]`, async () => {
                 PrivacyTokenAddress: tokenID
             })
             await validateSchemaCommand.validateSchema(backendApischemas.historyTokenAccountSchemas, resBefore.data)
-            
+
             shieldInfo.shieldBackendId = await account.waitForNewShieldRecord({
                 tokenId: tokenID,
                 interval: shieldInfo.blockTime * 4,
@@ -156,7 +152,7 @@ describe(`[ ======  AVAX BRIDGE - SHIELD ======  ]`, async () => {
                 logger.info(`Shield status =  ${tmp.data.Result.Status}  ----  ${tmp.data.Result.StatusMessage}  ---  ${tmp.data.Result.StatusDetail}`)
                 resDetail.data.Result.Status = tmp.data.Result.Status
                 if (resDetail.data.Result.Status === 12) {
-                    shieldInfo.shieldTokenFee = Number(resDetail.data.Result.TokenFee / 1e18)
+                    shieldInfo.shieldTokenFee = Number(resDetail.data.Result.TokenFee / 1e18).toFixed(9)
                     logger.info(`Shielding successfull`)
                     break
                 }
@@ -180,7 +176,7 @@ describe(`[ ======  AVAX BRIDGE - SHIELD ======  ]`, async () => {
             await wait(shieldInfo.blockTime * 3)
             accountInfoAfter.incTokenBal = await account.useCli.getBalance(tokenID)
             logger.info(`Token balance after shield: ${accountInfoAfter.incTokenBal}`)
-            chai.assert.equal(accountInfoAfter.incTokenBal , accountInfoBefore.incTokenBal + Number((shieldInfo.shieldAmt - shieldInfo.shieldTokenFee) * Number('1e' + shieldInfo.pTokenDecimal))  , 'mint token unsuceessfull')
+            chai.assert.equal(accountInfoAfter.incTokenBal, accountInfoBefore.incTokenBal + Number((shieldInfo.shieldAmt - shieldInfo.shieldTokenFee) * Number('1e' + shieldInfo.pTokenDecimal)), 'mint token unsuceessfull')
         }).timeout(100000);
     })
 });
@@ -235,7 +231,7 @@ describe(`[======  AVAX BRIDGE -- UNSHIELDING ====== ]`, async () => {
                 unifiedTokenId: '',
                 IncPaymentAddr: account.paymentK,
                 decimalPToken: unshieldInfo.pTokenDecimal
-            })  
+            })
             unshieldInfo.backendId = resEst.data.Result.ID
             unshieldInfo.unshieldTokenFee = resEst.data.Result.TokenFees.Level1
             logger.info(`Fee token unshield:  ${unshieldInfo.unshieldTokenFee}`)
@@ -248,7 +244,7 @@ describe(`[======  AVAX BRIDGE -- UNSHIELDING ====== ]`, async () => {
     describe(`STEP_2 Burn token`, async () => {
         it(`[2.1] Create unshield transaction by SDK `, async () => {
             await account.initSdkInstance();
-            
+
             unshieldInfo.unshieldIncTx = await account.useSdk.unshieldEvm({
                 unshieldBackendId: unshieldInfo.backendId,
                 tokenId: tokenID,
@@ -284,9 +280,9 @@ describe(`[======  AVAX BRIDGE -- UNSHIELDING ====== ]`, async () => {
 
     describe(`STEP_3 Verify record unshield backend`, async () => {
         it('[3.1] Check balance Unhield Fee Master Wallet', async () => {
-            let balFeeMaster = await web3.eth.getBalance(MasterUnshieldFeeWallet)
+            let balFeeMaster = await web3.eth.getBalance(configBackendToken.unshieldFeeWallet)
             if (balFeeMaster < MIN_BAL_FEE_MASTER_WALLET) {
-                slack.setInfo(`Need send more fee to Mater Fee Wallet  ${MasterUnshieldFeeWallet}`).send()
+                slack.setInfo(`Need send more fee to Mater Unshield Fee Wallet  ${configBackendToken.unshieldFeeWallet}`).send()
             }
             await chai.assert.isTrue(balFeeMaster > MIN_BAL_FEE_MASTER_WALLET)
         }).timeout(60000);
@@ -352,7 +348,7 @@ describe(`[======  AVAX BRIDGE -- UNSHIELDING ====== ]`, async () => {
         it('Verify update balance', async () => {
             accountInfoAfter.extTokenBal = await web3.eth.getBalance(extAccount.address)
             logger.info(`receiver balance : ${accountInfoAfter.extTokenBal}`)
-            chai.assert.equal(accountInfoAfter.extTokenBal, Number(accountInfoBefore.extTokenBal) + Number(unshieldInfo.unshieldAmt * 1e9),  `the receiver has not received yet`)
+            chai.assert.equal(accountInfoAfter.extTokenBal, Number(accountInfoBefore.extTokenBal) + Number(unshieldInfo.unshieldAmt * 1e9), `the receiver has not received yet`)
         })
     }).timeout(120000);
 })

@@ -14,11 +14,7 @@ const { ACCOUNTS, NODES } = require('../../TestBase');
 const networkBridgeInfo = ENV.Testbed.BSCFullnode.networkDetail
 const gasFee = ENV.Testbed.BSCFullnode.configGasTx
 const configBackendToken = ENV.Testbed.BSCFullnode.configIncBE
-
-const MasterShieldFeeWallet = '0xfebefa80332863d292c768dfed0a3f5bee74e632'
-const MasterUnshieldFeeWallet = '0x2228ad9ec671a1aee2786c04c695a580a3653853'
 const MIN_BAL_FEE_MASTER_WALLET = 0.05 * 1e18
-let signPublicKeyEncode = 'f78fcecf2b0e2b3267d5a1845c314b76f3787f86981c7abcc5b04abc49ae434a';
 
 
 describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {
@@ -45,7 +41,7 @@ describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {
         shieldPrvFee: 0,
         shieldTokenFee: 0,
         tmpWalletAddress: null,
-        timeout: 900,
+        timeout: 00,
         txDeposit: null,
         blockTime: 20,
         pTokenDecimal: 9
@@ -77,16 +73,17 @@ describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {
         it(`[2.1] Get balance before deposit`, async () => {
             accountInfoBefore.extTokenBal = await extAccount.getBalance()
             logger.info(`accountInfoBefore.extTokenBal: ${accountInfoBefore.extTokenBal}`)
-            tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
+            let tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`BE Wallet balance :  ${tmpWalletBal1}`)
         }).timeout(60000);
 
         it(`[2.2] Deposit token`, async () => {
+            let tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`sender ${extAccount.address} -- receiver ${shieldInfo.tmpWalletAddress}`)
 
             let resDeposit = await extAccount.sendNativeToken({
                 to: shieldInfo.tmpWalletAddress,
-                amount: web3.utils.toWei((shieldInfo.shieldAmt + shieldInfo.shieldTokenFee).toString(), 'ether'),
+                amount: web3.utils.toWei(shieldInfo.shieldAmt.toString(), 'ether'),
                 gas: gasFee.gasPrice,
                 gasLimit: gasFee.gasLimit,
                 chainName: networkBridgeInfo.chain,
@@ -103,7 +100,7 @@ describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {
             accountInfoAfter.extTokenBal = await extAccount.getBalance()
             logger.info(`accountInfoAfter.extTokenBal: ${accountInfoAfter.extTokenBal}`)
 
-            tmpWalletBal2 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
+            let tmpWalletBal2 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`BE Wallet balance : ${tmpWalletBal2}`)
             chai.assert.isTrue(tmpWalletBal2 > tmpWalletBal1)
         }).timeout(60000);
@@ -111,9 +108,9 @@ describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {
 
     describe(`STEP_3 Verify record shield backend`, async () => {
         it('[3.1] Check balance Shield Fee Master Wallet', async () => {
-            let balFeeMaster = await web3.eth.getBalance(MasterShieldFeeWallet)
+            let balFeeMaster = await web3.eth.getBalance(configBackendToken.shieldFeeWallet)
             if (balFeeMaster < MIN_BAL_FEE_MASTER_WALLET) {
-                slack.setInfo(`Need send more fee to Mater Fee Wallet  ${MasterShieldFeeWallet}`).send()
+                slack.setInfo(`Need send more fee to Mater Shield Fee Wallet  ${configBackendToken.shieldFeeWallet}`).send()
             }
             await chai.assert.isTrue(balFeeMaster > MIN_BAL_FEE_MASTER_WALLET)
         }).timeout(60000);
@@ -155,7 +152,7 @@ describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {
                 logger.info(`Shield status =  ${tmp.data.Result.Status}  ----  ${tmp.data.Result.StatusMessage}  ---  ${tmp.data.Result.StatusDetail}`)
                 resDetail.data.Result.Status = tmp.data.Result.Status
                 if (resDetail.data.Result.Status === 12) {
-                    shieldInfo.shieldTokenFee = Number(resDetail.data.Result.TokenFee / 1e18)
+                    shieldInfo.shieldTokenFee = Number(resDetail.data.Result.TokenFee / 1e18).toFixed(9)
                     logger.info(`'Shielding successfull`)
                     break
                 }
@@ -257,7 +254,6 @@ describe(`[======  BSC BRIDGE -- UNSHIELDING ====== ]`, async () => {
                 receiver: unshieldInfo.feeAccount,
                 amount: unshieldInfo.unshieldAmt,
                 amountFee: unshieldInfo.unshieldTokenFee,
-                decimalPtoken: unshieldInfo.pTokenDecimal,
                 remoteAddress: extAccount.address
             })
             logger.info(`Unshield INC tx :  ${unshieldInfo.unshieldIncTx}`)
@@ -285,9 +281,9 @@ describe(`[======  BSC BRIDGE -- UNSHIELDING ====== ]`, async () => {
 
     describe(`STEP_3 Verify record unshield backend`, async () => {
         it('[3.1] Check balance Unhield Fee Master Wallet', async () => {
-            let balFeeMaster = await web3.eth.getBalance(MasterUnshieldFeeWallet)
+            let balFeeMaster = await web3.eth.getBalance(configBackendToken.unshieldFeeWallet)
             if (balFeeMaster < MIN_BAL_FEE_MASTER_WALLET) {
-                slack.setInfo(`Need send more fee to Mater Fee Wallet  ${MasterUnshieldFeeWallet}`).send()
+                slack.setInfo(`Need send more fee to Mater Unshield Fee Wallet  ${configBackendToken.unshieldFeeWallet}`).send()
             }
             await chai.assert.isTrue(balFeeMaster > MIN_BAL_FEE_MASTER_WALLET)
         }).timeout(60000);
