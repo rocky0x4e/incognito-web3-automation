@@ -70,7 +70,6 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
 
     describe(`STEP_2 Deposit token`, async () => {
         it(`[2.1] Get balance before deposit`, async () => {
-             let tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             accountInfoBefore.extTokenBal = await extAccount.getBalance()
             logger.info(`accountInfoBefore.extTokenBal: ${accountInfoBefore.extTokenBal}`)
             let tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
@@ -78,6 +77,7 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
         }).timeout(60000);
 
         it(`[2.2] Deposit token`, async () => {
+            let tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`sender ${extAccount.address} -- receiver ${shieldInfo.tmpWalletAddress}`)
 
             let resDeposit = await extAccount.sendNativeToken({
