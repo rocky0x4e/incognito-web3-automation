@@ -4,6 +4,7 @@ const config = require("../../../config.json");
 let chai = require("chai");
 const addDebug = require('../../../lib/Utils/AddingContent').addDebug;
 const { ACCOUNTS, NODES } = require('../../TestBase');
+let assert = require("chai").assert
 
 let sender = ACCOUNTS.Incognito.get(2)
 let receiver = ACCOUNTS.Incognito.get(3)
@@ -61,14 +62,17 @@ describe("[Class] Send", () => {
         }).timeout(config.timeoutTx);
     });
 
-    describe.skip("TC002_SendToken", async () => {
+    describe("TC002_SendToken", async () => {
         let amountSend = 0
         let tx
         let tokenID = TOKEN.WBNB
 
         it("STEP_InitData", async () => {
             await sender.initSdkInstance();
+            await sender.useSdk.clearCacheBalance()
+
             await receiver.initSdkInstance();
+            await receiver.useSdk.clearCacheBalance()
 
             let balanceAll = await sender.useCli.getBalanceAll()
             sender.balanceAllBefore = balanceAll
@@ -111,4 +115,38 @@ describe("[Class] Send", () => {
 
         }).timeout(config.timeoutTx);
     });
+
+    describe("TC003_SendPRVInvalidAmount", async () => {
+        let amountSend = 0
+        let tx
+
+        it("STEP_InitData", async () => {
+            await sender.initSdkInstance();
+            // await sender.useSdk.clearCacheBalance()
+
+            await receiver.initSdkInstance();
+            // await receiver.useSdk.clearCacheBalance()
+
+            let balanceAll = await sender.useCli.getBalanceAll()
+            sender.balanceAllBefore = balanceAll
+            addDebug("sender.balanceAllBefore", sender.balanceAllBefore)
+
+            balanceAll = await receiver.useCli.getBalanceAll()
+            receiver.balanceAllBefore = balanceAll
+            addDebug("receiver.balanceAllBefore", receiver.balanceAllBefore)
+
+        }).timeout(config.timeoutApi);
+
+        it("STEP_Send", async () => {
+            tx = await sender.useSdk.sendPRV({
+                receiver,
+                amount: sender.balanceAllBefore[TOKEN.PRV] + 10000000000000
+            })
+            addDebug({ tx })
+
+            assert.equal(tx, "WEB_JS_ERROR: Error while preparing inputs")
+        }).timeout(config.timeoutApi);
+    });
+
+
 })
