@@ -11,7 +11,7 @@ let receiver = ACCOUNTS.Incognito.get(3)
 
 
 describe("[Class] Send", () => {
-    describe.only("TC001_SendPRV", async () => {
+    describe("TC001_SendPRV", async () => {
         let amountSend = 0
         let tx
 
