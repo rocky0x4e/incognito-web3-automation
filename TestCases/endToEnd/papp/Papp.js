@@ -25,7 +25,7 @@ let webServiceApi = new WebServiceApi()
 let sender = ACCOUNTS.Incognito.get(2)
 
 describe("[Class] Papp", () => {
-    describe("TC001_TradePancakeReDeposit", async () => {
+    describe.skip("TC001_TradePancakeReDeposit", async () => {
         let ammountSell = 0
         let estimateFeeObject
         let tx
@@ -145,7 +145,7 @@ describe("[Class] Papp", () => {
         }).timeout(config.timeoutTx);
     });
 
-    describe("TC001_TradeUniswapReDeposit", async () => {
+    describe("TC002_TradeUniswapReDeposit", async () => {
         let ammountSell = 0
         let estimateFeeObject
         let tx
@@ -241,7 +241,7 @@ describe("[Class] Papp", () => {
                 }
             }
 
-        }).timeout(840000);
+        }).timeout(84000);
 
         it("STEP_VerifyBalance", async () => {
             if (!estimateFeeObject) return true
