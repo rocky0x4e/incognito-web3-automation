@@ -1,6 +1,7 @@
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const backendApi_schemas = require("../../../schemas/backendApi_schemas");
 const { BackendApi } = require('../../../lib/Incognito/BackendApi');
+const addDebug = require('../../../lib/Utils/AddingContent').addDebug;
 
 
 let backendApi = new BackendApi()

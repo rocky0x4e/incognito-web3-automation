@@ -17,13 +17,12 @@ const ACCOUNTS = {
     Evm: (new EvmAccountGroup()).importKeyList(ENV.Testdata.Keys.EVM)
 }
 
-beforeEach(function() {
+beforeEach(function () {
     addingContent.resetContent()
 })
 
-afterEach(function() {
-
-    for (const item of addingContent.getContent()) {
+afterEach(function () {
+    for (const item of addingContent.getDebug()) {
         if (item.value) {
             logger.debug({ item });
             addContext(this, {
@@ -37,7 +36,25 @@ afterEach(function() {
                 value: item.key
             });
         }
+    }
 
+    //If test fail  
+    if (this.currentTest.state != 'passed') {
+        for (const item of addingContent.getContent()) {
+            if (item.value) {
+                logger.debug({ item });
+                addContext(this, {
+                    title: item.key,
+                    value: item.value
+                });
+            } else {
+                logger.debug(item.key);
+                addContext(this, {
+                    title: 'log',
+                    value: item.key
+                });
+            }
+        }
     }
 })
 

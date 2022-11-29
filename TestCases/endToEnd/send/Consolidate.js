@@ -1,15 +1,16 @@
 const { TOKEN } = require('../../../lib/Incognito/Constants')
-const AddingContent = require('../../../lib/Utils/AddingContent')
+const addDebug = require('../../../lib/Utils/AddingContent').addDebug
 let chai = require("chai");
+let assert = require("chai").assert;
 const { ACCOUNTS, NODES } = require('../../TestBase');
 const config = require("../../../config.json");
 
 let sender = ACCOUNTS.Incognito.get(3)
 
 describe("[Class] Consolidate", () => {
-    describe("TC001_ConsolidatePRV", async() => {
+    describe("TC001_ConsolidatePRV", async () => {
 
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
 
             let balanceAll = await sender.useSdk.getBalanceAll()
@@ -18,10 +19,10 @@ describe("[Class] Consolidate", () => {
             let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: TOKEN.PRV })
         }).timeout(config.timeoutApi);
 
-        it("STEP_Consolidate", async() => {
+        it("STEP_Consolidate", async () => {
             listTx = await sender.useSdk.consolidate({ tokenID: TOKEN.PRV })
 
-            AddingContent.addContent("listTx", listTx)
+            addDebug("listTx", listTx)
 
             for (const tx of listTx) {
                 await NODES.Incognito.getTransactionByHashRpc(tx)
@@ -35,30 +36,27 @@ describe("[Class] Consolidate", () => {
 
         }).timeout(config.timeoutTx);
 
-        it("STEP_VerifyNumberUtxo", async() => {
+        it("STEP_VerifyNumberUtxo", async () => {
             let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: TOKEN.PRV })
 
             chai.expect(getNumberUtxo).to.be.below(2);
         }).timeout(config.timeoutApi);
     });
 
-    describe("TC002_ConsolidateToken", async() => {
+    describe("TC002_ConsolidateToken", async () => {
 
         let tokenID = TOKEN.USDT_UT
-        it("STEP_InitData", async() => {
+        it("STEP_InitData", async () => {
             await sender.initSdkInstance();
 
             let balanceAll = await sender.useSdk.getBalanceAll()
             sender.balanceToken = balanceAll[tokenID]
-
-            let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: tokenID })
-            console.log('hoanh  getNumberUtxo', getNumberUtxo);
         }).timeout(config.timeoutApi);
 
-        it("STEP_Consolidate", async() => {
+        it("STEP_Consolidate", async () => {
             listTx = await sender.useSdk.consolidate({ tokenID: tokenID })
 
-            AddingContent.addContent("listTx", listTx)
+            addDebug("listTx", listTx)
 
             for (const tx of listTx) {
                 await NODES.Incognito.getTransactionByHashRpc(tx)
@@ -72,10 +70,29 @@ describe("[Class] Consolidate", () => {
             }
         }).timeout(config.timeoutTx);
 
-        it("STEP_VerifyNumberUtxo", async() => {
+        it("STEP_VerifyNumberUtxo", async () => {
             let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: tokenID })
 
             chai.expect(getNumberUtxo).to.be.below(2);
         }).timeout(config.timeoutApi);
+    });
+
+    describe("TC003_ConsolidateInvalidToken", async () => {
+
+        let tokenID = 'abc'
+        it("STEP_InitData", async () => {
+            await sender.initSdkInstance();
+
+            let balanceAll = await sender.useSdk.getBalanceAll()
+            sender.balanceToken = balanceAll[tokenID]
+        }).timeout(config.timeoutApi);
+
+        it("STEP_Consolidate", async () => {
+            listTx = await sender.useSdk.consolidate({ tokenID: tokenID })
+            addDebug("listTx", listTx)
+
+            assert.equal(listTx.length, 0)
+        }).timeout(config.timeoutTx);
+
     });
 });

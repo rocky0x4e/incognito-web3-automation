@@ -1,7 +1,7 @@
 const { TOKEN, POOL } = require('../../../lib/Incognito/Constants')
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
 const GenAction = require("../../../lib/Utils/GenAction");
-const AddingContent = require("../../../lib/Utils/AddingContent");
+const addDebug = require('../../../lib/Utils/AddingContent').addDebug;
 const config = require("../../../config.json");
 let chai = require("chai");
 let assert = require("chai").assert;
@@ -14,27 +14,26 @@ let coinServiceApi = new CoinServiceApi();
 let sender = ACCOUNTS.Incognito.get(2)
 
 describe("[Class] Pdex", () => {
-    describe.skip("TC001_TradePRVToToken", async () => {
+    describe("TC001_TradePRVToToken", async () => {
         let amountTrade = 0
         let estimateTradeObject
         let tx
+        let tokenSell = TOKEN.PRV
+        let tokenBuy = TOKEN.ZIL
 
         it("STEP_InitData", async () => {
             await sender.initSdkInstance();
             let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
-            sender.balanceZILBefore = balanceAll[TOKEN.ZIL]
-
-            logger.info({ balancePRVBefore: sender.balancePRVBefore })
-            logger.info({ balanceZILBefore: sender.balanceZILBefore })
+            sender.balanceAllBefore = balanceAll
+            addDebug("sender.balanceAllBefore", sender.balanceAllBefore)
 
             amountTrade = await GenAction.randomNumber(1000)
         }).timeout(config.timeoutApi);
 
         it("STEP_CoinServiceEstimateTrade", async () => {
             let estimateTrade = await coinServiceApi.estimateTrade({
-                tokenSell: TOKEN.PRV,
-                tokenBuy: TOKEN.ZIL,
+                tokenSell: tokenSell,
+                tokenBuy: tokenBuy,
                 sellAmount: amountTrade
             })
             estimateTradeObject = estimateTrade.data
@@ -52,11 +51,11 @@ describe("[Class] Pdex", () => {
                 minAcceptableAmount: estimateTradeObject.Result.FeePRV.MaxGet,
             })
 
-            AddingContent.addContent(tx)
+            addDebug(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
-                tokenID: TOKEN.ZIL,
-                countNumber: 20,
+                tokenID: tokenBuy,
+                countNumber: 15,
             })
         }).timeout(config.timeoutTx);
 
@@ -66,37 +65,33 @@ describe("[Class] Pdex", () => {
 
             chai.expect(response.data.Result.Status).to.equal(1)
             chai.expect(response.data.Result.BuyAmount).to.above(1)
-            chai.expect(response.data.Result.TokenToBuy).to.equal(TOKEN.ZIL)
+            chai.expect(response.data.Result.TokenToBuy).to.equal(tokenBuy)
 
         }).timeout(config.timeoutTx);
 
         it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balancePRVAfter = balanceAll[TOKEN.PRV]
-            sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
-            logger.info({ balancePRVAfter: sender.balancePRVAfter })
-            logger.info({ balanceZILAfter: sender.balanceZILAfter })
+            sender.balanceAllAfter = balanceAll
+            addDebug("sender.balanceAllAfter", sender.balanceAllAfter)
 
-            chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - amountTrade - 100 - estimateTradeObject.Result.FeePRV.Fee);
-            chai.expect(sender.balanceZILAfter).to.be.least(sender.balanceZILBefore + estimateTradeObject.Result.FeePRV.MaxGet);
+            chai.expect(sender.balanceAllAfter[tokenSell]).to.equal(sender.balanceAllBefore[tokenSell] - amountTrade - 100 - estimateTradeObject.Result.FeePRV.Fee);
+            chai.expect(sender.balanceAllAfter[tokenBuy]).to.be.least(sender.balanceAllBefore[tokenBuy] + estimateTradeObject.Result.FeePRV.MaxGet);
 
         }).timeout(config.timeoutApi);
     });
 
-    describe.skip("TC002_TradeTokenToPRV", async () => {
+    describe("TC002_TradeTokenToPRV", async () => {
         let amountTrade = 0
         let estimateTradeObject
         let tx
+        let tokenSell = TOKEN.ZIL
+        let tokenBuy = TOKEN.PRV
 
         it("STEP_InitData", async () => {
             await sender.initSdkInstance();
             let balanceAll = await sender.useCli.getBalanceAll()
-
-            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
-            sender.balanceZILBefore = balanceAll[TOKEN.ZIL]
-
-            logger.info({ balancePRVBefore: sender.balancePRVBefore })
-            logger.info({ balanceZILBefore: sender.balanceZILBefore })
+            sender.balanceAllBefore = balanceAll
+            addDebug("sender.balanceAllBefore", sender.balanceAllBefore)
 
             amountTrade = await GenAction.randomNumber(1000)
         }).timeout(config.timeoutApi);
@@ -114,19 +109,19 @@ describe("[Class] Pdex", () => {
         it("STEP_Trade", async () => {
 
             tx = await sender.useSdk.swap({
-                tokenSell: TOKEN.ZIL,
-                tokenBuy: TOKEN.PRV,
+                tokenSell: tokenSell,
+                tokenBuy: tokenBuy,
                 amount: amountTrade,
                 tradePath: estimateTradeObject.Result.FeeToken.Route,
                 tradingFee: estimateTradeObject.Result.FeeToken.Fee,
-                feeToken: TOKEN.ZIL,
+                feeToken: tokenSell,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
-                tokenID: TOKEN.PRV,
-                countNumber: 20,
+                tokenID: tokenBuy,
+                countNumber: 15,
             })
         }).timeout(config.timeoutTx);
 
@@ -136,19 +131,17 @@ describe("[Class] Pdex", () => {
 
             chai.expect(response.data.Result.Status).to.equal(1)
             chai.expect(response.data.Result.BuyAmount).to.above(1)
-            chai.expect(response.data.Result.TokenToBuy).to.equal(TOKEN.PRV)
+            chai.expect(response.data.Result.TokenToBuy).to.equal(tokenBuy)
 
         }).timeout(config.timeoutTx);
 
         it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balancePRVAfter = balanceAll[TOKEN.PRV]
-            sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
-            logger.info({ balancePRVAfter: sender.balancePRVAfter })
-            logger.info({ balanceZILAfter: sender.balanceZILAfter })
+            sender.balanceAllAfter = balanceAll
+            addDebug("sender.balanceAllAfter", sender.balanceAllAfter)
 
-            chai.expect(sender.balancePRVAfter).to.least(sender.balancePRVBefore - 100 + estimateTradeObject.Result.FeePRV.MaxGet);
-            chai.expect(sender.balanceZILAfter).to.be.equal(sender.balanceZILBefore - amountTrade - estimateTradeObject.Result.FeeToken.Fee);
+            chai.expect(sender.balanceAllAfter[tokenBuy]).to.least(sender.balanceAllBefore[tokenBuy] - 100 + estimateTradeObject.Result.FeePRV.MaxGet);
+            chai.expect(sender.balanceAllAfter[tokenSell]).to.be.equal(sender.balanceAllBefore[tokenSell] - amountTrade - estimateTradeObject.Result.FeeToken.Fee);
 
         }).timeout(config.timeoutApi);
     });
@@ -188,7 +181,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-tradePath" failed: Required. Found undefined (type of undefined)`)
 
         }).timeout(config.timeoutTx);
@@ -204,7 +197,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             chai.expect(tx).to.contain(`create-tx error - error parsing parameters - error parsing metadata`)
             chai.expect(tx).to.contain(`cannot unmarshal number into Go struct field .TradePath of type string`)
 
@@ -222,7 +215,7 @@ describe("[Class] Pdex", () => {
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
 
-            AddingContent.addContent(tx)
+            addDebug(tx)
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject not sansity tx transaction's sansity ${tx} is error -3000: Invalid sanity data for privacy Token Invalid trade request - path empty`)
 
@@ -239,7 +232,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             let response = await coinServiceApi.gettxstatus({ tx })
             chai.expect(response.data.ErrMsg).to.contain(`Reject invalid metadata with blockchain validate metadata of tx ${tx} with blockchain error Not found poolPairID`)
 
@@ -279,7 +272,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
 
         }).timeout(config.timeoutTx);
@@ -298,7 +291,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             chai.expect(tx).to.contain(`Error while preparing inputs Not enough coin to spend ${amountTrade + estimateTradeObject.Result.FeeToken.Fee}`)
 
         }).timeout(config.timeoutTx);
@@ -352,7 +345,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet + 100000,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await NODES.Incognito.rpc.waitForTxSwapHaveStatus(tx)
 
@@ -401,7 +394,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
         }).timeout(config.timeoutTx);
 
@@ -415,7 +408,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await NODES.Incognito.rpc.waitForTxSwapHaveStatus(tx)
 
@@ -464,7 +457,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
 
             //TODO
         }).timeout(config.timeoutTx);
@@ -504,7 +497,7 @@ describe("[Class] Pdex", () => {
                 feeToken: sellTokenID,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await NODES.Incognito.rpc.waitForTxSwapHaveStatus(tx)
 
@@ -554,7 +547,7 @@ describe("[Class] Pdex", () => {
                 feeToken: 123,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
             chai.expect(tx).to.contain(`Validating "createAndSendOrderRequestTx-feetoken" failed: Must be string. Found 123 (type of number)`)
 
 
@@ -570,7 +563,7 @@ describe("[Class] Pdex", () => {
                 feeToken: null,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
 
             assert.include(tx, `Validating "createAndSendOrderRequestTx-feetoken" failed: Required. Found null (type of object)`)
         }).timeout(config.timeoutTx);
@@ -585,7 +578,7 @@ describe("[Class] Pdex", () => {
                 feeToken: TOKEN.BTC,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
-            AddingContent.addContent(tx)
+            addDebug(tx)
 
             assert.include(tx, `Validating "createAndSendOrderRequestTx-feetoken" failed: Required. Found null (type of object)`)
         }).timeout(config.timeoutTx);
