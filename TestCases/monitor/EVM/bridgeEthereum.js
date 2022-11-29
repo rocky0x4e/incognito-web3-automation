@@ -36,7 +36,7 @@ describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, async () => {
     }
 
     const shieldInfo = {
-        shieldAmt: 0.01, // eth
+        shieldAmt: 0.009, // eth
         shieldBackendId: null,
         shieldPrvFee: 0,
         shieldTokenFee: 0,
@@ -321,6 +321,10 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, async () => {
                     break
                 } else if (resDetail.data.Result.Status === 34) {
                     slack.setInfo(`NotEnoughVaultPleaseWait -- unshield Id = ${unshieldInfo.backendId}  in status = ${resDetail.data.Result.Status} --- ${tmp.data.Result.StatusDetail}`).send()
+                    break
+                }
+                else if (resDetail.data.Result.Status === 20) {
+                    slack.setInfo(`Submit tx backend failed -- unshield Id = ${unshieldInfo.backendId}  in status = ${resDetail.data.Result.Status} --- ${tmp.data.Result.StatusDetail}`).send()
                     break
                 }
                 unshieldInfo.unshieldExtTx = tmp.data.Result.OutChainTx.substring(tmp.data.Result.OutChainTx.indexOf(`0x`))

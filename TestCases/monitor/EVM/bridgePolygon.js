@@ -23,7 +23,7 @@ describe(`[ ======  POLYGON BRIDGE - SHIELD ======  ]`, async () => {
     let web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.PLGFullnode.url))
     let account = ACCOUNTS.Incognito.get(0)
     let backendApi = new BackendApi()
-    let extAccount = ACCOUNTS.Evm.get(0).setProvider(ENV.Testbed.PLGFullnode.url)
+    let extAccount = ACCOUNTS.Evm.get(2).setProvider(ENV.Testbed.PLGFullnode.url)
     let slack = makeSlackAlert("POLYGON_Shielding")
 
     const accountInfoBefore = {
@@ -36,7 +36,7 @@ describe(`[ ======  POLYGON BRIDGE - SHIELD ======  ]`, async () => {
     }
 
     const shieldInfo = {
-        shieldAmt: 0.01, // bnb
+        shieldAmt: 0.09, // bnb
         shieldBackendId: null,
         shieldPrvFee: 0,
         shieldTokenFee: 0,
@@ -99,7 +99,6 @@ describe(`[ ======  POLYGON BRIDGE - SHIELD ======  ]`, async () => {
 
             accountInfoAfter.extTokenBal = await extAccount.getBalance()
             logger.info(`accountInfoAfter.extTokenBal: ${accountInfoAfter.extTokenBal}`)
-
             let tmpWalletBal2 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`BE Wallet balance : ${tmpWalletBal2}`)
             chai.assert.isTrue(tmpWalletBal2 > tmpWalletBal1)
@@ -189,7 +188,7 @@ describe(`[======  POLYGON BRIDGE -- UNSHIELDING ====== ]`, async () => {
     let web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.PLGFullnode.url))
 
     let account = ACCOUNTS.Incognito.get(0)
-    let extAccount = ACCOUNTS.Evm.get(0).setProvider(ENV.Testbed.PLGFullnode.url)
+    let extAccount = ACCOUNTS.Evm.get(2).setProvider(ENV.Testbed.PLGFullnode.url)
     let backendApi = new BackendApi()
     let slack = makeSlackAlert("POLYGON_UnShielding")
 
@@ -320,6 +319,10 @@ describe(`[======  POLYGON BRIDGE -- UNSHIELDING ====== ]`, async () => {
                     break
                 } else if (resDetail.data.Result.Status === 34) {
                     slack.setInfo(`NotEnoughVaultPleaseWait -- unshield Id = ${unshieldInfo.backendId}  in status = ${resDetail.data.Result.Status} --- ${tmp.data.Result.StatusDetail}`).send()
+                    break
+                }
+                else if (resDetail.data.Result.Status === 20) {
+                    slack.setInfo(`Submit tx backend failed -- unshield Id = ${unshieldInfo.backendId}  in status = ${resDetail.data.Result.Status} --- ${tmp.data.Result.StatusDetail}`).send()
                     break
                 }
                 unshieldInfo.unshieldExtTx = tmp.data.Result.OutChainTx.substring(tmp.data.Result.OutChainTx.indexOf(`0x`))

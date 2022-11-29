@@ -23,7 +23,7 @@ describe(`[ ======  FANTOM BRIDGE - SHIELD ======  ]`, async () => {
     let web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.FTMFullnode.url))
     let account = ACCOUNTS.Incognito.get(0)
     let backendApi = new BackendApi()
-    let extAccount = ACCOUNTS.Evm.get(0).setProvider(ENV.Testbed.FTMFullnode.url)
+    let extAccount = ACCOUNTS.Evm.get(3).setProvider(ENV.Testbed.FTMFullnode.url)
     let slack = makeSlackAlert("FTM_Shielding")
 
     const accountInfoBefore = {
@@ -36,7 +36,7 @@ describe(`[ ======  FANTOM BRIDGE - SHIELD ======  ]`, async () => {
     }
 
     const shieldInfo = {
-        shieldAmt: 0.015,
+        shieldAmt: 0.15,
         shieldBackendId: null,
         shieldPrvFee: 0,
         shieldTokenFee: 0,
@@ -187,7 +187,7 @@ describe(`[======  FTM BRIDGE -- UNSHIELDING ====== ]`, async () => {
     const tokenID = ENV.Testbed.Tokens.FTM_FTM
     let web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.FTMFullnode.url))
     let account = ACCOUNTS.Incognito.get(0)
-    let extAccount = ACCOUNTS.Evm.get(0).setProvider(ENV.Testbed.FTMFullnode.url)
+    let extAccount = ACCOUNTS.Evm.get(3).setProvider(ENV.Testbed.FTMFullnode.url)
     let backendApi = new BackendApi()
     let slack = makeSlackAlert("FTM_UnShielding")
 
@@ -320,6 +320,10 @@ describe(`[======  FTM BRIDGE -- UNSHIELDING ====== ]`, async () => {
                     break
                 } else if (resDetail.data.Result.Status === 34) {
                     slack.setInfo(`NotEnoughVaultPleaseWait -- unshield Id = ${unshieldInfo.backendId}  in status = ${resDetail.data.Result.Status} --- ${tmp.data.Result.StatusDetail}`).send()
+                    break
+                }
+                else if (resDetail.data.Result.Status === 20) {
+                    slack.setInfo(`Submit tx backend failed -- unshield Id = ${unshieldInfo.backendId}  in status = ${resDetail.data.Result.Status} --- ${tmp.data.Result.StatusDetail}`).send()
                     break
                 }
                 unshieldInfo.unshieldExtTx = tmp.data.Result.OutChainTx.substring(tmp.data.Result.OutChainTx.indexOf(`0x`))

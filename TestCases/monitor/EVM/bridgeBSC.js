@@ -23,7 +23,7 @@ describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {
     let web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.BSCFullnode.url))
     let account = ACCOUNTS.Incognito.get(0)
     let backendApi = new BackendApi()
-    let extAccount = ACCOUNTS.Evm.get(0).setProvider(ENV.Testbed.BSCFullnode.url)
+    let extAccount = ACCOUNTS.Evm.get(1).setProvider(ENV.Testbed.BSCFullnode.url)
     let slack = makeSlackAlert("BSC_Shielding")
 
     const accountInfoBefore = {
@@ -36,12 +36,12 @@ describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, async () => {
     }
 
     const shieldInfo = {
-        shieldAmt: 0.01, // bnb
+        shieldAmt: 0.009, // bnb
         shieldBackendId: null,
         shieldPrvFee: 0,
         shieldTokenFee: 0,
         tmpWalletAddress: null,
-        timeout: 00,
+        timeout: 600,
         txDeposit: null,
         blockTime: 20,
         pTokenDecimal: 9
@@ -189,7 +189,7 @@ describe(`[======  BSC BRIDGE -- UNSHIELDING ====== ]`, async () => {
     let web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.BSCFullnode.url))
 
     let account = ACCOUNTS.Incognito.get(0)
-    let extAccount = ACCOUNTS.Evm.get(0).setProvider(ENV.Testbed.BSCFullnode.url)
+    let extAccount = ACCOUNTS.Evm.get(1).setProvider(ENV.Testbed.BSCFullnode.url)
     let backendApi = new BackendApi()
     let slack = makeSlackAlert("BSC_UnShielding")
 
@@ -320,6 +320,10 @@ describe(`[======  BSC BRIDGE -- UNSHIELDING ====== ]`, async () => {
                     break
                 } else if (resDetail.data.Result.Status === 34) {
                     slack.setInfo(`NotEnoughVaultPleaseWait -- unshield Id = ${unshieldInfo.backendId}  in status = ${resDetail.data.Result.Status} --- ${tmp.data.Result.StatusDetail}`).send()
+                    break
+                }
+                else if (resDetail.data.Result.Status === 20) {
+                    slack.setInfo(`Submit tx backend failed -- unshield Id = ${unshieldInfo.backendId}  in status = ${resDetail.data.Result.Status} --- ${tmp.data.Result.StatusDetail}`).send()
                     break
                 }
                 unshieldInfo.unshieldExtTx = tmp.data.Result.OutChainTx.substring(tmp.data.Result.OutChainTx.indexOf(`0x`))
