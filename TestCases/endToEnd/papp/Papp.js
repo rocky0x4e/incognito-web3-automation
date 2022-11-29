@@ -25,7 +25,7 @@ let webServiceApi = new WebServiceApi()
 let sender = ACCOUNTS.Incognito.get(2)
 
 describe("[Class] Papp", () => {
-    describe.skip("TC001_TradePancakeReDeposit", async () => {
+    describe("TC001_TradePancakeReDeposit", async () => {
         let ammountSell = 0
         let estimateFeeObject
         let tx

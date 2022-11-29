@@ -77,18 +77,24 @@ describe("[Class] Consolidate", () => {
         }).timeout(config.timeoutApi);
     });
 
-    describe("TC003_ConsolidateInvalidToken", async () => {
+    describe.only("TC003_ConsolidateInvalidToken", async () => {
 
-        let tokenID = 'abc'
         it("STEP_InitData", async () => {
             await sender.initSdkInstance();
 
             let balanceAll = await sender.useSdk.getBalanceAll()
-            sender.balanceToken = balanceAll[tokenID]
+            console.log('hoanh balanceAll', balanceAll);
         }).timeout(config.timeoutApi);
 
-        it("STEP_Consolidate", async () => {
-            listTx = await sender.useSdk.consolidate({ tokenID: tokenID })
+        it("STEP_ConsolidateWithTokenInvalid", async () => {
+            listTx = await sender.useSdk.consolidate({ tokenID: 'abc' })
+            addDebug("listTx", listTx)
+
+            assert.equal(listTx.length, 0)
+        }).timeout(config.timeoutTx);
+
+        it("STEP_ConsolidateWithTokenNotHaveBalance", async () => {
+            listTx = await sender.useSdk.consolidate({ tokenID: TOKEN.USDC_UT })
             addDebug("listTx", listTx)
 
             assert.equal(listTx.length, 0)
