@@ -16,46 +16,44 @@ const gasFee = ENV.Testbed.AuroraFullnode.configGasTx
 const configBackendToken = ENV.Testbed.AuroraFullnode.configIncBE
 const MIN_BAL_FEE_MASTER_WALLET = ENV.Testbed.AuroraFullnode.configIncBE.minimumFeeTheshold
 
+describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, () => {
+    describe('SHIELDING ETH AURORA', async () => {
+        const accountInfoBefore = {
+            incTokenBal: 0,
+            extTokenBal: 0
+        }
+        const accountInfoAfter = {
+            incTokenBal: 0,
+            extTokenBal: 0
+        }
 
-describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
-    const tokenID = ENV.Testbed.Tokens.ETH_AURORA
-    let web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.AuroraFullnode.url))
-    let account = ACCOUNTS.Incognito.get(0)
-    let backendApi = new BackendApi()
-    let extAccount = ACCOUNTS.Evm.get(5).setProvider(ENV.Testbed.AuroraFullnode.url)
-    let slack = makeSlackAlert("AURORA_Shielding")
+        const shieldInfo = {
+            shieldAmt: 0.002,
+            shieldBackendId: null,
+            shieldPrvFee: 0,
+            shieldTokenFee: 0,
+            tmpWalletAddress: null,
+            timeout: 600,
+            txDeposit: null,
+            blockTime: 20,
+            pTokenDecimal: 9
+        }
 
-    const accountInfoBefore = {
-        incTokenBal: 0,
-        extTokenBal: 0
-    }
-    const accountInfoAfter = {
-        incTokenBal: 0,
-        extTokenBal: 0
-    }
+        let tokenID, web3, account, backendApi, extAccount, slack;
 
-    const shieldInfo = {
-        shieldAmt: 0.005,
-        shieldBackendId: null,
-        shieldPrvFee: 0,
-        shieldTokenFee: 0,
-        tmpWalletAddress: null,
-        timeout: 600,
-        txDeposit: null,
-        blockTime: 20,
-        pTokenDecimal: 9
-    }
-
-    describe('SHIELDING ETH_AURORA', async () => {
         it('Init data', async () => {
+            tokenID = ENV.Testbed.Tokens.ETH_AURORA
+            web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.AuroraFullnode.url))
+            account = ACCOUNTS.Incognito.get(0)
+            backendApi = new BackendApi()
+            extAccount = ACCOUNTS.Evm.get(5).setProvider(ENV.Testbed.AuroraFullnode.url)
+            slack = makeSlackAlert("AURORA_Shielding")
             logger.info(`Token ID: ${tokenID}`)
             accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenID)
-            logger.info(`accountInfoBefore :  ${accountInfoBefore.incTokenBal}`)
+            logger.info(`Ptoken balance init :  ${accountInfoBefore.incTokenBal}`)
         }).timeout(60000);
-    })
 
-    describe(`STEP_1 get shielding address and estimate shield fee`, async () => {
-        it('Call API backend..', async () => {
+        it('STEP_1 get shielding address and estimate shield fee', async () => {
             let res = await backendApi.auroraGenerate({
                 walletAddress: account.paymentK,
                 tokenId: tokenID
@@ -66,17 +64,15 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
             logger.info(`BE estimate shield res :   ${JSON.stringify(res.data)}`)
 
         }).timeout(60000);
-    })
 
-    describe(`STEP_2 Deposit token`, async () => {
-        it(`[2.1] Get balance before deposit`, async () => {
+        it(`STEP_2.1 Get balance before deposit`, async () => {
             accountInfoBefore.extTokenBal = await extAccount.getBalance()
-            logger.info(`accountInfoBefore.extTokenBal: ${accountInfoBefore.extTokenBal}`)
+            logger.info(`Balance sender account: ${accountInfoBefore.extTokenBal}`)
             let tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`BE Wallet balance :  ${tmpWalletBal1}`)
         }).timeout(60000);
 
-        it(`[2.2] Deposit token`, async () => {
+        it(`STEP_2.1 Deposit token`, async () => {
             let tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`sender ${extAccount.address} -- receiver ${shieldInfo.tmpWalletAddress}`)
 
@@ -97,24 +93,22 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
             chai.assert.isTrue(resReceipt.status)
 
             accountInfoAfter.extTokenBal = await extAccount.getBalance()
-            logger.info(`accountInfoAfter.extTokenBal: ${accountInfoAfter.extTokenBal}`)
-
+            logger.info(`Balance sender account after deposit: ${accountInfoAfter.extTokenBal}`)
             let tmpWalletBal2 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`BE Wallet balance : ${tmpWalletBal2}`)
             chai.assert.isTrue(tmpWalletBal2 > tmpWalletBal1)
         }).timeout(60000);
-    })
 
-    describe(`STEP_3 Verify record shield backend`, async () => {
-        it('[3.1] Check balance Shield Fee Master Wallet', async () => {
+        it('STEP_3.1 Check balance Shield Fee Master Wallet', async () => {
             let balFeeMaster = await web3.eth.getBalance(configBackendToken.shieldFeeWallet)
+
             if (balFeeMaster < MIN_BAL_FEE_MASTER_WALLET) {
-                slack.setInfo(`Need send more fee to Mater Fee Wallet  ${configBackendToken.shieldFeeWallet}`).send()
+                slack.setInfo(`Need send more fee to Mater Shield Fee Wallet  ${configBackendToken.shieldFeeWallet}`).send()
             }
             await chai.assert.isTrue(balFeeMaster > MIN_BAL_FEE_MASTER_WALLET)
         }).timeout(60000);
 
-        it('[3.2] Call API backend to get new shielding ', async () => {
+        it('STEP_3.2 Call API backend to get new shielding ', async () => {
             let resBefore = await backendApi.historyByTokenAccount({
                 WalletAddress: account.paymentK,
                 PrivacyTokenAddress: tokenID
@@ -134,7 +128,7 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
             await chai.assert.notEqual(shieldInfo.shieldBackendId, 0, 'Backend seems to be not creating new shield')
         }).timeout(900000);
 
-        it('[3.3] Verify shielding detail', async () => {
+        it('STEP_3.3 Verify shielding detail', async () => {
             let resDetail = await backendApi.historyDetail({
                 historyID: shieldInfo.shieldBackendId,
                 CurrencyType: configBackendToken.currencyType,  // native token
@@ -170,60 +164,57 @@ describe(`[ ======  AURORA BRIDGE - SHIELD ======  ]`, async () => {
             }
             await chai.assert.equal(resDetail.data.Result.Status, 12)
         }).timeout(1200000);
-    })
-    describe(`STEP_4 Verify balance in Incognito`, async () => {
-        it('Verify balance affter shield', async () => {
+
+        it('STEP_4 Verify pToken balance affter shield', async () => {
             await wait(shieldInfo.blockTime * 3)
             accountInfoAfter.incTokenBal = await account.useCli.getBalance(tokenID)
             logger.info(`Token balance after shield: ${accountInfoAfter.incTokenBal}`)
             chai.assert.equal(accountInfoAfter.incTokenBal, accountInfoBefore.incTokenBal + Number((shieldInfo.shieldAmt - shieldInfo.shieldTokenFee) * Number('1e' + shieldInfo.pTokenDecimal)), 'mint token unsuceessfull')
         }).timeout(100000);
     })
-});
+})
 
 
-describe(`[======  AURORA BRIDGE -- UNSHIELDING ====== ]`, async () => {
-    const tokenID = ENV.Testbed.Tokens.ETH_AURORA
-    let web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.AuroraFullnode.url))
-    let account = ACCOUNTS.Incognito.get(0)
-    let extAccount = ACCOUNTS.Evm.get(5).setProvider(ENV.Testbed.AuroraFullnode.url)
-    let backendApi = new BackendApi()
-    let slack = makeSlackAlert("AURORA_UnShielding")
+describe(`[======  AURORA BRIDGE -- UNSHIELDING ====== ]`, () => {
+    describe('UNSHIELDING ETH_AURORA', async () => {
+        const accountInfoBefore = {
+            incTokenBal: 0,
+            extTokenBal: 0
+        }
+        const accountInfoAfter = {
+            incTokenBal: 0,
+            extTokenBal: 0
+        }
+        const unshieldInfo = {
+            unshieldAmt: 0,
+            unshieldPrvFee: 0,
+            unshieldTokenFee: 0,
+            backendId: null,
+            feeAccount: null,
+            unshieldExtTx: null,
+            unshieldIncTx: null,
+            timeout: 900,
+            blockTime: 20,
+            pTokenDecimal: 9,
+            burningType: 353
+        }
+        let tokenID, web3, account, backendApi, extAccount, slack;
 
-    const accountInfoBefore = {
-        incTokenBal: 0,
-        extTokenBal: 0
-    }
-    const accountInfoAfter = {
-        incTokenBal: 0,
-        extTokenBal: 0
-    }
-    const unshieldInfo = {
-        unshieldAmt: 0,
-        unshieldPrvFee: 0,
-        unshieldTokenFee: 0,
-        backendId: null,
-        feeAccount: null,
-        unshieldExtTx: null,
-        unshieldIncTx: null,
-        timeout: 900,
-        blockTime: 20,
-        pTokenDecimal: 9,
-        burningType: 353
-    }
-
-    describe('UNSHIELDING ETH AURORA', async () => {
         it('Init data', async () => {
+            tokenID = ENV.Testbed.Tokens.ETH_AURORA
+            web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.AuroraFullnode.url))
+            account = ACCOUNTS.Incognito.get(0)
+            extAccount = ACCOUNTS.Evm.get(5).setProvider(ENV.Testbed.AuroraFullnode.url)
+            backendApi = new BackendApi()
+            slack = makeSlackAlert("AURORA_UnShielding")
             logger.info(`Token ID: ${tokenID}`)
             accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenID)
             logger.info(`token balance on INC: ${accountInfoBefore.incTokenBal}`)
             accountInfoBefore.extTokenBal = await extAccount.getBalance()
             logger.info(`token balance on external network :  ${accountInfoBefore.extTokenBal}`)
         }).timeout(60000);
-    })
 
-    describe('STEP_1 Estimate Unshield Fee', async () => {
-        it('Call API get estimate Fee and backend UnshielId', async () => {
+        it('STEP_1 Estimate Unshield Fee and backend UnshielId', async () => {
             resEst = await backendApi.auroraUnshieldEstFee({
                 unshieldAmount: Number(accountInfoBefore.incTokenBal / Number('1e' + unshieldInfo.pTokenDecimal)),
                 extRemoteAddr: extAccount.address,
@@ -237,12 +228,12 @@ describe(`[======  AURORA BRIDGE -- UNSHIELDING ====== ]`, async () => {
             logger.info(`Fee token unshield:  ${unshieldInfo.unshieldTokenFee}`)
             unshieldInfo.feeAccount = resEst.data.Result.FeeAddress
             unshieldInfo.unshieldAmt = accountInfoBefore.incTokenBal - unshieldInfo.unshieldTokenFee
+            console.log("unshieldInfo.unshieldAmt %d = accountInfoBefore.incTokenBal %d - unshieldInfo.unshieldTokenFee  %d ", unshieldInfo.unshieldAmt, accountInfoBefore.incTokenBal, unshieldInfo.unshieldTokenFee);
+
             logger.info(`ResEstimate: ${JSON.stringify(resEst.data)}`)
         }).timeout(60000);
-    })
 
-    describe(`STEP_2 Burn token`, async () => {
-        it(`[2.1] Create unshield transaction by SDK `, async () => {
+        it(`STEP_2.1 Create unshield transaction by SDK `, async () => {
             await account.initSdkInstance();
 
             unshieldInfo.unshieldIncTx = await account.useSdk.unshieldEvm({
@@ -260,7 +251,7 @@ describe(`[======  AURORA BRIDGE -- UNSHIELDING ====== ]`, async () => {
             let resTx = await NODES.Incognito.getTransactionByHashRpc(unshieldInfo.unshieldIncTx)
         }).timeout(100000);
 
-        it(`[2.2] Submit unshield tx to backend`, async () => {
+        it(`STEP_2.2 Submit unshield tx to backend`, async () => {
             let resSubmitTx = await backendApi.submutTxAuroraUnshield({
                 currencyType: configBackendToken.currencyType,  // native token
                 unshieldAmount: unshieldInfo.unshieldAmt,
@@ -276,18 +267,16 @@ describe(`[======  AURORA BRIDGE -- UNSHIELDING ====== ]`, async () => {
             logger.info(`Res submit tx to backend : ${JSON.stringify(resSubmitTx.data)}`)
             await chai.assert.isTrue(resSubmitTx.data.Result, 'submit tx not success')
         }).timeout(60000);
-    })
 
-    describe(`STEP_3 Verify record unshield backend`, async () => {
-        it('[3.1] Check balance Unhield Fee Master Wallet', async () => {
+        it('STEP_3.1 Check balance Unhield Fee Master Wallet', async () => {
             let balFeeMaster = await web3.eth.getBalance(configBackendToken.unshieldFeeWallet)
             if (balFeeMaster < MIN_BAL_FEE_MASTER_WALLET) {
-                slack.setInfo(`Need send more fee to Mater Fee Wallet  ${configBackendToken.unshieldFeeWallet}`).send()
+                slack.setInfo(`Need send more fee to Mater Unshield Fee Wallet  ${configBackendToken.unshieldFeeWallet}`).send()
             }
             await chai.assert.isTrue(balFeeMaster > MIN_BAL_FEE_MASTER_WALLET)
         }).timeout(60000);
 
-        it('[3.2] Verify unshielding detail', async () => {
+        it('STEP_3.2 Verify unshielding detail', async () => {
             let resDetail = await backendApi.historyDetail({
                 historyID: unshieldInfo.backendId,
                 CurrencyType: configBackendToken.currencyType,  // native token
@@ -332,28 +321,24 @@ describe(`[======  AURORA BRIDGE -- UNSHIELDING ====== ]`, async () => {
             }
             await chai.assert.equal(resDetail.data.Result.Status, 25)
         }).timeout(1200000);
-    })
 
-    describe(`STEP_4 Verify balance in Incognito`, async () => {
-        it('Verify balance affter unshield', async () => {
+        it('STEP_4 Verify balance in Incognito', async () => {
             await wait(unshieldInfo.blockTime * 2)
             accountInfoAfter.incTokenBal = await account.useCli.getBalance(tokenID)
             logger.info(`accountInfoAfter: ${accountInfoAfter.incTokenBal}`)
             chai.assert.notEqual(accountInfoBefore.incTokenBal, accountInfoAfter.incTokenBal, 'burn token unsuceessfull')
-        })
-    }).timeout(120000);
+        }).timeout(120000);
 
-    describe('STEP_5 Verify data on AURORA', async () => {
-        it('Verify transaction', async () => {
+        it('STEP_5.1 Verify data on AURORA - Verify transaction', async () => {
             logger.info(`tx unshield on AURORA :  ${unshieldInfo.unshieldExtTx}`)
             let res = await web3.eth.getTransactionReceipt(unshieldInfo.unshieldExtTx)
             chai.assert.isTrue(res.status)
-        })
-        it('Verify update balance', async () => {
+        }).timeout(60000);
+        it('STEP_5.2 Verify update balance', async () => {
             accountInfoAfter.extTokenBal = await web3.eth.getBalance(extAccount.address)
             logger.info(`receiver balance : ${accountInfoAfter.extTokenBal}`)
             chai.assert.equal(accountInfoAfter.extTokenBal, Number(accountInfoBefore.extTokenBal) + Number(unshieldInfo.unshieldAmt * 1e9), `the receiver has not received yet`)
-        })
-    }).timeout(120000);
+        }).timeout(60000);
+    })
 })
 
