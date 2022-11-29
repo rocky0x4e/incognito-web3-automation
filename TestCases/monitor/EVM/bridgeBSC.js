@@ -5,20 +5,20 @@ const { ENV } = require('../../../global');
 const { wait } = require('../../../lib/Utils/Timer');
 const { makeSlackAlert } = require('../../../lib/Utils/InstantAlert')
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
-const logger = getLogger("ETH_EVM")
+const logger = getLogger("BSC_EVM")
 
 let Web3 = require('web3');
 let chai = require('chai');
 const { ACCOUNTS, NODES } = require('../../TestBase');
 
-const networkBridgeInfo = ENV.Testbed.EthereumFullnode.networkDetail
-const gasFee = ENV.Testbed.EthereumFullnode.configGasTx
-const configBackendToken = ENV.Testbed.EthereumFullnode.configIncBE
-const MIN_BAL_FEE_MASTER_WALLET = ENV.Testbed.EthereumFullnode.configIncBE.minimumFeeTheshold
+const networkBridgeInfo = ENV.Testbed.BSCFullnode.networkDetail
+const gasFee = ENV.Testbed.BSCFullnode.configGasTx
+const configBackendToken = ENV.Testbed.BSCFullnode.configIncBE
+const MIN_BAL_FEE_MASTER_WALLET = ENV.Testbed.BSCFullnode.configIncBE.minimumFeeTheshold
 
 
-describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
-    describe('SHIELDING ETH', async () => {
+describe(`[ ======  BSC BRIDGE - SHIELD ======  ]`, () => {
+    describe('SHIELDING BNB', async () => {
         const accountInfoBefore = {
             incTokenBal: 0,
             extTokenBal: 0
@@ -29,7 +29,7 @@ describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
         }
 
         const shieldInfo = {
-            shieldAmt: 0.009, // eth
+            shieldAmt: 0.009, // bnb
             shieldBackendId: null,
             shieldPrvFee: 0,
             shieldTokenFee: 0,
@@ -43,20 +43,20 @@ describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
         let tokenID, tokenUnifiedID, web3, account, backendApi, extAccount, slack;
 
         it('Init data', async () => {
-            tokenID = ENV.Testbed.Tokens.ETH_ETH
-            tokenUnifiedID = ENV.Testbed.Tokens.ETH_UT
-            web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.EthereumFullnode.url))
+            tokenID = ENV.Testbed.Tokens.BNB_BSC
+            tokenUnifiedID = ENV.Testbed.Tokens.BNB_UT
+            web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.BSCFullnode.url))
             account = ACCOUNTS.Incognito.get(0)
             backendApi = new BackendApi()
-            extAccount = ACCOUNTS.Evm.get(0).setProvider(ENV.Testbed.EthereumFullnode.url)
-            slack = makeSlackAlert("EVM_Ethereum_Shielding")
+            extAccount = ACCOUNTS.Evm.get(1).setProvider(ENV.Testbed.BSCFullnode.url)
+            slack = makeSlackAlert("BSC_Shielding")
             logger.info(`Token ID: ${tokenUnifiedID}`)
             accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
             logger.info(`Ptoken balance init :  ${accountInfoBefore.incTokenBal}`)
         }).timeout(60000);
 
         it('STEP_1 get shielding address and estimate shield fee', async () => {
-            let res = await backendApi.ethGenerate({
+            let res = await backendApi.bscGenerate({
                 walletAddress: account.paymentK,
                 tokenId: tokenID
             })
@@ -67,14 +67,14 @@ describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
 
         }).timeout(60000);
 
-        it(`STEP_2.1 Get token balance on Ethereum before deposit`, async () => {
+        it(`STEP_2.1 Get balance token on BSC before deposit`, async () => {
             accountInfoBefore.extTokenBal = await extAccount.getBalance()
             logger.info(`Balance sender account: ${accountInfoBefore.extTokenBal}`)
             let tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`BE Wallet balance :  ${tmpWalletBal1}`)
         }).timeout(60000);
 
-        it(`STEP_2.2 Deposit token`, async () => {
+        it(`STEP_2.2  Deposit token`, async () => {
             let tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`sender ${extAccount.address} -- receiver ${shieldInfo.tmpWalletAddress}`)
 
@@ -102,10 +102,10 @@ describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
             chai.assert.isTrue(tmpWalletBal2 > tmpWalletBal1)
         }).timeout(60000);
 
-        it('STEP_3.1 Check balance Shield Fee Shield Master Wallet', async () => {
+        it('STEP_3.1 Check balance Shield Fee Master Wallet', async () => {
             let balFeeMaster = await web3.eth.getBalance(configBackendToken.shieldFeeWallet)
             if (balFeeMaster < MIN_BAL_FEE_MASTER_WALLET) {
-                slack.setInfo(`Need send more fee to Mater Fee Wallet  ${configBackendToken.shieldFeeWallet}`).send()
+                slack.setInfo(`Need send more fee to Mater Shield Fee Wallet  ${configBackendToken.shieldFeeWallet}`).send()
             }
             await chai.assert.isTrue(balFeeMaster > MIN_BAL_FEE_MASTER_WALLET)
         }).timeout(60000);
@@ -166,7 +166,7 @@ describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
             await chai.assert.equal(resDetail.data.Result.Status, 12)
         }).timeout(1200000);
 
-        it('STEP_4 Verify Incognito balance affter shield', async () => {
+        it('STEP_4 Verify pToken balance affter shield', async () => {
             await wait(shieldInfo.blockTime * 3)
             accountInfoAfter.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
             logger.info(`Token balance after shield: ${accountInfoAfter.incTokenBal}`)
@@ -177,8 +177,8 @@ describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
 });
 
 
-describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, () => {
-    describe('UNSHIELDING ETH', async () => {
+describe(`[======  BSC BRIDGE -- UNSHIELDING ====== ]`, () => {
+    describe('UNSHIELDING BNB', async () => {
         const accountInfoBefore = {
             incTokenBal: 0,
             extTokenBal: 0
@@ -195,7 +195,7 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, () => {
             feeAccount: null,
             unshieldExtTx: null,
             unshieldIncTx: null,
-            timeout: 800,
+            timeout: 900,
             blockTime: 20,
             pTokenDecimal: 9
         }
@@ -203,15 +203,14 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, () => {
         let tokenID, tokenUnifiedID, web3, account, backendApi, extAccount, slack;
 
         it('Init data', async () => {
-            tokenID = ENV.Testbed.Tokens.ETH_ETH
-            tokenUnifiedID = ENV.Testbed.Tokens.ETH_UT
-            web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.EthereumFullnode.url))
-
+            tokenID = ENV.Testbed.Tokens.BNB_BSC
+            tokenUnifiedID = ENV.Testbed.Tokens.BNB_UT
+            web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.BSCFullnode.url))
             account = ACCOUNTS.Incognito.get(0)
-            extAccount = ACCOUNTS.Evm.get(0).setProvider(ENV.Testbed.EthereumFullnode.url)
+            extAccount = ACCOUNTS.Evm.get(1).setProvider(ENV.Testbed.BSCFullnode.url)
             backendApi = new BackendApi()
-            slack = makeSlackAlert("EVM_Ethereum_UnShielding")
-
+            slack = makeSlackAlert("BSC_UnShielding")
+            
             logger.info(`Token ID: ${tokenUnifiedID}`)
             accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
             logger.info(`token balance on INC: ${accountInfoBefore.incTokenBal}`)
@@ -220,7 +219,7 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, () => {
         }).timeout(60000);
 
         it('STEP_1 Estimate Unshield Fee and backend UnshielId', async () => {
-            resEst = await backendApi.ethUnshieldEstFee({
+            resEst = await backendApi.bscUnshieldEstFee({
                 unshieldAmount: Number(accountInfoBefore.incTokenBal / Number('1e' + unshieldInfo.pTokenDecimal)),
                 extRemoteAddr: extAccount.address,
                 tokenId: tokenID,
@@ -246,7 +245,6 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, () => {
                 receiver: unshieldInfo.feeAccount,
                 amount: unshieldInfo.unshieldAmt,
                 amountFee: unshieldInfo.unshieldTokenFee,
-                decimalPtoken: unshieldInfo.pTokenDecimal,
                 remoteAddress: extAccount.address
             })
             logger.info(`Unshield INC tx :  ${unshieldInfo.unshieldIncTx}`)
@@ -254,10 +252,11 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, () => {
             let resTx = await NODES.Incognito.getTransactionByHashRpc(unshieldInfo.unshieldIncTx)
         }).timeout(100000);
 
-        it(`[2.2] Submit unshield tx to backend`, async () => {
-            let resSubmitTx = await backendApi.submutTxEthereumUnshield({
-                currencyType: configBackendToken.currencyType, //currencyType ETH
+        it(`STEP_2.2 Submit unshield tx to backend`, async () => {
+            let resSubmitTx = await backendApi.submutTxBSCUnshield({
+                currencyType: configBackendToken.currencyType, //currencyType BNB
                 unshieldAmount: unshieldInfo.unshieldAmt,
+                decimalPToken: unshieldInfo.pTokenDecimal,
                 extRemoteAddr: extAccount.address,
                 tokenID: tokenID,
                 rawTxId: unshieldInfo.unshieldIncTx,
@@ -270,7 +269,7 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, () => {
             await chai.assert.isTrue(resSubmitTx.data.Result, 'submit tx not success')
         }).timeout(60000);
 
-        it('STEP_3.1 Check balance Unhield Fee Master Wallet', async () => {
+        it('STEP_3.1 Check balance Unshield Fee Master Wallet', async () => {
             let balFeeMaster = await web3.eth.getBalance(configBackendToken.unshieldFeeWallet)
             if (balFeeMaster < MIN_BAL_FEE_MASTER_WALLET) {
                 slack.setInfo(`Need send more fee to Mater Unshield Fee Wallet  ${configBackendToken.unshieldFeeWallet}`).send()
@@ -324,15 +323,15 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, () => {
             await chai.assert.equal(resDetail.data.Result.Status, 25)
         }).timeout(1200000);
 
-        it('STEP_4 Verify Incognito pToken balance affter unshield', async () => {
+        it('STEP_4 Verify balance in Incognito after unshield', async () => {
             await wait(unshieldInfo.blockTime * 2)
             accountInfoAfter.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
             logger.info(`accountInfoAfter: ${accountInfoAfter.incTokenBal}`)
             chai.assert.notEqual(accountInfoBefore.incTokenBal, accountInfoAfter.incTokenBal, 'burn token unsuceessfull')
         }).timeout(120000);
 
-        it('STEP_5.1 Verify data on Ethereum - Verify transaction', async () => {
-            logger.info(`tx unshield on ethereum :  ${unshieldInfo.unshieldExtTx}`)
+        it('STEP_5.1 Verify data on BSC - Verify transaction', async () => {
+            logger.info(`tx unshield on BSC :  ${unshieldInfo.unshieldExtTx}`)
             let res = await web3.eth.getTransactionReceipt(unshieldInfo.unshieldExtTx)
             chai.assert.isTrue(res.status)
         }).timeout(120000);

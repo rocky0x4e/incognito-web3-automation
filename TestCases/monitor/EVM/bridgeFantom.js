@@ -5,20 +5,19 @@ const { ENV } = require('../../../global');
 const { wait } = require('../../../lib/Utils/Timer');
 const { makeSlackAlert } = require('../../../lib/Utils/InstantAlert')
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
-const logger = getLogger("ETH_EVM")
+const logger = getLogger("FTM_EVM")
 
 let Web3 = require('web3');
 let chai = require('chai');
 const { ACCOUNTS, NODES } = require('../../TestBase');
 
-const networkBridgeInfo = ENV.Testbed.EthereumFullnode.networkDetail
-const gasFee = ENV.Testbed.EthereumFullnode.configGasTx
-const configBackendToken = ENV.Testbed.EthereumFullnode.configIncBE
-const MIN_BAL_FEE_MASTER_WALLET = ENV.Testbed.EthereumFullnode.configIncBE.minimumFeeTheshold
+const networkBridgeInfo = ENV.Testbed.FTMFullnode.networkDetail
+const gasFee = ENV.Testbed.FTMFullnode.configGasTx
+const configBackendToken = ENV.Testbed.FTMFullnode.configIncBE
+const MIN_BAL_FEE_MASTER_WALLET = ENV.Testbed.FTMFullnode.configIncBE.minimumFeeTheshold
 
-
-describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
-    describe('SHIELDING ETH', async () => {
+describe(`[ ======  FANTOM BRIDGE - SHIELD ======  ]`, () => {
+    describe('SHIELDING FTM', async () => {
         const accountInfoBefore = {
             incTokenBal: 0,
             extTokenBal: 0
@@ -29,7 +28,7 @@ describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
         }
 
         const shieldInfo = {
-            shieldAmt: 0.009, // eth
+            shieldAmt: 0.13,
             shieldBackendId: null,
             shieldPrvFee: 0,
             shieldTokenFee: 0,
@@ -40,23 +39,22 @@ describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
             pTokenDecimal: 9
         }
 
-        let tokenID, tokenUnifiedID, web3, account, backendApi, extAccount, slack;
+        let tokenID, web3, account, backendApi, extAccount, slack;
 
         it('Init data', async () => {
-            tokenID = ENV.Testbed.Tokens.ETH_ETH
-            tokenUnifiedID = ENV.Testbed.Tokens.ETH_UT
-            web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.EthereumFullnode.url))
+            tokenID = ENV.Testbed.Tokens.FTM_FTM
+            web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.FTMFullnode.url))
             account = ACCOUNTS.Incognito.get(0)
             backendApi = new BackendApi()
-            extAccount = ACCOUNTS.Evm.get(0).setProvider(ENV.Testbed.EthereumFullnode.url)
-            slack = makeSlackAlert("EVM_Ethereum_Shielding")
-            logger.info(`Token ID: ${tokenUnifiedID}`)
-            accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
+            extAccount = ACCOUNTS.Evm.get(3).setProvider(ENV.Testbed.FTMFullnode.url)
+            slack = makeSlackAlert("FTM_Shielding")
+            logger.info(`Token ID: ${tokenID}`)
+            accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenID)
             logger.info(`Ptoken balance init :  ${accountInfoBefore.incTokenBal}`)
         }).timeout(60000);
 
         it('STEP_1 get shielding address and estimate shield fee', async () => {
-            let res = await backendApi.ethGenerate({
+            let res = await backendApi.ftmGenerate({
                 walletAddress: account.paymentK,
                 tokenId: tokenID
             })
@@ -67,20 +65,20 @@ describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
 
         }).timeout(60000);
 
-        it(`STEP_2.1 Get token balance on Ethereum before deposit`, async () => {
+        it(`STEP_2.1 Get balance before deposit`, async () => {
             accountInfoBefore.extTokenBal = await extAccount.getBalance()
             logger.info(`Balance sender account: ${accountInfoBefore.extTokenBal}`)
             let tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`BE Wallet balance :  ${tmpWalletBal1}`)
         }).timeout(60000);
 
-        it(`STEP_2.2 Deposit token`, async () => {
+        it(`STEP_2.1 Deposit token`, async () => {
             let tmpWalletBal1 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`sender ${extAccount.address} -- receiver ${shieldInfo.tmpWalletAddress}`)
 
             let resDeposit = await extAccount.sendNativeToken({
                 to: shieldInfo.tmpWalletAddress,
-                amount: web3.utils.toWei(shieldInfo.shieldAmt.toString(), 'ether'),
+                amount: web3.utils.toWei((shieldInfo.shieldAmt).toString(), 'ether'),
                 gas: gasFee.gasPrice,
                 gasLimit: gasFee.gasLimit,
                 chainName: networkBridgeInfo.chain,
@@ -96,16 +94,16 @@ describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
 
             accountInfoAfter.extTokenBal = await extAccount.getBalance()
             logger.info(`Balance sender account after deposit: ${accountInfoAfter.extTokenBal}`)
-
             let tmpWalletBal2 = await web3.eth.getBalance(shieldInfo.tmpWalletAddress)
             logger.info(`BE Wallet balance : ${tmpWalletBal2}`)
             chai.assert.isTrue(tmpWalletBal2 > tmpWalletBal1)
         }).timeout(60000);
 
-        it('STEP_3.1 Check balance Shield Fee Shield Master Wallet', async () => {
+        it('STEP_3.1 Check balance Shield Fee Master Wallet', async () => {
             let balFeeMaster = await web3.eth.getBalance(configBackendToken.shieldFeeWallet)
+
             if (balFeeMaster < MIN_BAL_FEE_MASTER_WALLET) {
-                slack.setInfo(`Need send more fee to Mater Fee Wallet  ${configBackendToken.shieldFeeWallet}`).send()
+                slack.setInfo(`Need send more fee to Mater Shield Fee Wallet  ${configBackendToken.shieldFeeWallet}`).send()
             }
             await chai.assert.isTrue(balFeeMaster > MIN_BAL_FEE_MASTER_WALLET)
         }).timeout(60000);
@@ -113,11 +111,12 @@ describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
         it('STEP_3.2 Call API backend to get new shielding ', async () => {
             let resBefore = await backendApi.historyByTokenAccount({
                 WalletAddress: account.paymentK,
-                PrivacyTokenAddress: tokenUnifiedID
+                PrivacyTokenAddress: tokenID
             })
             await validateSchemaCommand.validateSchema(backendApischemas.historyTokenAccountSchemas, resBefore.data)
+
             shieldInfo.shieldBackendId = await account.waitForNewShieldRecord({
-                tokenId: tokenUnifiedID,
+                tokenId: tokenID,
                 interval: shieldInfo.blockTime * 4,
                 timedOut: shieldInfo.timeout
             })
@@ -132,7 +131,7 @@ describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
         it('STEP_3.3 Verify shielding detail', async () => {
             let resDetail = await backendApi.historyDetail({
                 historyID: shieldInfo.shieldBackendId,
-                CurrencyType: configBackendToken.currencyType,
+                CurrencyType: configBackendToken.currencyType,  // native token
                 Decentralized: configBackendToken.decentralized
             })
             await validateSchemaCommand.validateSchema(backendApischemas.historyTokenAccountDetailSchemas, resDetail.data)
@@ -141,14 +140,14 @@ describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
             while (resDetail.data.Result.Status != 12) {
                 let tmp = await backendApi.historyDetail({
                     historyID: shieldInfo.shieldBackendId,
-                    CurrencyType: configBackendToken.currencyType,
+                    CurrencyType: configBackendToken.currencyType, // native token
                     Decentralized: configBackendToken.decentralized
                 })
                 logger.info(`Shield status =  ${tmp.data.Result.Status}  ----  ${tmp.data.Result.StatusMessage}  ---  ${tmp.data.Result.StatusDetail}`)
                 resDetail.data.Result.Status = tmp.data.Result.Status
                 if (resDetail.data.Result.Status === 12) {
                     shieldInfo.shieldTokenFee = Number(resDetail.data.Result.TokenFee / 1e18).toFixed(9)
-                    logger.info(`'Shielding successfull`)
+                    logger.info(`Shielding successfull`)
                     break
                 }
                 else if (timeOut <= 0) {
@@ -166,19 +165,17 @@ describe(`[ ======  ETHEREUM BRIDGE - SHIELD ======  ]`, () => {
             await chai.assert.equal(resDetail.data.Result.Status, 12)
         }).timeout(1200000);
 
-        it('STEP_4 Verify Incognito balance affter shield', async () => {
+        it('STEP_4 Verify pToken balance affter shield', async () => {
             await wait(shieldInfo.blockTime * 3)
-            accountInfoAfter.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
+            accountInfoAfter.incTokenBal = await account.useCli.getBalance(tokenID)
             logger.info(`Token balance after shield: ${accountInfoAfter.incTokenBal}`)
             chai.assert.equal(accountInfoAfter.incTokenBal, accountInfoBefore.incTokenBal + Number((shieldInfo.shieldAmt - shieldInfo.shieldTokenFee) * Number('1e' + shieldInfo.pTokenDecimal)), 'mint token unsuceessfull')
-
         }).timeout(100000);
     })
-});
+})
 
-
-describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, () => {
-    describe('UNSHIELDING ETH', async () => {
+describe(`[======  FANTOM BRIDGE -- UNSHIELDING ====== ]`, () => {
+    describe('UNSHIELDING FTM', async () => {
         const accountInfoBefore = {
             incTokenBal: 0,
             extTokenBal: 0
@@ -195,36 +192,33 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, () => {
             feeAccount: null,
             unshieldExtTx: null,
             unshieldIncTx: null,
-            timeout: 800,
+            timeout: 900,
             blockTime: 20,
-            pTokenDecimal: 9
+            pTokenDecimal: 9,
+            burningType: 333
         }
-
-        let tokenID, tokenUnifiedID, web3, account, backendApi, extAccount, slack;
+        let tokenID, web3, account, backendApi, extAccount, slack;
 
         it('Init data', async () => {
-            tokenID = ENV.Testbed.Tokens.ETH_ETH
-            tokenUnifiedID = ENV.Testbed.Tokens.ETH_UT
-            web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.EthereumFullnode.url))
-
+            tokenID = ENV.Testbed.Tokens.FTM_FTM
+            web3 = await new Web3(new Web3.providers.HttpProvider(ENV.Testbed.FTMFullnode.url))
             account = ACCOUNTS.Incognito.get(0)
-            extAccount = ACCOUNTS.Evm.get(0).setProvider(ENV.Testbed.EthereumFullnode.url)
+            extAccount = ACCOUNTS.Evm.get(3).setProvider(ENV.Testbed.FTMFullnode.url)
             backendApi = new BackendApi()
-            slack = makeSlackAlert("EVM_Ethereum_UnShielding")
-
-            logger.info(`Token ID: ${tokenUnifiedID}`)
-            accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
+            slack = makeSlackAlert("FTM_UnShielding")
+            logger.info(`Token ID: ${tokenID}`)
+            accountInfoBefore.incTokenBal = await account.useCli.getBalance(tokenID)
             logger.info(`token balance on INC: ${accountInfoBefore.incTokenBal}`)
             accountInfoBefore.extTokenBal = await extAccount.getBalance()
             logger.info(`token balance on external network :  ${accountInfoBefore.extTokenBal}`)
         }).timeout(60000);
 
         it('STEP_1 Estimate Unshield Fee and backend UnshielId', async () => {
-            resEst = await backendApi.ethUnshieldEstFee({
+            resEst = await backendApi.ftmUnshieldEstFee({
                 unshieldAmount: Number(accountInfoBefore.incTokenBal / Number('1e' + unshieldInfo.pTokenDecimal)),
                 extRemoteAddr: extAccount.address,
                 tokenId: tokenID,
-                unifiedTokenId: tokenUnifiedID,
+                unifiedTokenId: '',
                 IncPaymentAddr: account.paymentK,
                 decimalPToken: unshieldInfo.pTokenDecimal
             })
@@ -233,31 +227,34 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, () => {
             logger.info(`Fee token unshield:  ${unshieldInfo.unshieldTokenFee}`)
             unshieldInfo.feeAccount = resEst.data.Result.FeeAddress
             unshieldInfo.unshieldAmt = accountInfoBefore.incTokenBal - unshieldInfo.unshieldTokenFee
+            // console.log("unshieldInfo.unshieldAmt %d = accountInfoBefore.incTokenBal %d - unshieldInfo.unshieldTokenFee  %d ", unshieldInfo.unshieldAmt, accountInfoBefore.incTokenBal, unshieldInfo.unshieldTokenFee);
+
             logger.info(`ResEstimate: ${JSON.stringify(resEst.data)}`)
         }).timeout(60000);
 
         it(`STEP_2.1 Create unshield transaction by SDK `, async () => {
             await account.initSdkInstance();
 
-            unshieldInfo.unshieldIncTx = await account.useSdk.unshieldUnifiedEvm({
+            unshieldInfo.unshieldIncTx = await account.useSdk.unshieldEvm({
                 unshieldBackendId: unshieldInfo.backendId,
                 tokenId: tokenID,
-                unifiedTokenId: tokenUnifiedID,
                 receiver: unshieldInfo.feeAccount,
                 amount: unshieldInfo.unshieldAmt,
                 amountFee: unshieldInfo.unshieldTokenFee,
                 decimalPtoken: unshieldInfo.pTokenDecimal,
-                remoteAddress: extAccount.address
+                remoteAddress: extAccount.address,
+                burningType: unshieldInfo.burningType
             })
             logger.info(`Unshield INC tx :  ${unshieldInfo.unshieldIncTx}`)
             await wait(unshieldInfo.blockTime)
             let resTx = await NODES.Incognito.getTransactionByHashRpc(unshieldInfo.unshieldIncTx)
         }).timeout(100000);
 
-        it(`[2.2] Submit unshield tx to backend`, async () => {
-            let resSubmitTx = await backendApi.submutTxEthereumUnshield({
-                currencyType: configBackendToken.currencyType, //currencyType ETH
+        it(`STEP_2.2 Submit unshield tx to backend`, async () => {
+            let resSubmitTx = await backendApi.submutTxFTMUnshield({
+                currencyType: configBackendToken.currencyType,  // native token
                 unshieldAmount: unshieldInfo.unshieldAmt,
+                decimalPToken: unshieldInfo.pTokenDecimal,
                 extRemoteAddr: extAccount.address,
                 tokenID: tokenID,
                 rawTxId: unshieldInfo.unshieldIncTx,
@@ -281,7 +278,7 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, () => {
         it('STEP_3.2 Verify unshielding detail', async () => {
             let resDetail = await backendApi.historyDetail({
                 historyID: unshieldInfo.backendId,
-                CurrencyType: configBackendToken.currencyType,
+                CurrencyType: configBackendToken.currencyType,  // native token
                 Decentralized: configBackendToken.decentralized
             })
             logger.info(`BE unshielding detail : ${JSON.stringify(resDetail.data)}`)
@@ -291,7 +288,7 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, () => {
             while (resDetail.data.Result.Status != 25) {
                 let tmp = await backendApi.historyDetail({
                     historyID: unshieldInfo.backendId,
-                    CurrencyType: configBackendToken.currencyType,
+                    CurrencyType: configBackendToken.currencyType, //native token
                     Decentralized: configBackendToken.decentralized
                 })
                 logger.info(`Unshield status = ${tmp.data.Result.Status} ---- ${tmp.data.Result.StatusMessage}  --- ${tmp.data.Result.StatusDetail}`)
@@ -324,23 +321,23 @@ describe(`[======  ETHEREUM BRIDGE -- UNSHIELDING ====== ]`, () => {
             await chai.assert.equal(resDetail.data.Result.Status, 25)
         }).timeout(1200000);
 
-        it('STEP_4 Verify Incognito pToken balance affter unshield', async () => {
+        it('STEP_4 Verify balance in Incognito', async () => {
             await wait(unshieldInfo.blockTime * 2)
-            accountInfoAfter.incTokenBal = await account.useCli.getBalance(tokenUnifiedID)
+            accountInfoAfter.incTokenBal = await account.useCli.getBalance(tokenID)
             logger.info(`accountInfoAfter: ${accountInfoAfter.incTokenBal}`)
             chai.assert.notEqual(accountInfoBefore.incTokenBal, accountInfoAfter.incTokenBal, 'burn token unsuceessfull')
         }).timeout(120000);
 
-        it('STEP_5.1 Verify data on Ethereum - Verify transaction', async () => {
-            logger.info(`tx unshield on ethereum :  ${unshieldInfo.unshieldExtTx}`)
+        it('STEP_5.1 Verify data on FANTOM - Verify transaction', async () => {
+            logger.info(`tx unshield on FANTOM :  ${unshieldInfo.unshieldExtTx}`)
             let res = await web3.eth.getTransactionReceipt(unshieldInfo.unshieldExtTx)
             chai.assert.isTrue(res.status)
-        }).timeout(120000);
-
+        }).timeout(60000);
         it('STEP_5.2 Verify update balance', async () => {
             accountInfoAfter.extTokenBal = await web3.eth.getBalance(extAccount.address)
             logger.info(`receiver balance : ${accountInfoAfter.extTokenBal}`)
             chai.assert.equal(accountInfoAfter.extTokenBal, Number(accountInfoBefore.extTokenBal) + Number(unshieldInfo.unshieldAmt * 1e9), `the receiver has not received yet`)
-        }).timeout(120000);
+        }).timeout(60000);
     })
 })
+
