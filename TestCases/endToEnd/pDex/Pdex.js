@@ -14,27 +14,26 @@ let coinServiceApi = new CoinServiceApi();
 let sender = ACCOUNTS.Incognito.get(2)
 
 describe("[Class] Pdex", () => {
-    describe.skip("TC001_TradePRVToToken", async () => {
+    describe("TC001_TradePRVToToken", async () => {
         let amountTrade = 0
         let estimateTradeObject
         let tx
+        let tokenSell = TOKEN.PRV
+        let tokenBuy = TOKEN.ZIL
 
         it("STEP_InitData", async () => {
             await sender.initSdkInstance();
             let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
-            sender.balanceZILBefore = balanceAll[TOKEN.ZIL]
-
-            logger.info({ balancePRVBefore: sender.balancePRVBefore })
-            logger.info({ balanceZILBefore: sender.balanceZILBefore })
+            sender.balanceAllBefore = balanceAll
+            addDebug("sender.balanceAllBefore", sender.balanceAllBefore)
 
             amountTrade = await GenAction.randomNumber(1000)
         }).timeout(config.timeoutApi);
 
         it("STEP_CoinServiceEstimateTrade", async () => {
             let estimateTrade = await coinServiceApi.estimateTrade({
-                tokenSell: TOKEN.PRV,
-                tokenBuy: TOKEN.ZIL,
+                tokenSell: tokenSell,
+                tokenBuy: tokenBuy,
                 sellAmount: amountTrade
             })
             estimateTradeObject = estimateTrade.data
@@ -55,8 +54,8 @@ describe("[Class] Pdex", () => {
             addDebug(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
-                tokenID: TOKEN.ZIL,
-                countNumber: 20,
+                tokenID: tokenBuy,
+                countNumber: 15,
             })
         }).timeout(config.timeoutTx);
 
@@ -66,37 +65,33 @@ describe("[Class] Pdex", () => {
 
             chai.expect(response.data.Result.Status).to.equal(1)
             chai.expect(response.data.Result.BuyAmount).to.above(1)
-            chai.expect(response.data.Result.TokenToBuy).to.equal(TOKEN.ZIL)
+            chai.expect(response.data.Result.TokenToBuy).to.equal(tokenBuy)
 
         }).timeout(config.timeoutTx);
 
         it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balancePRVAfter = balanceAll[TOKEN.PRV]
-            sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
-            logger.info({ balancePRVAfter: sender.balancePRVAfter })
-            logger.info({ balanceZILAfter: sender.balanceZILAfter })
+            sender.balanceAllAfter = balanceAll
+            addDebug("sender.balanceAllAfter", sender.balanceAllAfter)
 
-            chai.expect(sender.balancePRVAfter).to.equal(sender.balancePRVBefore - amountTrade - 100 - estimateTradeObject.Result.FeePRV.Fee);
-            chai.expect(sender.balanceZILAfter).to.be.least(sender.balanceZILBefore + estimateTradeObject.Result.FeePRV.MaxGet);
+            chai.expect(sender.balanceAllAfter[tokenSell]).to.equal(sender.balanceAllBefore[tokenSell] - amountTrade - 100 - estimateTradeObject.Result.FeePRV.Fee);
+            chai.expect(sender.balanceAllAfter[tokenBuy]).to.be.least(sender.balanceAllBefore[tokenBuy] + estimateTradeObject.Result.FeePRV.MaxGet);
 
         }).timeout(config.timeoutApi);
     });
 
-    describe.skip("TC002_TradeTokenToPRV", async () => {
+    describe("TC002_TradeTokenToPRV", async () => {
         let amountTrade = 0
         let estimateTradeObject
         let tx
+        let tokenSell = TOKEN.ZIL
+        let tokenBuy = TOKEN.PRV
 
         it("STEP_InitData", async () => {
             await sender.initSdkInstance();
             let balanceAll = await sender.useCli.getBalanceAll()
-
-            sender.balancePRVBefore = balanceAll[TOKEN.PRV]
-            sender.balanceZILBefore = balanceAll[TOKEN.ZIL]
-
-            logger.info({ balancePRVBefore: sender.balancePRVBefore })
-            logger.info({ balanceZILBefore: sender.balanceZILBefore })
+            sender.balanceAllBefore = balanceAll
+            addDebug("sender.balanceAllBefore", sender.balanceAllBefore)
 
             amountTrade = await GenAction.randomNumber(1000)
         }).timeout(config.timeoutApi);
@@ -114,19 +109,19 @@ describe("[Class] Pdex", () => {
         it("STEP_Trade", async () => {
 
             tx = await sender.useSdk.swap({
-                tokenSell: TOKEN.ZIL,
-                tokenBuy: TOKEN.PRV,
+                tokenSell: tokenSell,
+                tokenBuy: tokenBuy,
                 amount: amountTrade,
                 tradePath: estimateTradeObject.Result.FeeToken.Route,
                 tradingFee: estimateTradeObject.Result.FeeToken.Fee,
-                feeToken: TOKEN.ZIL,
+                feeToken: tokenSell,
                 minAcceptableAmount: estimateTradeObject.Result.FeeToken.MaxGet,
             })
             addDebug(tx)
             await NODES.Incognito.getTransactionByHashRpc(tx)
             await sender.useSdk.waitForUtxoChange({
-                tokenID: TOKEN.PRV,
-                countNumber: 20,
+                tokenID: tokenBuy,
+                countNumber: 15,
             })
         }).timeout(config.timeoutTx);
 
@@ -136,19 +131,17 @@ describe("[Class] Pdex", () => {
 
             chai.expect(response.data.Result.Status).to.equal(1)
             chai.expect(response.data.Result.BuyAmount).to.above(1)
-            chai.expect(response.data.Result.TokenToBuy).to.equal(TOKEN.PRV)
+            chai.expect(response.data.Result.TokenToBuy).to.equal(tokenBuy)
 
         }).timeout(config.timeoutTx);
 
         it("STEP_VerifyBalance", async () => {
             let balanceAll = await sender.useCli.getBalanceAll()
-            sender.balancePRVAfter = balanceAll[TOKEN.PRV]
-            sender.balanceZILAfter = balanceAll[TOKEN.ZIL]
-            logger.info({ balancePRVAfter: sender.balancePRVAfter })
-            logger.info({ balanceZILAfter: sender.balanceZILAfter })
+            sender.balanceAllAfter = balanceAll
+            addDebug("sender.balanceAllAfter", sender.balanceAllAfter)
 
-            chai.expect(sender.balancePRVAfter).to.least(sender.balancePRVBefore - 100 + estimateTradeObject.Result.FeePRV.MaxGet);
-            chai.expect(sender.balanceZILAfter).to.be.equal(sender.balanceZILBefore - amountTrade - estimateTradeObject.Result.FeeToken.Fee);
+            chai.expect(sender.balanceAllAfter[tokenBuy]).to.least(sender.balanceAllBefore[tokenBuy] - 100 + estimateTradeObject.Result.FeePRV.MaxGet);
+            chai.expect(sender.balanceAllAfter[tokenSell]).to.be.equal(sender.balanceAllBefore[tokenSell] - amountTrade - estimateTradeObject.Result.FeeToken.Fee);
 
         }).timeout(config.timeoutApi);
     });

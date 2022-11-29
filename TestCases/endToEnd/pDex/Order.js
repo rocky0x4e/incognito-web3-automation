@@ -412,7 +412,7 @@ describe("[Class] Order", () => {
                 buyAmount: amountBuy,
             })
             addDebug('tx', tx)
-            assert.include(tx, `WEB_JS_ERROR: Error while preparing inputs`)
+            assert.include(tx, `strconv.ParseUint: parsing "null": invalid syntax`)
 
         }).timeout(config.timeoutTx);
 
@@ -502,7 +502,7 @@ describe("[Class] Order", () => {
         }).timeout(config.timeoutTx);
     });
 
-    describe("TC008_AddOrderThanMoreBalance", async () => {
+    describe("TC007_AddOrderThanMoreBalance", async () => {
         let amountBuy = 0
         let tx
         let tokenSellID = TOKEN.PRV
@@ -530,7 +530,7 @@ describe("[Class] Order", () => {
         }).timeout(config.timeoutTx);
     });
 
-    describe("TC009_AddOrderNotExistPoolID", async () => {
+    describe("TC008_AddOrderNotExistPoolID", async () => {
         let amountBuy = 0
         let amountSell = 0
         let tx
@@ -561,7 +561,7 @@ describe("[Class] Order", () => {
         }).timeout(config.timeoutTx);
     });
 
-    describe("TC010_CancelOrderWithNftInvalid", async () => {
+    describe("TC009_CancelOrderWithNftInvalid", async () => {
 
         let pendingOrderObject
 
@@ -595,7 +595,7 @@ describe("[Class] Order", () => {
         }).timeout(config.timeoutTx);
     });
 
-    describe("TC011_CancelOrderIdNotExist", async () => {
+    describe("TC010_CancelOrderIdNotExist", async () => {
 
         let pendingOrderObject
 
@@ -638,7 +638,7 @@ describe("[Class] Order", () => {
         }).timeout(config.timeoutTx);
     });
 
-    describe("TC012_CancelOrderWithPoolIDIncorrect", async () => {
+    describe("TC011_CancelOrderWithPoolIDIncorrect", async () => {
 
         let pendingOrderObject
 
@@ -676,7 +676,7 @@ describe("[Class] Order", () => {
         }).timeout(config.timeoutTx);
     });
 
-    describe("TC013_CancelOrderWithIncorrectToken1ID", async () => {
+    describe("TC012_CancelOrderWithIncorrectToken1ID", async () => {
 
         let pendingOrderObject
 
@@ -721,7 +721,7 @@ describe("[Class] Order", () => {
         }).timeout(config.timeoutTx);
     });
 
-    describe("TC014_CancelOrderWithIncorrectToken2ID", async () => {
+    describe("TC013_CancelOrderWithIncorrectToken2ID", async () => {
 
         let pendingOrderObject
 
@@ -765,7 +765,7 @@ describe("[Class] Order", () => {
         }).timeout(config.timeoutTx);
     });
 
-    describe("TC015_CancelOrderIDNotBelongWithOrder", async () => {
+    describe("TC014_CancelOrderIDNotBelongWithOrder", async () => {
 
         let pendingOrderObject1
         let pendingOrderObject2
@@ -810,7 +810,7 @@ describe("[Class] Order", () => {
         }).timeout(config.timeoutTx);
     });
 
-    describe("TC016_CancelPoolIDNotBelongWithOrder", async () => {
+    describe("TC015_CancelPoolIDNotBelongWithOrder", async () => {
 
         let pendingOrderObject1
         let pendingOrderObject2

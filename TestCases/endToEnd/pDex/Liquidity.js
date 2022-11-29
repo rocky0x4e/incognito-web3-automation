@@ -9,7 +9,7 @@ const { ACCOUNTS, NODES } = require('../../TestBase');
 const config = require("../../../config.json");
 
 let coinServiceApi = new CoinServiceApi()
-let sender = ACCOUNTS.Incognito.get(3)
+let sender = ACCOUNTS.Incognito.get(2)
 
 describe("[Class] Liquidity", () => {
     describe("TC001_AddExistLiquidity", async () => {
@@ -321,7 +321,7 @@ describe("[Class] Liquidity", () => {
 
         const logger = getLogger("Pdex")
 
-        let sender = ACCOUNTS.Incognito.get(3)
+        let sender = ACCOUNTS.Incognito.get(2)
 
         let amount1 = 0
         let amount2 = 0
@@ -339,12 +339,6 @@ describe("[Class] Liquidity", () => {
 
             //getBalance
             let balanceAll = await sender.useSdk.getBalanceAll()
-
-            for (const tokenID of Object.keys(balanceAll)) {
-                let symbol = await coinServiceApi.getTokenSymbol(tokenID)
-                console.log(`======> ${symbol} : ${balanceAll[tokenID]}`);
-            }
-
             sender.balanceAllBefore = balanceAll
             addDebug('sender.balanceAllBefore ', sender.balanceAllBefore)
 
@@ -407,7 +401,7 @@ describe("[Class] Liquidity", () => {
 
             //create tx
             listTx = await sender.useSdk.contributeLiquidity({
-                tokenId1: TOKEN.WBNB,
+                tokenId1: token1ID,
                 tokenId2: token2ID,
                 amount1,
                 amount2,
@@ -428,9 +422,13 @@ describe("[Class] Liquidity", () => {
             for (const tx of listTx) {
                 let response = await NODES.Incognito.rpc.pdexv3_getContributionStatus(tx)
 
-                chai.expect(response.data.Result.Status).to.equal(4)
-                chai.expect(response.data.Result.Token0ID).to.equal(token2ID)
-                chai.expect(response.data.Result.Token1ID).to.equal(TOKEN.WBNB)
+                chai.expect(response.data.Result.Status).to.equal(3)
+                chai.expect(response.data.Result.Token0ID).to.equal("")
+                chai.expect(response.data.Result.Token0ContributedAmount).to.equal(0)
+                chai.expect(response.data.Result.Token0ReturnedAmount).to.equal(0)
+                chai.expect(response.data.Result.Token1ID).to.equal("")
+                chai.expect(response.data.Result.Token1ContributedAmount).to.equal(0)
+                chai.expect(response.data.Result.Token1ReturnedAmount).to.equal(0)
                 chai.expect(response.data.Result.PoolPairID).to.equal(poolPairID)
             }
         }).timeout(config.timeoutTx * 2);
@@ -454,7 +452,6 @@ describe("[Class] Liquidity", () => {
 
         it("STEP_InitData", async () => {
             await sender.initSdkInstance();
-            // await sender.useSdk.clearCacheBalance()
 
             //getBalance
             let balanceAll = await sender.useSdk.getBalanceAll()
@@ -469,7 +466,6 @@ describe("[Class] Liquidity", () => {
                 }
                 break
             }
-            console.log('hoanh nftData', nftData);
 
             //randomNumber
             amount1 = await GenAction.randomNumber(10000)
