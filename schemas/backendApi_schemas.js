@@ -1598,9 +1598,9 @@
  const historyTokenAccountSchemas = {
     "$id": "historyTokenAccountSchemas",
     "type": "object",
-    "$ref": "#/definitions/Welcome2",
+    "$ref": "#/definitions/Welcome9",
     "definitions": {
-        "Welcome2": {
+        "Welcome9": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -1618,7 +1618,7 @@
                 "Error",
                 "Result"
             ],
-            "title": "Welcome2"
+            "title": "Welcome9"
         },
         "Result": {
             "type": "object",
@@ -1637,7 +1637,7 @@
                     "type": "string"
                 },
                 "EstFeeAt": {
-                    "type": "null"
+                    
                 },
                 "AddressType": {
                     "type": "integer"
@@ -1646,7 +1646,7 @@
                     "type": "integer"
                 },
                 "StatusMessage": {
-                    "type": "string"
+                    "$ref": "#/definitions/StatusMessage"
                 },
                 "StatusDetail": {
                     "type": "string"
@@ -1700,7 +1700,7 @@
                     "type": "string"
                 },
                 "InChainTx": {
-                    "type": "string"   
+                    "type": "string"
                 },
                 "TokenFee": {
                     "type": "string"
@@ -1733,7 +1733,14 @@
                     "type": "string"
                 },
                 "UnifiedStatus": {
-                    "type": "null"
+                    "anyOf": [
+                        {
+                            "$ref": "#/definitions/UnifiedStatus"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
                 },
                 "UnifiedReward": {
                     "anyOf": [
@@ -1825,27 +1832,42 @@
             ],
             "title": "UnifiedReward"
         },
+        "UnifiedStatus": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "Fee": {
+                    "type": "integer"
+                },
+                "ReceivedAmount": {
+                    "type": "integer"
+                },
+                "Status": {
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "Fee",
+                "ReceivedAmount",
+                "Status"
+            ],
+            "title": "UnifiedStatus"
+        },
         "Address": {
             "type": "string",
-            "enum": [
-                "0x960F5C14b99221f05B0d65a94B703DeDb3f6E5E5",
-                "Deposit from app!"
-            ],
             "title": "Address"
         },
         "Network": {
             "type": "string",
-            "enum": [
-                "Ethereum"
-            ],
             "title": "Network"
         },
         "PrivacyTokenAddress": {
             "type": "string",
-            "enum": [
-                "ffd8d42dc40a8d166ea4848baf8b5f6e9fe0e9c30d60062eb7d44a8df9e00854"
-            ],
             "title": "PrivacyTokenAddress"
+        },
+        "StatusMessage": {
+            "type": "string",
+            "title": "StatusMessage"
         }
     }
  };
@@ -1889,7 +1911,7 @@
                     "type": "string"
                 },
                 "EstFeeAt": {
-                    "type": "null"
+            
                 },
                 "AddressType": {
                     "type": "integer"

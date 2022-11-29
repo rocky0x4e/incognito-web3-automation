@@ -35,25 +35,151 @@
         }
     },
     "Web3": {
-        "url": "http://blabla",
+        "url": "https://kovan.infura.io/v3/",
         "authPath": ""
     },
     "EthereumFullnode": {
-        "url": "http://blabla"
+        "url": "https://eth-goerli.g.alchemy.com/v2/qOolRKBtov0fk1r657-8qWmLrcfZCw87",
+        "networkDetail": {
+            "chainParams": {
+                "name": "goerli",
+                "networkId": 5,
+                "chainId": 5
+            },
+            "chain": "goerli",
+            "hardfork": "istanbul"
+        },
+        "configGasTx": {
+            "gasPrice": 90,
+            "gasLimit": 21000
+        },
+        "configIncBE": {
+            "currencyType": 1,
+            "currencyTypeERC20": 3,
+            "decentralized": 2,
+            "shieldFeeWallet": "0xxxxxx",
+            "unshieldFeeWallet": "0xxxxxx",
+            "minimumFeeTheshold": 50000000000000000
+        }
     },
     "BSCFullnode": {
-        "url": "http://blabla"
+        "url": "https://data-seed-prebsc-1-s1.binance.org:8545",
+        "networkDetail": {
+            "chainParams": {
+                "name": "Binance Smart Chain Testnet",
+                "networkId": 97,
+                "chainId": 97
+            },
+            "chain": "ropsten",
+            "hardfork": "istanbul"
+        },
+        "configGasTx": {
+            "gasPrice": 90,
+            "gasLimit": 21000
+        },
+        "configIncBE": {
+            "currencyType": 7,
+            "currencyTypeERC20": 8,
+            "decentralized": 3,
+            "shieldFeeWallet": "0xxxxxx",
+            "unshieldFeeWallet": "0xxxxxx",
+            "minimumFeeTheshold": 50000000000000000
+        }
     },
     "PLGFullnode": {
-        "url": "http://blabla"
+        "url": "https://polygon-mumbai.g.alchemy.com/v2/V8SP0S8Q-sT35ca4VKH3Iwyvh8K8wTRn",
+        "networkDetail": {
+            "chainParams": {
+                "name": "mumbai polygon",
+                "networkId": 80001,
+                "chainId": 80001
+            },
+            "chain": "goerli",
+            "hardfork": "petersburg"
+        },
+        "configGasTx": {
+            "gasPrice": 90,
+            "gasLimit": 21000
+        },
+        "configIncBE": {
+            "currencyType": 19,
+            "currencyTypeERC20": 20,
+            "decentralized": 4,
+            "shieldFeeWallet": "0xxxxxx",
+            "unshieldFeeWallet": "0xxxxxx",
+            "minimumFeeTheshold": 50000000000000000
+        }
     },
     "FTMFullnode": {
-        "url": "http://blabla"
+        "url": "https://rpc.testnet.fantom.network",
+        "networkDetail": {
+            "chainParams": {
+                "name": "Fantom Testnet",
+                "networkId": 4002,
+                "chainId": 4002
+            },
+            "chain": "goerli",
+            "hardfork": "petersburg"
+        },
+        "configGasTx": {
+            "gasPrice": 10,
+            "gasLimit": 21000
+        },
+        "configIncBE": {
+            "currencyType": 21,
+            "currencyTypeERC20": 22,
+            "decentralized": 5,
+            "shieldFeeWallet": "0xxxxxx",
+            "unshieldFeeWallet": "0xxxxxx",
+            "minimumFeeTheshold": 50000000000000000
+        }
     },
     "AuroraFullnode": {
-        "url": "http://blabla"
+        "url": "https://testnet.aurora.dev",
+        "networkDetail": {
+            "chainParams": {
+                "name": "aurora Testnet",
+                "networkId": 1313161555,
+                "chainId": 1313161555
+            },
+            "chain": "goerli",
+            "hardfork": "petersburg"
+        },
+        "configGasTx": {
+            "gasPrice": 10,
+            "gasLimit": 21000
+        },
+        "configIncBE": {
+            "currencyType": 30,
+            "currencyTypeERC20": 31,
+            "decentralized": 9,
+            "shieldFeeWallet": "0xxxxxx",
+            "unshieldFeeWallet": "0xxxxxx",
+            "minimumFeeTheshold": 50000000000000000
+        }
     },
     "AvaxFullnode": {
-        "url": "http://blabla"
+        "url": "https://api.avax-test.network/ext/C/rpc",
+        "networkDetail": {
+            "chainParams": {
+                "name": "C-chain Testnet",
+                "networkId": 43113,
+                "chainId": 43113
+            },
+            "chain": "goerli",
+            "hardfork": "petersburg"
+        },
+        "configGasTx": {
+            "gasPrice": 50,
+            "gasLimit": 21000
+        },
+        "configIncBE": {
+            "currencyType": 28,
+            "currencyTypeERC20": 29,
+            "decentralized": 8,
+            "shieldFeeWallet": "0xxxxxx",
+            "unshieldFeeWallet": "0xxxxxx",
+            "minimumFeeTheshold": 50000000000000000
+        }
     }
 }

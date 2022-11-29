@@ -8,7 +8,7 @@
     "scripts": {
         "start": "node server.js",
         "dev": "nodemon --debug",
-        "test": "npx mocha TestCases/monitor/backend/Papp --timeout 10000 --file testbase/testbase.js --reporter mochawesome --charts true --exit"
+        "test": "npx mocha TestCases/monitor/EVM --timeout 100000000000  --reporter mochawesome --charts true --exit"
     },
     "dependencies": {
         "ajv": "^8.11.0",
@@ -17,16 +17,17 @@
         "body-parser": "^1.17.2",
         "chai": "^4.0.2",
         "chai-http": "^4.3.0",
-        "ethereumjs-common": "^1.5.0",
+        "ethereumjs-common": "^1.5.2",
         "ethereumjs-tx": "^2.1.2",
         "express": "^4.15.3",
         "incognito-chain-web-js": "https://github.com/incognitochain/incognito-chain-web-js#4.4.5.23",
         "lodash": "^4.17.21",
-        "mocha": "^10.0.0",
+        "mocha": "^10.1.0",
         "morgan": "^1.8.2",
         "node-fetch": "^2.6.7",
         "node-localstorage": "^2.2.1",
         "node-persist": "^3.1.0",
+        "slack-notify": "^2.0.4",
         "table": "^6.8.0",
         "web3": "^1.8.0",
         "winston": "^3.8.2"

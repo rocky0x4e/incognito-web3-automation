@@ -5,8 +5,8 @@ let chai = require('chai');
 const { wait } = require('../../../lib/Utils/Timer');
 
 
-describe(`[EVM] Fullnode`, () => {
-    describe(`TC001_Ethereum_Fullnode`, async () => {
+describe.skip(`[EVM] Fullnode`, () => {
+    describe(`TC001_Ethereum_Fullnode`, async () => {    
         it(`Call Fullnode`, async () => {
             const host = ENV.EthereumFullnode
             console.log(host)
