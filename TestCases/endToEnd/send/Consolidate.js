@@ -77,7 +77,7 @@ describe("[Class] Consolidate", () => {
         }).timeout(config.timeoutApi);
     });
 
-    describe.only("TC003_ConsolidateInvalidToken", async () => {
+    describe("TC003_ConsolidateInvalidToken", async () => {
 
         it("STEP_InitData", async () => {
             await sender.initSdkInstance();
