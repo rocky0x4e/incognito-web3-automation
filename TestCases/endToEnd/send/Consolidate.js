@@ -56,7 +56,7 @@ describe("[Class] Consolidate", () => {
         it("STEP_Consolidate", async () => {
             listTx = await sender.useSdk.consolidate({ tokenID: tokenID })
 
-            AddingContent.addContent("listTx", listTx)
+            addDebug("listTx", listTx)
 
             for (const tx of listTx) {
                 await NODES.Incognito.getTransactionByHashRpc(tx)

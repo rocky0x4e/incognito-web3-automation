@@ -396,8 +396,8 @@ describe("[Class] Order", () => {
 
         it("STEP_InitData", async () => {
             await sender.initSdkInstance();
-            let listUtxo = await sender.useSdk.getNumberUtxo({ tokenID: TOKEN.PRV })
-            console.log('hoanh listUtxo', listUtxo);
+            let balanceAll = await sender.useSdk.getBalanceAll()
+            addDebug(balanceAll)
 
             amountBuy = await GenAction.randomNumber(1000)
             amountSell = await GenAction.randomNumber(1000)
@@ -412,7 +412,7 @@ describe("[Class] Order", () => {
                 buyAmount: amountBuy,
             })
             addDebug('tx', tx)
-            chai.expect(tx).to.contain(`strconv.ParseUint: parsing "null": invalid syntax`)
+            assert.include(tx, `WEB_JS_ERROR: Error while preparing inputs`)
 
         }).timeout(config.timeoutTx);
 
@@ -439,7 +439,7 @@ describe("[Class] Order", () => {
                 buyAmount: amountBuy,
             })
             addDebug('tx', tx)
-            chai.expect(tx).to.contain(`strconv.ParseUint: parsing "abc": invalid syntax`)
+            assert.include(tx, `strconv.ParseUint: parsing "abc": invalid syntax`)
 
         }).timeout(config.timeoutTx);
     });
