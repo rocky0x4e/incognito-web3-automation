@@ -6,8 +6,8 @@ const addDebug = require('../../../lib/Utils/AddingContent').addDebug;
 const { ACCOUNTS, NODES } = require('../../TestBase');
 let assert = require("chai").assert
 
-let sender = ACCOUNTS.Incognito.get(2)
-let receiver = ACCOUNTS.Incognito.get(3)
+let sender = ACCOUNTS.Incognito.get(1)
+let receiver = ACCOUNTS.Incognito.get(2)
 
 
 describe("[Class] Send", () => {

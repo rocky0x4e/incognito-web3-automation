@@ -4,11 +4,11 @@ const coinServiceApi_schemas = require("../../../schemas/coinServiceApi_schemas"
 let chai = require("chai");
 const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
 const GenAction = require("../../../lib/Utils/GenAction");
-const { NODES, ACCOUNTS } = require("../../TestBase");
+const { ACCOUNTS } = require("../../TestBase");
 
 // let account = await ACCOUNTS.Incognito.get[2]
 let coinServiceApi = new CoinServiceApi();
-let account = ACCOUNTS.Incognito.get(2)
+let account = ACCOUNTS.Incognito.get(1)
 
 describe("[Class] Pdex", () => {
     describe("TC001_SwapTradeHistory", async () => {

@@ -7,9 +7,9 @@ const { CoinServiceApi } = require("../../../lib/Incognito/CoinServiceApi");
 const GenAction = require("../../../lib/Utils/GenAction");
 const { ACCOUNTS, NODES } = require("../../TestBase");
 
-let account = ACCOUNTS.Incognito.get(2)
-let sender = ACCOUNTS.Incognito.get(2)
-let receiver = ACCOUNTS.Incognito.get(3)
+let account = ACCOUNTS.Incognito.get(1)
+let sender = ACCOUNTS.Incognito.get(1)
+let receiver = ACCOUNTS.Incognito.get(2)
 
 let coinServiceApi = new CoinServiceApi();
 

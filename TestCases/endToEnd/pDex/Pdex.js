@@ -7,11 +7,10 @@ let chai = require("chai");
 let assert = require("chai").assert;
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const { ACCOUNTS, NODES } = require('../../TestBase');
-const { addCodeArg } = require('ajv/dist/compile/codegen/code');
 const logger = getLogger("Pdex")
 
 let coinServiceApi = new CoinServiceApi();
-let sender = ACCOUNTS.Incognito.get(2)
+let sender = ACCOUNTS.Incognito.get(1)
 
 describe("[Class] Pdex", () => {
     describe("TC001_TradePRVToToken", async () => {

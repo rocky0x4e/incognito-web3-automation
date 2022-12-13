@@ -1,13 +1,12 @@
 const validateSchemaCommand = require("../../../schemas/validateSchemaCommand");
 const backendApi_schemas = require("../../../schemas/backendApi_schemas");
 const { BackendApi } = require('../../../lib/Incognito/BackendApi');
-const { IncAccount } = require("../../../lib/Incognito/Account/Account");
 const { ACCOUNTS } = require("../../TestBase");
 
 
 // let privateKey = (await config.getAccount('main7')).privateKey
 var backendApi = new BackendApi()
-var account = ACCOUNTS.Incognito.get(2)
+var account = ACCOUNTS.Incognito.get(1)
 
 describe('[CLASS] Papp', async() => {
 

@@ -3,20 +3,24 @@ const GenAction = require("../../../lib/Utils/GenAction");
 const addDebug = require('../../../lib/Utils/AddingContent').addDebug;
 let chai = require("chai");
 let assert = require("chai").assert;
-const { getLogger } = require("../../../lib/Utils/LoggingManager");
-const { CoinServiceApi } = require('../../../lib/Incognito/CoinServiceApi');
 const { ACCOUNTS, NODES } = require('../../TestBase');
 const config = require("../../../config.json");
 
-let coinServiceApi = new CoinServiceApi()
-let sender = ACCOUNTS.Incognito.get(2)
 
 describe("[Class] Liquidity", () => {
+    var sender = ACCOUNTS.Incognito.get(1)
+
+    async function initSdkNGetBal() {
+        await sender.initSdkInstance();
+        await sender.useSdk.clearCacheBalance()
+
+        //getBalance
+        let balanceAll = await sender.useSdk.getBalanceAll()
+        sender.balanceAllBefore = balanceAll
+        addDebug('sender.balanceAllBefore ', sender.balanceAllBefore)
+    }
+
     describe("TC001_AddExistLiquidity", async () => {
-
-        const logger = getLogger("Pdex")
-
-        let sender = ACCOUNTS.Incognito.get(2)
 
         let amount1 = 0
         let amount2 = 0
@@ -29,14 +33,7 @@ describe("[Class] Liquidity", () => {
         let poolPairID = POOL.PRV_USDT
 
         it("STEP_InitData", async () => {
-            await sender.initSdkInstance();
-            await sender.useSdk.clearCacheBalance()
-
-            //getBalance
-            let balanceAll = await sender.useSdk.getBalanceAll()
-            sender.balanceAllBefore = balanceAll
-            addDebug('sender.balanceAllBefore ', sender.balanceAllBefore)
-
+            await initSdkNGetBal()
             sender.balancePRVBefore = balanceAll[token1ID]
             sender.balanceUSDTBefore = balanceAll[token2ID]
 
@@ -118,15 +115,7 @@ describe("[Class] Liquidity", () => {
         let tx
 
         it("STEP_InitData", async () => {
-            await sender.initSdkInstance();
-            await sender.useSdk.clearCacheBalance()
-
-            //getBalance
-            let balanceAll = await sender.useSdk.getBalanceAll()
-            sender.balanceAllBefore = balanceAll
-
-            addDebug("sender.balanceAllBefore", sender.balanceAllBefore)
-
+            await initSdkNGetBal()
         }).timeout(config.timeoutApi);
 
         it("STEP_FindMyPoolShare", async () => {
@@ -206,14 +195,7 @@ describe("[Class] Liquidity", () => {
         let poolHaveReward
 
         it("STEP_InitData", async () => {
-            await sender.initSdkInstance();
-            await sender.useSdk.clearCacheBalance()
-
-            //getBalance
-            let balanceAll = await sender.useSdk.getBalanceAll()
-            sender.balanceAllBefore = balanceAll
-
-            addDebug("sender.balanceAllBefore", sender.balanceAllBefore)
+            await initSdkNGetBal()
         }).timeout(config.timeoutApi);
 
         it("STEP_FindLiqudityHaveReward", async () => {
@@ -318,15 +300,8 @@ describe("[Class] Liquidity", () => {
     });
 
     describe("TC004_AddExistLiquidityWithInvalidToken1", async () => {
-
-        const logger = getLogger("Pdex")
-
-        let sender = ACCOUNTS.Incognito.get(2)
-
         let amount1 = 0
         let amount2 = 0
-        let actualAmount0Add
-        let actualAmount1Add
         let listTx = []
         let nftID
         let token1ID = TOKEN.PRV
@@ -334,13 +309,7 @@ describe("[Class] Liquidity", () => {
         let poolPairID = POOL.PRV_USDT
 
         it("STEP_InitData", async () => {
-            await sender.initSdkInstance();
-            await sender.useSdk.clearCacheBalance()
-
-            //getBalance
-            let balanceAll = await sender.useSdk.getBalanceAll()
-            sender.balanceAllBefore = balanceAll
-            addDebug('sender.balanceAllBefore ', sender.balanceAllBefore)
+            await initSdkNGetBal()
 
             //selectNFT
             let nftData = await sender.useSdk.getNftData()
@@ -435,15 +404,8 @@ describe("[Class] Liquidity", () => {
     });
 
     describe("TC005_AddExistLiquidityWithInvalidAmount1", async () => {
-
-        const logger = getLogger("Pdex")
-
-        let sender = ACCOUNTS.Incognito.get(2)
-
         let amount1 = 0
         let amount2 = 0
-        let actualAmount0Add
-        let actualAmount1Add
         let listTx = []
         let nftID
         let token1ID = TOKEN.PRV
@@ -451,12 +413,7 @@ describe("[Class] Liquidity", () => {
         let poolPairID = POOL.PRV_USDT
 
         it("STEP_InitData", async () => {
-            await sender.initSdkInstance();
-
-            //getBalance
-            let balanceAll = await sender.useSdk.getBalanceAll()
-            sender.balanceAllBefore = balanceAll
-            addDebug('sender.balanceAllBefore ', sender.balanceAllBefore)
+            await initSdkNGetBal()
 
             //selectNFT
             let nftData = await sender.useSdk.getNftData()

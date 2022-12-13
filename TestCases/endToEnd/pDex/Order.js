@@ -7,11 +7,10 @@ const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const addDebug = require('../../../lib/Utils/AddingContent').addDebug;
 const config = require("../../../config.json");
 const { ACCOUNTS, NODES } = require('../../TestBase');
-const { expect } = require('chai');
 const logger = getLogger("Pdex")
 
 let coinServiceApi = new CoinServiceApi();
-let sender = ACCOUNTS.Incognito.get(2)
+let sender = ACCOUNTS.Incognito.get(1)
 
 describe("[Class] Order", () => {
 

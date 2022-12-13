@@ -1,4 +1,3 @@
-const commonFunction = require("../../../constant/commonFunction");
 const addDebug = require('../../../lib/Utils/AddingContent').addDebug;
 let chai = require("chai");
 const { IncAccount } = require("../../../lib/Incognito/Account/Account");
@@ -7,6 +6,7 @@ const { BackendApi } = require("../../../lib/Incognito/BackendApi");
 const { ENV } = require("../../../global");
 const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const { NODES } = require("../../TestBase");
+const { randomNumberInRange } = require('../../../lib/Utils/GenAction');
 const logger = getLogger("Provide");
 
 let sender = new IncAccount("112t8rnXVMJJZzfF1naXvfE9nkTKwUwFWFeh8cfEyViG1vpA8A9khJk3mhyB1hDuJ4RbreDTsZpgJK4YcSxdEpXJKMEd8Vmp5UqKWwBcYzxv").attachTo(
@@ -33,7 +33,7 @@ describe("[Class] Provide", () => {
         let amountProvide = 0;
 
         it("STEP_InitData", async () => {
-            amountProvide = await commonFunction.randomNumberInRange(1234000123, 10234000567);
+            amountProvide = await randomNumberInRange(1234000123, 10234000567);
         });
 
         it.skip("STEP_CheckBalanceCli", async () => {

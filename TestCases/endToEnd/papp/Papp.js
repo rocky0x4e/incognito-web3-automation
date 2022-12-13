@@ -1,28 +1,15 @@
-const { TOKEN, POOL } = require('../../../lib/Incognito/Constants')
+const { TOKEN } = require('../../../lib/Incognito/Constants')
 const GenAction = require("../../../lib/Utils/GenAction");
-const { getLogger } = require("../../../lib/Utils/LoggingManager");
 const { CoinServiceApi } = require('../../../lib/Incognito/CoinServiceApi');
 const { WebServiceApi } = require('../../../lib/Incognito/WebServiceApi');
-const logger = getLogger("Pdex")
 const { ACCOUNTS, NODES } = require('../../TestBase');
 const AddingContent = require('../../../lib/Utils/AddingContent');
 const config = require('../../../config.json');
-const { send } = require('process');
 const assert = require("chai").assert;
-
-
-const INCOGNITO_NETWORK = 0;
-const ETH_NETWORK = 1;
-const BSC_NETWORK = 2;
-const POLYGON_NETWORK = 3;
-const FANTOM_NETWORK = 4;
-const AURORA_NETWORK = 5;
-const AVALANCHE_NETWORK = 6;
-const NEAR_NETWORK = 7; // TO DO, change after
 
 let coinServiceApi = new CoinServiceApi()
 let webServiceApi = new WebServiceApi()
-let sender = ACCOUNTS.Incognito.get(2)
+let sender = ACCOUNTS.Incognito.get(1)
 
 describe("[Class] Papp", () => {
     describe.skip("TC001_TradePancakeReDeposit", async () => {
@@ -111,7 +98,6 @@ describe("[Class] Papp", () => {
                     let redeposit_inctx = network_result.redeposit_inctx
                     await NODES.Incognito.getTransactionByHashRpc(redeposit_inctx)
 
-                    let swap_tx = network_result.swap_tx
                     //TODO : verify on EVM
 
                     let swap_detail = response.data.Result[tx].swap_detail
@@ -231,7 +217,6 @@ describe("[Class] Papp", () => {
                     let redeposit_inctx = network_result.redeposit_inctx
                     await NODES.Incognito.getTransactionByHashRpc(redeposit_inctx)
 
-                    let swap_tx = network_result.swap_tx
                     //TODO : verify on EVM
 
                     let swap_detail = response.data.Result[tx].swap_detail
