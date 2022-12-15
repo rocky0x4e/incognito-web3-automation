@@ -4,6 +4,7 @@ const config = require("../../../config.json");
 let chai = require("chai");
 const addDebug = require('../../../lib/Utils/AddingContent').addDebug;
 const { ACCOUNTS, NODES } = require('../../TestBase');
+const { IncAccount } = require('../../../lib/Incognito/Account/Account');
 let assert = require("chai").assert
 
 let sender = ACCOUNTS.Incognito.get(1)
@@ -148,7 +149,6 @@ describe("[Class] Send", () => {
 
         it("STEP_InitData", async () => {
             await sender.initSdkInstance();
-
             await receiver.initSdkInstance();
 
             let balanceAll = await sender.useCli.getBalanceAll()
@@ -161,12 +161,12 @@ describe("[Class] Send", () => {
 
             amountSend = await GenAction.randomNumber(10000)
             addDebug("amountSend", amountSend)
-
         }).timeout(config.timeoutApi);
 
         it("STEP_Send", async () => {
-            tx = await sender.useSdk.sendPRVToPaymentAddress({
-                address: "123",
+            receiver = IncAccount({ PaymentAddress: "123" })
+            tx = await sender.useSdk.sendPRV({
+                address: receiver,
                 amount: amountSend
             })
             addDebug({ tx })

@@ -49,7 +49,7 @@ describe("[Class] pNode", () => {
                     chai.assert.equal(withdrawRewardResponse.status, 200, "Response Status Code is not 200");
                     chai.assert.equal(JSON.stringify(withdrawRewardResponse.data), '{"Result":true,"Error":null}', "Error unable to withdraw reward");
                     logger.info(
-                        `STEP Withdraw Provide Reward\nResponse Status Code is ${withdrawRewardResponse.status}\n 
+                        `STEP Withdraw Provide Reward\nResponse Status Code is ${withdrawRewardResponse.status}\n
                     ${JSON.stringify(withdrawRewardResponse.data)}\n --- PASSED --- `
                     );
                 } catch (err) {
@@ -58,7 +58,6 @@ describe("[Class] pNode", () => {
                     chai.assert.equal(JSON.stringify(err.response.data), '{"Result":true,"Error":null}', "Error unable to withdraw reward");
                 }
             } else {
-                it.skip;
                 logger.info("Withdraw pNode Reward: SKIPPED");
             }
         });
@@ -77,7 +76,6 @@ describe("[Class] pNode", () => {
                 chai.expect(senderBalancePRVAfter - senderBalancePRVAfter).to.be.equal(pNodeRewardAmount);
                 logger.info(`sender.balancePRVAfter: ${senderBalancePRVAfter}`);
             } else {
-                it.skip;
                 logger.info("Checking balance after withdraw reward: SKIPPED");
             }
         }).timeout(400000);

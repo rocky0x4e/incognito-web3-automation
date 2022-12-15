@@ -9,13 +9,14 @@ const config = require("../../../config.json");
 
 describe("[Class] Liquidity", () => {
     var sender = ACCOUNTS.Incognito.get(1)
+    var balanceAll
 
     async function initSdkNGetBal() {
         await sender.initSdkInstance();
         await sender.useSdk.clearCacheBalance()
 
         //getBalance
-        let balanceAll = await sender.useSdk.getBalanceAll()
+        balanceAll = await sender.useSdk.getBalanceAll()
         sender.balanceAllBefore = balanceAll
         addDebug('sender.balanceAllBefore ', sender.balanceAllBefore)
     }
@@ -38,13 +39,7 @@ describe("[Class] Liquidity", () => {
             sender.balanceUSDTBefore = balanceAll[token2ID]
 
             //selectNFT
-            let nftData = await sender.useSdk.getNftData()
-            for (const nft of nftData) {
-                if (nft.realAmount == 1) {
-                    nftID = nft.nftToken
-                }
-                break
-            }
+            nftID = (await sender.useSdk.getNftTokens())[0]
 
             //randomNumber
             amount1 = await GenAction.randomNumber(10000)
