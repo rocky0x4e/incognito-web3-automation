@@ -51,6 +51,13 @@ describe("[Class] Liquidity", () => {
             let poolInfo = await sender.useSdk.getListPoolsDetail(poolPairID)
             let amp = poolInfo[0].amp
 
+            //split PRV utxo
+            let countPrvUtxo = sender.useSdk.getNumberUtxo({ tokenID: TOKEN.PRV })
+            while (countPrvUtxo < 3) {
+                let txId = sender.useSdk.sendPRV({ receiver: sender, amount: config.minTxFee })
+                await NODES.Incognito.getTransactionByHashRpc(txId)
+                countPrvUtxo++
+            }
             //create tx
             listTx = await sender.useSdk.contributeLiquidity({
                 tokenId1: token1ID,

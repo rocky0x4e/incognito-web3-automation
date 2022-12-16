@@ -15,8 +15,6 @@ describe("[Class] Consolidate", () => {
 
             let balanceAll = await sender.useSdk.getBalanceAll()
             sender.balancePRVBefore = balanceAll[TOKEN.PRV]
-
-            let getNumberUtxo = await sender.useSdk.getNumberUtxo({ tokenID: TOKEN.PRV })
         }).timeout(config.timeoutApi);
 
         it("STEP_Consolidate", async () => {
