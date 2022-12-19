@@ -247,7 +247,7 @@ describe("[Class] Order", () => {
             tx = await sender.useSdk.addOrder({
                 poolPairID: POOL.PRV_USDT,
                 tokenIDToSell: TOKEN.PRV,
-                tokenIDToBuy: TOKEN.LINK_UT,
+                tokenIDToBuy: TOKEN.USDT,
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
             })
@@ -329,7 +329,7 @@ describe("[Class] Order", () => {
 
             tx = await sender.useSdk.addOrder({
                 poolPairID: POOL.PRV_USDT,
-                tokenIDToSell: TOKEN.LINK_UT,
+                tokenIDToSell: TOKEN.USDT,
                 tokenIDToBuy: TOKEN.ZIL,
                 sellAmount: amountSell,
                 buyAmount: amountBuy,
