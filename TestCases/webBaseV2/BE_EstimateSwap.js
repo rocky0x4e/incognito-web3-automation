@@ -5,6 +5,7 @@ const { CoinServiceApi } = require("../../lib/Incognito/CoinServiceApi");
 const validateSchemaCommand = require("../../schemas/validateSchemaCommand");
 const webServiceApi_schemas = require("../../schemas/webServiceApi_schemas");
 const coinServiceApi_schemas = require("../../schemas/coinServiceApi_schemas");
+const { ENV } = require("../../global");
 
 const webServiceApi = new WebServiceApi();
 const coinServiceApi = new CoinServiceApi();
@@ -13,7 +14,7 @@ const coinServiceApi = new CoinServiceApi();
 describe("[Class] EstimateTrade", async() => {
     //Testcase
     describe("TC001_EstimateTradePdexPTVToToken", async() => {
-        it("STEP_webEstimateTradepDex", async() => {
+        it("STEP_webEstimateTradepDex", async () => {
             //call api
             let tokenSell = await selectToken("prv");
             let tokenBuy = await selectToken("zil", "zil");
@@ -29,7 +30,7 @@ describe("[Class] EstimateTrade", async() => {
 
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getEstimatetradeSchemas, response.data);
             chai.assert.equal(response.data.Error, null);
-        })
+        }).timeout(ENV.config.timeoutApi);
     })
 
     describe("TC002_EstimateTradePdexTokenToPRV", async() => {
@@ -49,7 +50,7 @@ describe("[Class] EstimateTrade", async() => {
 
             await validateSchemaCommand.validateSchema(coinServiceApi_schemas.getEstimatetradeSchemas, response.data);
             chai.assert.equal(response.data.Error, null);
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
     describe("TC003_EstimateTradePdexOnly", async() => {
@@ -83,7 +84,7 @@ describe("[Class] EstimateTrade", async() => {
             chai.assert.equal(Paths[0], fromToken);
             chai.assert.equal(Paths[Paths.length - 1], toToken);
             chai.assert.equal(response.Error, null);
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
     describe("TC004_EstimateTradePappOnly", async() => {
@@ -116,7 +117,7 @@ describe("[Class] EstimateTrade", async() => {
             chai.assert.equal(response.data.Result.Networks.bsc[0].Fee[0].tokenid, fromToken);
             chai.assert.notEqual(response.data.Result.Networks.bsc[0].Calldata, "");
             chai.assert.equal(response.Error, null);
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
     describe("TC005_EstimateTradeCannotTrade", async() => {
@@ -140,7 +141,7 @@ describe("[Class] EstimateTrade", async() => {
 
             // await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data);
             chai.assert.equal(response.data.Error, "No tradeable network found");
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
     describe("TC006_EstimateTradeBscPancake", async() => {
@@ -172,7 +173,7 @@ describe("[Class] EstimateTrade", async() => {
             chai.assert.equal(response.data.Result.Networks.bsc[0].Fee[0].tokenid, fromToken);
             chai.assert.notEqual(response.data.Result.Networks.bsc[0].Calldata, "");
             chai.assert.equal(response.Error, null);
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
     describe("TC007_EstimateTradeIncPancake", async() => {
@@ -204,7 +205,7 @@ describe("[Class] EstimateTrade", async() => {
             chai.assert.equal(response.data.Result.Networks.bsc[0].Fee[0].tokenid, fromToken);
             chai.assert.notEqual(response.data.Result.Networks.bsc[0].Calldata, "");
             chai.assert.equal(response.Error, null);
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
     describe("TC008_EstimateTradeBscPancakeCannotTrade", async() => {
@@ -226,7 +227,7 @@ describe("[Class] EstimateTrade", async() => {
             });
 
             chai.assert.equal(response.data.Error, "No tradeable network found");
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 });
 

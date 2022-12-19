@@ -11,16 +11,17 @@ const AddingContent = require('../../lib/Utils/AddingContent');
 const webServiceApi = new WebServiceApi()
 const coinServiceApi = new CoinServiceApi()
 
-describe('[Class] EstimateTrade', async() => {
+const { ENV } = require("../../global")
 
+describe('[Class] EstimateTrade', async () => {
     //PANCAKE
-    describe('TC001_PANCAKE_BNB(BSC)_DAI(UT)_BSC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC001_PANCAKE_BNB(BSC)_DAI(UT)_BSC', async () => {
+        it('STEP_Estimate_Swap_Fee', async () => {
 
             let networkTarget = 'bsc'
             let appName = 'pancake'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('bnb', 'bsc')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -41,10 +42,6 @@ describe('[Class] EstimateTrade', async() => {
 
             AddingContent.addContent("response.data", response.data)
 
-            await AddingContent.addContent(
-                'data',
-                response.data
-            )
             await validateSchemaCommand.validateSchema(webServiceApi_schemas.estimateSwapFeeSchemas, response.data)
 
             chai.assert.equal(response.data.Result.Networks.bsc[0].AppName, appName)
@@ -52,16 +49,16 @@ describe('[Class] EstimateTrade', async() => {
 
             let Paths = response.data.Result.Networks.bsc[0].Paths
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC002_PANCAKE_USDT(UT)_DAI(UT)_BSC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC002_PANCAKE_USDT(UT)_DAI(UT)_BSC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'bsc'
             let appName = 'pancake'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('usdt', 'ut')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -92,16 +89,16 @@ describe('[Class] EstimateTrade', async() => {
             let Paths = response.data.Result.Networks.bsc[0].Paths
 
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC003_PANCAKE_BUSD(BSC)_DAI(UT)_BSC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC003_PANCAKE_BUSD(BSC)_DAI(UT)_BSC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'bsc'
             let appName = 'pancake'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('busd', 'bsc')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -132,16 +129,16 @@ describe('[Class] EstimateTrade', async() => {
             let Paths = response.data.Result.Networks.bsc[0].Paths
 
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC004_PANCAKE_ETH(UT)_BUSD(BSC)_BSC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC004_PANCAKE_ETH(UT)_BUSD(BSC)_BSC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'bsc'
             let appName = 'pancake'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('eth', 'ut')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -170,18 +167,18 @@ describe('[Class] EstimateTrade', async() => {
             chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
 
             let Paths = response.data.Result.Networks.bsc[0].Paths
-                //
+            //
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC005_PANCAKE_CAKE(BSC)_BUSD(BSC)_BSC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC005_PANCAKE_CAKE(BSC)_BUSD(BSC)_BSC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'bsc'
             let appName = 'pancake'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('cake', 'bsc')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -210,18 +207,18 @@ describe('[Class] EstimateTrade', async() => {
             chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
 
             let Paths = response.data.Result.Networks.bsc[0].Paths
-                //
+            //
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC006_PANCAKE_BNB(BSC)_DAI(UT)_INC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC006_PANCAKE_BNB(BSC)_DAI(UT)_INC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'bsc'
             let appName = 'pancake'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('bnb', 'bsc')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -250,18 +247,18 @@ describe('[Class] EstimateTrade', async() => {
             chai.assert.equal(response.data.Result.Networks.bsc[0].CallContract.toLowerCase(), contractApp.toLowerCase())
 
             let Paths = response.data.Result.Networks.bsc[0].Paths
-                //
+            //
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC007_PANCAKE_USDT(UT)_DAI(UT)_INC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC007_PANCAKE_USDT(UT)_DAI(UT)_INC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'bsc'
             let appName = 'pancake'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('usdt', 'ut')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -292,16 +289,16 @@ describe('[Class] EstimateTrade', async() => {
             let Paths = response.data.Result.Networks.bsc[0].Paths
 
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC008_PANCAKE_BUSD(BSC)_DAI(UT)_INC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC008_PANCAKE_BUSD(BSC)_DAI(UT)_INC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'bsc'
             let appName = 'pancake'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('busd', 'bsc')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -332,16 +329,16 @@ describe('[Class] EstimateTrade', async() => {
             let Paths = response.data.Result.Networks.bsc[0].Paths
 
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC009_PANCAKE_ETH(UT)_BUSD(BSC)_INC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC009_PANCAKE_ETH(UT)_BUSD(BSC)_INC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'bsc'
             let appName = 'pancake'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('eth', 'ut')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -372,16 +369,16 @@ describe('[Class] EstimateTrade', async() => {
             let Paths = response.data.Result.Networks.bsc[0].Paths
 
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC010_PANCAKE_CAKE(BSC)_BUSD(BSC)_INC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC010_PANCAKE_CAKE(BSC)_BUSD(BSC)_INC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'bsc'
             let appName = 'pancake'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('cake', 'bsc')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -412,18 +409,18 @@ describe('[Class] EstimateTrade', async() => {
             let Paths = response.data.Result.Networks.bsc[0].Paths
 
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
     //UNISWAP_PLG
 
-    describe('TC011_UNI_MATIC(PLG)_USDT(UT)_PLG', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC011_UNI_MATIC(PLG)_USDT(UT)_PLG', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'uniswap'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('matic', 'plg')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -452,24 +449,24 @@ describe('[Class] EstimateTrade', async() => {
                 chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
                 chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
                 let Paths = response.data.Result.Networks.plg[0].Paths
-                    //
+                //
             } else {
                 chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
                 chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
                 let Paths = response.data.Result.Networks.plg[1].Paths
-                    //
+                //
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC012_UNI_MATIC(UT)_USDT(UT)_PLG', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC012_UNI_MATIC(UT)_USDT(UT)_PLG', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'uniswap'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('matic', 'ut')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -498,24 +495,24 @@ describe('[Class] EstimateTrade', async() => {
                 chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
                 chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
                 let Paths = response.data.Result.Networks.plg[0].Paths
-                    //
+                //
             } else {
                 chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
                 chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
                 let Paths = response.data.Result.Networks.plg[1].Paths
-                    //
+                //
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC013_UNI_USDT(UT)_DAI(PLG)_PLG', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC013_UNI_USDT(UT)_DAI(PLG)_PLG', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'uniswap'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('usdt', 'ut')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -552,16 +549,16 @@ describe('[Class] EstimateTrade', async() => {
 
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC014_UNI_WETH(PLG)_USDT(UT)_PLG', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC014_UNI_WETH(PLG)_USDT(UT)_PLG', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'uniswap'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('weth', 'plg')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -598,16 +595,16 @@ describe('[Class] EstimateTrade', async() => {
 
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC015_UNI_UNI(PLG)_AAVE(PLG)_PLG', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC015_UNI_UNI(PLG)_AAVE(PLG)_PLG', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'uniswap'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('uni', 'plg')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -644,16 +641,16 @@ describe('[Class] EstimateTrade', async() => {
 
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC016_UNI_MATIC(PLG)_USDT(UT)_INC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC016_UNI_MATIC(PLG)_USDT(UT)_INC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'uniswap'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('matic', 'plg')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -682,24 +679,24 @@ describe('[Class] EstimateTrade', async() => {
                 chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
                 chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
                 let Paths = response.data.Result.Networks.plg[0].Paths
-                    //
+                //
             } else {
                 chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
                 chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
                 let Paths = response.data.Result.Networks.plg[1].Paths
-                    //
+                //
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC017_UNI_MATIC(UT)_USDT(UT)_INC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC017_UNI_MATIC(UT)_USDT(UT)_INC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'uniswap'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('matic', 'ut')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -728,24 +725,24 @@ describe('[Class] EstimateTrade', async() => {
                 chai.assert.equal(response.data.Result.Networks.plg[0].AppName, appName)
                 chai.assert.equal(response.data.Result.Networks.plg[0].CallContract.toLowerCase(), contractApp.toLowerCase())
                 let Paths = response.data.Result.Networks.plg[0].Paths
-                    //
+                //
             } else {
                 chai.assert.equal(response.data.Result.Networks.plg[1].AppName, appName)
                 chai.assert.equal(response.data.Result.Networks.plg[1].CallContract.toLowerCase(), contractApp.toLowerCase())
                 let Paths = response.data.Result.Networks.plg[1].Paths
-                    //
+                //
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC018_UNI_USDT(UT)_DAI(PLG)_INC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC018_UNI_USDT(UT)_DAI(PLG)_INC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'uniswap'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('usdt', 'ut')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -782,16 +779,16 @@ describe('[Class] EstimateTrade', async() => {
 
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC019_UNI_WETH(PLG)_USDT(UT)_INC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC019_UNI_WETH(PLG)_USDT(UT)_INC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'uniswap'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('weth', 'plg')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -827,16 +824,16 @@ describe('[Class] EstimateTrade', async() => {
                 let Paths = response.data.Result.Networks.plg[1].Paths
 
             }
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC020_UNI_UNI(PLG)_AAVE(PLG)_INC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC020_UNI_UNI(PLG)_AAVE(PLG)_INC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'uniswap'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('uni', 'plg')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -873,18 +870,18 @@ describe('[Class] EstimateTrade', async() => {
 
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
     //CURVE_PLG
 
-    describe('TC021_CURVE_WETH(PLG)_USDT(UT)_PLG', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC021_CURVE_WETH(PLG)_USDT(UT)_PLG', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'curve'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('weth', 'plg')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -921,16 +918,16 @@ describe('[Class] EstimateTrade', async() => {
 
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC022_CURVE_DAI(PLG)_USDC(PLG)_PLG', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC022_CURVE_DAI(PLG)_USDC(PLG)_PLG', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'curve'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('dai', 'plg')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -967,16 +964,16 @@ describe('[Class] EstimateTrade', async() => {
 
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC023_CURVE_USDT(UT)_WBTC(PLG)_PLG', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC023_CURVE_USDT(UT)_WBTC(PLG)_PLG', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'curve'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('usdt', 'ut')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -1013,16 +1010,16 @@ describe('[Class] EstimateTrade', async() => {
 
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC024_CURVE_USDT(UT)_USDC(UT)_PLG', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC024_CURVE_USDT(UT)_USDC(UT)_PLG', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'curve'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('usdt', 'ut')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -1059,16 +1056,16 @@ describe('[Class] EstimateTrade', async() => {
 
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC025_CURVE_WETH(PLG)_USDT(UT)_INC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC025_CURVE_WETH(PLG)_USDT(UT)_INC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'curve'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('weth', 'plg')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -1105,16 +1102,16 @@ describe('[Class] EstimateTrade', async() => {
 
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC026_CURVE_DAI(PLG)_USDC(PLG)_INC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC026_CURVE_DAI(PLG)_USDC(PLG)_INC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'curve'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('dai', 'plg')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -1151,16 +1148,16 @@ describe('[Class] EstimateTrade', async() => {
 
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
-    describe('TC027_CURVE_USDT(UT)_WBTC(PLG)_INC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC027_CURVE_USDT(UT)_WBTC(PLG)_INC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'curve'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('usdt', 'ut')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -1199,13 +1196,13 @@ describe('[Class] EstimateTrade', async() => {
         });
     });
 
-    describe('TC028_CURVE_USDT(UT)_USDC(UT)_INC', async() => {
-        it('STEP_Estiamte_Swap_Fee', async() => {
+    describe('TC028_CURVE_USDT(UT)_USDC(UT)_INC', async () => {
+        it('STEP_Estiamte_Swap_Fee', async () => {
 
             let networkTarget = 'plg'
             let appName = 'curve'
             let contractApp = await getContactAppByAppName(appName, networkTarget)
-                //call api
+            //call api
             let sellToken = await selectToken('usdt', 'ut')
             let sellTokenContract = await coinServiceApi.getTokenContract(sellToken, networkTarget)
 
@@ -1242,7 +1239,7 @@ describe('[Class] EstimateTrade', async() => {
 
             }
 
-        });
+        }).timeout(ENV.config.timeoutApi);
     });
 
 
@@ -1252,7 +1249,7 @@ describe('[Class] EstimateTrade', async() => {
 
 });
 
-const selectToken = async(symbol, network = null) => {
+const selectToken = async (symbol, network = null) => {
     symbol = symbol ? symbol.toLowerCase() : null
     network = network ? network.toLowerCase() : null
 
@@ -1275,7 +1272,7 @@ const selectToken = async(symbol, network = null) => {
     return null
 }
 
-const convertNetworkToCurrencyType = async(symbol, network) => {
+const convertNetworkToCurrencyType = async (symbol, network) => {
     network = network.toLowerCase()
 
     switch (network) {
@@ -1330,7 +1327,7 @@ const convertNetworkToCurrencyType = async(symbol, network) => {
     }
 }
 
-const getContactAppByAppName = async(appName, network) => {
+const getContactAppByAppName = async (appName, network) => {
     switch (appName) {
         case 'pancake':
             return '0x95Cd8898917c7216Da0517aAB6A115d7A7b6CA90'
